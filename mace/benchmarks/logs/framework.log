@@ -1,0 +1,9 @@
+neighbor scenario 0 passed (2002 edges)
+neighbor scenario 1 passed (348 edges)
+neighbor scenario 2 passed (56 edges)
+neighbor scenario 3 passed (10 edges)
+neighbor scenario 4 passed (10 edges)
+neighbor scenario 5 passed (0 edges)
+neighbor scenario 6 passed (20880 edges)
+neighbor scenario 7 passed (0 edges)
+LJ derivatives, reuse, concurrency, resource limits, queue boundaries and geometry errors passed

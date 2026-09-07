@@ -1,0 +1,243 @@
+{
+  "protocol": "development",
+  "atoms": 512,
+  "edges": [
+    44030,
+    44032,
+    44030
+  ],
+  "warmup": 3,
+  "windows": 3,
+  "steps": 3,
+  "seed": 83071,
+  "trajectory_sha256": "cb367506f4d656737d56d64d02c06bda40f237bd84c06c172d66951be331ac01",
+  "structure": "synthetic diamond Si a=4.6 4x4x4",
+  "frame": 0,
+  "checkpoint_sha256": "a522eb7f59c7879963d41586528f4980baf33e086c94aa92e3eafdeccad3be47",
+  "archive_sha256": "f797fa892d1f5e6d75e264721dd2afd40198d0aa1c8f0c929a08710c19dc8b93",
+  "head": "matpes_r2scan",
+  "dataset_revision": "synthetic-v2",
+  "structure_id": null,
+  "structure_file_sha256": null,
+  "mace_revision": "59ad3a473ca02101a1cf02db242197e8d616dd11",
+  "versions": {
+    "torch": "2.14.0",
+    "e3nn": "0.4.4",
+    "cuequivariance": "0.11.1",
+    "cuequivariance-torch": "0.11.1",
+    "ase": "3.29.0",
+    "numpy": "2.5.2"
+  },
+  "python": "3.12.13",
+  "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Sep_12_02:18:05_PDT_2024\nCuda compilation tools, release 12.6, V12.6.77\nBuild cuda_12.6.r12.6/compiler.34841621_0",
+  "gpu": "NVIDIA GeForce RTX 3060 Ti, 591.86, 8192 MiB, 7043 MiB",
+  "process_memory_observation": "3219955, [N/A]",
+  "results": {
+    "framework": {
+      "wall_median_ms": 62.63522012159228,
+      "wall_p95_ms": 63.46260062418878,
+      "window_means_ms": [
+        62.59358666526774,
+        62.85365376000603,
+        62.844686986257635
+      ],
+      "samples_ms": [
+        62.60501989163458,
+        62.54051998257637,
+        62.63522012159228,
+        63.101820182055235,
+        62.70402017980814,
+        62.75512091815472,
+        62.477719970047474,
+        62.353220069780946,
+        63.70312091894448
+      ],
+      "device_mean_ms": 62.349922222222226,
+      "diagnostics": {
+        "backend": "CellList",
+        "grid": [
+          3,
+          3,
+          3
+        ],
+        "reason": "grid has lower occupancy-estimated work",
+        "max_occupancy": 25,
+        "occupied_bins": 27,
+        "mean_occupancy": 18.963,
+        "grid_candidates": 262144,
+        "brute_candidates": 7077890.0,
+        "context_bytes": 180847695,
+        "context_peak_bytes": 180847695,
+        "parameter_bytes": 25860716,
+        "device_ms": 63.3495,
+        "kernels": [
+          {
+            "name": "MH1.ZBL",
+            "registers": 60,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 11776,
+            "blocks_per_sm": 7
+          },
+          {
+            "name": "MH1.forward0",
+            "registers": 84,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 25152,
+            "blocks_per_sm": 3
+          },
+          {
+            "name": "MH1.forward1",
+            "registers": 92,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 37440,
+            "blocks_per_sm": 2
+          },
+          {
+            "name": "MH1.backward1",
+            "registers": 98,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 16960,
+            "blocks_per_sm": 4
+          },
+          {
+            "name": "MH1.backward0",
+            "registers": 99,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 16960,
+            "blocks_per_sm": 4
+          }
+        ]
+      }
+    },
+    "explicit": {
+      "wall_median_ms": 58.08181897737086,
+      "wall_p95_ms": 66.98688180185854,
+      "window_means_ms": [
+        63.42785401890675,
+        57.90555205506583,
+        58.19321904952327
+      ],
+      "samples_ms": [
+        70.45672298409045,
+        61.78212002851069,
+        58.04471904411912,
+        57.932218071073294,
+        57.947819121181965,
+        57.83661897294223,
+        58.08181897737086,
+        58.25551901943982,
+        58.24231915175915
+      ],
+      "device_mean_ms": 59.43726666666666,
+      "diagnostics": {
+        "backend": "CellList",
+        "grid": [
+          3,
+          3,
+          3
+        ],
+        "reason": "grid has lower occupancy-estimated work; benchmark explicit connectivity",
+        "max_occupancy": 25,
+        "occupied_bins": 27,
+        "mean_occupancy": 18.963,
+        "grid_candidates": 262144,
+        "brute_candidates": 7077890.0,
+        "context_bytes": 181557078,
+        "context_peak_bytes": 182261558,
+        "parameter_bytes": 25860716,
+        "device_ms": 57.858,
+        "kernels": [
+          {
+            "name": "reference.count_edges",
+            "registers": 40,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 5120,
+            "blocks_per_sm": 12
+          },
+          {
+            "name": "reference.store_edges",
+            "registers": 40,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 5120,
+            "blocks_per_sm": 12
+          },
+          {
+            "name": "MH1.ZBL",
+            "registers": 68,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 11776,
+            "blocks_per_sm": 7
+          },
+          {
+            "name": "MH1.forward0",
+            "registers": 87,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 25152,
+            "blocks_per_sm": 3
+          },
+          {
+            "name": "MH1.forward1",
+            "registers": 87,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 37440,
+            "blocks_per_sm": 2
+          },
+          {
+            "name": "MH1.backward1",
+            "registers": 91,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 16960,
+            "blocks_per_sm": 5
+          },
+          {
+            "name": "MH1.backward0",
+            "registers": 91,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 16960,
+            "blocks_per_sm": 5
+          }
+        ]
+      }
+    },
+    "cueq": {
+      "wall_median_ms": 78.5841247998178,
+      "wall_p95_ms": 357.8145155683158,
+      "window_means_ms": [
+        234.1471757584562,
+        76.08389140417178,
+        75.79525761927168
+      ],
+      "samples_ms": [
+        541.6235751472414,
+        82.10092619992793,
+        78.71702592819929,
+        78.64992506802082,
+        75.37032500840724,
+        74.2314241360873,
+        74.36202396638691,
+        78.5841247998178,
+        74.43962409161031
+      ],
+      "device_mean_ms": 128.7943352593316
+    }
+  },
+  "failures": {},
+  "combined_torch_memory": {
+    "peak_allocated": 1440205312,
+    "peak_reserved": 1778384896
+  },
+  "speedup_over_cueq": 1.254631573853565,
+  "implicit_over_explicit": 1.07839632477756
+}

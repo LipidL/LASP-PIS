@@ -1,0 +1,290 @@
+[
+  {
+    "case": "Si8",
+    "atoms": 8,
+    "energy": -69.88685464859009,
+    "reference_energy": -69.8868537939867,
+    "errors": {
+      "energy_per_atom": 1.0682542317397292e-07,
+      "force_max": 3.5068387749248586e-06,
+      "virial_max": 9.954390870703378e-06
+    },
+    "wall_seconds": 0.14938249392434955,
+    "diagnostics": {
+      "backend": "BruteForce",
+      "grid": [
+        1,
+        1,
+        1
+      ],
+      "reason": "reciprocal plane height below cutoff",
+      "max_occupancy": 8,
+      "occupied_bins": 1,
+      "mean_occupancy": 8,
+      "grid_candidates": 1728,
+      "brute_candidates": 8000,
+      "context_bytes": 2826519,
+      "context_peak_bytes": 2826519,
+      "parameter_bytes": 25860716,
+      "device_ms": 148.194,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 120,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 124,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    }
+  },
+  {
+    "case": "Si64",
+    "atoms": 64,
+    "energy": -558.9819369316101,
+    "reference_energy": -558.9819386975762,
+    "errors": {
+      "energy_per_atom": 2.759322015322141e-08,
+      "force_max": 9.21120287966648e-06,
+      "virial_max": 3.455599993618108e-05
+    },
+    "wall_seconds": 0.012140599079430103,
+    "diagnostics": {
+      "backend": "BruteForce",
+      "grid": [
+        1,
+        1,
+        1
+      ],
+      "reason": "brute force has comparable or lower estimated work",
+      "max_occupancy": 64,
+      "occupied_bins": 1,
+      "mean_occupancy": 64,
+      "grid_candidates": 110592,
+      "brute_candidates": 110592,
+      "context_bytes": 22606615,
+      "context_peak_bytes": 22621911,
+      "parameter_bytes": 25860716,
+      "device_ms": 11.8525,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 120,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 124,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    }
+  },
+  {
+    "case": "Si216",
+    "atoms": 216,
+    "energy": -1886.6552596092224,
+    "reference_energy": -1886.6552612321461,
+    "errors": {
+      "energy_per_atom": 7.513535735968077e-09,
+      "force_max": 1.617297805378559e-05,
+      "virial_max": 0.00013652736124569742
+    },
+    "wall_seconds": 0.02105419896543026,
+    "diagnostics": {
+      "backend": "CellList",
+      "grid": [
+        2,
+        2,
+        2
+      ],
+      "reason": "grid has lower occupancy-estimated work",
+      "max_occupancy": 31,
+      "occupied_bins": 8,
+      "mean_occupancy": 27,
+      "grid_candidates": 157024,
+      "brute_candidates": 1259710.0,
+      "context_bytes": 76295531,
+      "context_peak_bytes": 77722667,
+      "parameter_bytes": 25860716,
+      "device_ms": 20.7334,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 120,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 124,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    }
+  },
+  {
+    "case": "mixed4",
+    "atoms": 4,
+    "energy": -21.992023706436157,
+    "reference_energy": -21.99202267018577,
+    "errors": {
+      "energy_per_atom": 2.5906259715213764e-07,
+      "force_max": 9.3875720494907e-06,
+      "virial_max": 4.550934008307195e-06
+    },
+    "wall_seconds": 0.0020177988335490227,
+    "diagnostics": {
+      "backend": "BruteForce",
+      "grid": [
+        1,
+        1,
+        1
+      ],
+      "reason": "brute force has comparable or lower estimated work",
+      "max_occupancy": 4,
+      "occupied_bins": 1,
+      "mean_occupancy": 4,
+      "grid_candidates": 432,
+      "brute_candidates": 432,
+      "context_bytes": 76295531,
+      "context_peak_bytes": 77722667,
+      "parameter_bytes": 25860716,
+      "device_ms": 1.7657,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 120,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 124,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    }
+  }
+]

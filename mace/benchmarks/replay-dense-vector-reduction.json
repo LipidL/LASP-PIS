@@ -1,0 +1,250 @@
+{
+  "protocol": "development",
+  "atoms": 512,
+  "edges": [
+    44030,
+    44032,
+    44030
+  ],
+  "warmup": 3,
+  "windows": 3,
+  "steps": 3,
+  "seed": 83071,
+  "trajectory_sha256": "cb367506f4d656737d56d64d02c06bda40f237bd84c06c172d66951be331ac01",
+  "structure": "synthetic diamond Si a=4.6 4x4x4",
+  "frame": 0,
+  "checkpoint_sha256": "a522eb7f59c7879963d41586528f4980baf33e086c94aa92e3eafdeccad3be47",
+  "archive_sha256": "f797fa892d1f5e6d75e264721dd2afd40198d0aa1c8f0c929a08710c19dc8b93",
+  "head": "matpes_r2scan",
+  "dataset_revision": "synthetic-v2",
+  "structure_id": null,
+  "structure_file_sha256": null,
+  "mace_revision": "59ad3a473ca02101a1cf02db242197e8d616dd11",
+  "versions": {
+    "torch": "2.14.0",
+    "e3nn": "0.4.4",
+    "cuequivariance": "0.11.1",
+    "cuequivariance-torch": "0.11.1",
+    "ase": "3.29.0",
+    "numpy": "2.5.2"
+  },
+  "python": "3.12.13",
+  "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Sep_12_02:18:05_PDT_2024\nCuda compilation tools, release 12.6, V12.6.77\nBuild cuda_12.6.r12.6/compiler.34841621_0",
+  "gpu": "NVIDIA GeForce RTX 3060 Ti, 591.86, 8192 MiB, 7218 MiB",
+  "process_memory_observation": "3494062, [N/A]",
+  "results": {
+    "framework": {
+      "wall_median_ms": 37.48661605641246,
+      "wall_p95_ms": 38.1625366397202,
+      "window_means_ms": [
+        37.448683055117726,
+        37.942283321172,
+        37.393083019802965
+      ],
+      "samples_ms": [
+        37.230716086924076,
+        37.390816025435925,
+        37.72451705299318,
+        38.37561700493097,
+        37.842916091904044,
+        37.60831686668098,
+        37.36351593397558,
+        37.48661605641246,
+        37.32911706902087
+      ],
+      "device_mean_ms": 37.19378888888888,
+      "diagnostics": {
+        "backend": "CellList",
+        "grid": [
+          3,
+          3,
+          3
+        ],
+        "reason": "grid has lower occupancy-estimated work",
+        "max_occupancy": 25,
+        "occupied_bins": 27,
+        "mean_occupancy": 18.963,
+        "grid_candidates": 262144,
+        "brute_candidates": 7077890.0,
+        "context_bytes": 180847695,
+        "context_peak_bytes": 180847695,
+        "parameter_bytes": 25860716,
+        "device_ms": 36.9259,
+        "kernels": [
+          {
+            "name": "MH1.ZBL",
+            "registers": 61,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 11776,
+            "blocks_per_sm": 7
+          },
+          {
+            "name": "MH1.forward0",
+            "registers": 115,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 24116,
+            "blocks_per_sm": 4
+          },
+          {
+            "name": "MH1.forward1",
+            "registers": 120,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 48692,
+            "blocks_per_sm": 2
+          },
+          {
+            "name": "MH1.backward1",
+            "registers": 144,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 48688,
+            "blocks_per_sm": 2
+          },
+          {
+            "name": "MH1.backward0",
+            "registers": 143,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 24112,
+            "blocks_per_sm": 3
+          }
+        ]
+      }
+    },
+    "explicit": {
+      "wall_median_ms": 38.19741611368954,
+      "wall_p95_ms": 52.09660292603075,
+      "window_means_ms": [
+        45.81628662223617,
+        38.39371663828691,
+        38.01121663612624
+      ],
+      "samples_ms": [
+        61.03212689049542,
+        38.50541589781642,
+        37.91131707839668,
+        38.68571692146361,
+        38.69331697933376,
+        37.80211601406336,
+        37.9834168124944,
+        38.19741611368954,
+        37.85281698219478
+      ],
+      "device_mean_ms": 40.29501111111111,
+      "diagnostics": {
+        "backend": "CellList",
+        "grid": [
+          3,
+          3,
+          3
+        ],
+        "reason": "grid has lower occupancy-estimated work; benchmark explicit connectivity",
+        "max_occupancy": 25,
+        "occupied_bins": 27,
+        "mean_occupancy": 18.963,
+        "grid_candidates": 262144,
+        "brute_candidates": 7077890.0,
+        "context_bytes": 181557078,
+        "context_peak_bytes": 182261558,
+        "parameter_bytes": 25860716,
+        "device_ms": 37.444,
+        "kernels": [
+          {
+            "name": "reference.count_edges",
+            "registers": 40,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 5120,
+            "blocks_per_sm": 12
+          },
+          {
+            "name": "reference.store_edges",
+            "registers": 40,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 5120,
+            "blocks_per_sm": 12
+          },
+          {
+            "name": "MH1.ZBL",
+            "registers": 67,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 11776,
+            "blocks_per_sm": 7
+          },
+          {
+            "name": "MH1.forward0",
+            "registers": 115,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 24116,
+            "blocks_per_sm": 4
+          },
+          {
+            "name": "MH1.forward1",
+            "registers": 115,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 48692,
+            "blocks_per_sm": 2
+          },
+          {
+            "name": "MH1.backward1",
+            "registers": 149,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 48688,
+            "blocks_per_sm": 2
+          },
+          {
+            "name": "MH1.backward0",
+            "registers": 147,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 24112,
+            "blocks_per_sm": 3
+          }
+        ]
+      }
+    },
+    "cueq": {
+      "wall_median_ms": 81.4169361256063,
+      "wall_p95_ms": 291.61454681307066,
+      "window_means_ms": [
+        214.87175999209285,
+        73.67696535463135,
+        80.76410166298349
+      ],
+      "samples_ms": [
+        405.3628761321306,
+        118.26035100966692,
+        120.992052834481,
+        73.18893214687705,
+        74.19723202474415,
+        73.64473189227283,
+        81.71203499659896,
+        81.4169361256063,
+        79.16333386674523
+      ],
+      "device_mean_ms": 123.23214891221788
+    }
+  },
+  "failures": {},
+  "source_sha256": "227d716eab6c5d7a2f0e0033d6df385d3f480fe1ab229f614f687dfef925578b",
+  "library_sha256": {
+    "framework": "752bdb3e1a93dc3e7c31ee4cd6cb3599302991060d28a26dd0fc80326349c7fe",
+    "explicit": "c482487fdd984912ec9338a4a94408fcecff595ef772650263977e0545e7ea6e"
+  },
+  "compiler": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+  "environment_lock_sha256": "701e8dee99359e769be9a020ea56e8f5b8ce3c823c20724fe794ff45a2985a05",
+  "combined_torch_memory": {
+    "peak_allocated": 1440205312,
+    "peak_reserved": 1778384896
+  },
+  "speedup_over_cueq": 2.1718934566695602,
+  "implicit_over_explicit": 0.9813914099539749
+}

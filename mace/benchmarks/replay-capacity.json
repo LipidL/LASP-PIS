@@ -1,0 +1,119 @@
+{
+  "protocol": "development",
+  "atoms": 4096,
+  "edges": [
+    188416,
+    188416,
+    188416
+  ],
+  "warmup": 3,
+  "windows": 3,
+  "steps": 3,
+  "seed": 83071,
+  "trajectory_sha256": "d3c2b54e2315a19c2f488811866d74d9d2c323d3d888df2e0099f0edcb5b81a5",
+  "structure": "synthetic diamond Si 8x8x8",
+  "frame": 0,
+  "checkpoint_sha256": "a522eb7f59c7879963d41586528f4980baf33e086c94aa92e3eafdeccad3be47",
+  "archive_sha256": "f797fa892d1f5e6d75e264721dd2afd40198d0aa1c8f0c929a08710c19dc8b93",
+  "head": "matpes_r2scan",
+  "dataset_revision": "synthetic-v2",
+  "structure_id": null,
+  "structure_file_sha256": null,
+  "mace_revision": "59ad3a473ca02101a1cf02db242197e8d616dd11",
+  "versions": {
+    "torch": "2.14.0",
+    "e3nn": "0.4.4",
+    "cuequivariance": "0.11.1",
+    "cuequivariance-torch": "0.11.1",
+    "ase": "3.29.0",
+    "numpy": "2.5.2"
+  },
+  "python": "3.12.13",
+  "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Sep_12_02:18:05_PDT_2024\nCuda compilation tools, release 12.6, V12.6.77\nBuild cuda_12.6.r12.6/compiler.34841621_0",
+  "gpu": "NVIDIA GeForce RTX 3060 Ti, 591.86, 8192 MiB, 6765 MiB",
+  "process_memory_observation": "3210302, [N/A]",
+  "results": {
+    "framework": {
+      "wall_median_ms": 280.38779692724347,
+      "wall_p95_ms": 280.94067703932524,
+      "window_means_ms": [
+        280.07149742916226,
+        279.9144636373967,
+        280.74823032754165
+      ],
+      "samples_ms": [
+        279.16379715316,
+        280.71559709496796,
+        280.33509803935885,
+        280.85199696943164,
+        278.57029694132507,
+        280.3210970014334,
+        280.98959708586335,
+        280.86729696951807,
+        280.38779692724347
+      ],
+      "device_mean_ms": 279.6701111111111,
+      "diagnostics": {
+        "backend": "CellList",
+        "grid": [
+          7,
+          7,
+          7
+        ],
+        "reason": "grid has lower occupancy-estimated work",
+        "max_occupancy": 18,
+        "occupied_bins": 343,
+        "mean_occupancy": 11.9417,
+        "grid_candidates": 1313000.0,
+        "brute_candidates": 452985000.0,
+        "context_bytes": 1446777631,
+        "context_peak_bytes": 1446777631,
+        "parameter_bytes": 25860716,
+        "device_ms": 279.938,
+        "kernels": [
+          {
+            "name": "MH1.ZBL",
+            "registers": 60,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 11776,
+            "blocks_per_sm": 7
+          },
+          {
+            "name": "MH1.forward0",
+            "registers": 84,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 25152,
+            "blocks_per_sm": 3
+          },
+          {
+            "name": "MH1.forward1",
+            "registers": 92,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 37440,
+            "blocks_per_sm": 2
+          },
+          {
+            "name": "MH1.backward1",
+            "registers": 98,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 16960,
+            "blocks_per_sm": 4
+          },
+          {
+            "name": "MH1.backward0",
+            "registers": 99,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 16960,
+            "blocks_per_sm": 4
+          }
+        ]
+      }
+    }
+  },
+  "failures": {}
+}

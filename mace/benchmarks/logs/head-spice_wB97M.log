@@ -1,0 +1,93 @@
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Failed to get GPU information from pynvml: Not Supported. Using default values for NVIDIA GeForce RTX 3060 Ti.
+/home/lipid/learn/cuda/pairwise_framework_gpt/mace-ref/mace/calculators/mace.py:260: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  torch.load(f=model_path, map_location=device)
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+  a.shape = (-1,) + shape
+GPU information: NVIDIA RTX A6000, 8, 6, 45, 84, 300, 2100
+{
+  "case": "mixed4",
+  "atoms": 4,
+  "energy": -3099.1171329021454,
+  "reference_energy": -3099.117132753971,
+  "errors": {
+    "energy_per_atom": 3.7043605516373646e-08,
+    "force_max": 9.124947735861255e-06,
+    "virial_max": 6.140078390615145e-06
+  },
+  "wall_seconds": 0.05914970184676349,
+  "diagnostics": {
+    "backend": "BruteForce",
+    "grid": [
+      1,
+      1,
+      1
+    ],
+    "reason": "brute force has comparable or lower estimated work",
+    "max_occupancy": 4,
+    "occupied_bins": 1,
+    "mean_occupancy": 4,
+    "grid_candidates": 432,
+    "brute_candidates": 432,
+    "context_bytes": 1413655,
+    "context_peak_bytes": 1413655,
+    "parameter_bytes": 25860716,
+    "device_ms": 57.3102,
+    "kernels": [
+      {
+        "name": "MH1.ZBL",
+        "registers": 61,
+        "threads": 128,
+        "static_shared": 256,
+        "dynamic_shared": 11776,
+        "blocks_per_sm": 7
+      },
+      {
+        "name": "MH1.forward0",
+        "registers": 120,
+        "threads": 128,
+        "static_shared": 256,
+        "dynamic_shared": 24116,
+        "blocks_per_sm": 4
+      },
+      {
+        "name": "MH1.forward1",
+        "registers": 124,
+        "threads": 128,
+        "static_shared": 256,
+        "dynamic_shared": 48692,
+        "blocks_per_sm": 2
+      },
+      {
+        "name": "MH1.backward1",
+        "registers": 145,
+        "threads": 128,
+        "static_shared": 256,
+        "dynamic_shared": 48688,
+        "blocks_per_sm": 2
+      },
+      {
+        "name": "MH1.backward0",
+        "registers": 145,
+        "threads": 128,
+        "static_shared": 256,
+        "dynamic_shared": 24112,
+        "blocks_per_sm": 3
+      }
+    ]
+  }
+}

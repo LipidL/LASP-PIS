@@ -1,0 +1,17 @@
+{
+  "dataset": "Materials Project Trajectory (MPtrj) Dataset",
+  "revision": "10.6084/m9.figshare.23713842.v2",
+  "url": "https://figshare.com/articles/dataset/23713842/2",
+  "file_url": "https://ndownloader.figshare.com/files/41619375",
+  "file_md5_from_figshare": "50ead5f27f9a4f6beb7564c4188f1e9f",
+  "full_file_downloaded_or_verified": false,
+  "prefix_bytes": 262144,
+  "prefix_sha256": "60bb86a8f7d2c8cc5a4ec86dc49263c7abbb820a41eeee6f0b405746603c2ae2",
+  "material_id": "mp-1005792",
+  "frame_id": "mp-1012897-0-0",
+  "license": "MIT",
+  "author": "Bowen Deng",
+  "structure_sha256": "5021adb6503120d7924a942f326958afd2cad8ea7b1654e89e8e27c8ea064588",
+  "atoms": 28,
+  "formula": "As12Cu4O4Sm8"
+}

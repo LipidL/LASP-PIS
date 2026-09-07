@@ -1,0 +1,74 @@
+[
+  {
+    "case": "Si216",
+    "atoms": 216,
+    "energy": -1886.6552543640137,
+    "reference_energy": -1886.6552612321461,
+    "errors": {
+      "energy_per_atom": 3.179690953334945e-08,
+      "force_max": 1.6530605922548958e-05,
+      "virial_max": 0.00013271266398717785
+    },
+    "wall_seconds": 0.10970032890327275,
+    "diagnostics": {
+      "backend": "CellList",
+      "grid": [
+        2,
+        2,
+        2
+      ],
+      "reason": "grid has lower occupancy-estimated work",
+      "max_occupancy": 31,
+      "occupied_bins": 8,
+      "mean_occupancy": 27,
+      "grid_candidates": 157024,
+      "brute_candidates": 1259710.0,
+      "context_bytes": 76295531,
+      "context_peak_bytes": 76295531,
+      "parameter_bytes": 25860716,
+      "device_ms": 108.546,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 80,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 25152,
+          "blocks_per_sm": 3
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 90,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 37440,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 89,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 16960,
+          "blocks_per_sm": 5
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 89,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 16960,
+          "blocks_per_sm": 5
+        }
+      ]
+    }
+  }
+]

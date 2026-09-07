@@ -1,0 +1,133 @@
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Failed to get GPU information from pynvml: Not Supported. Using default values for NVIDIA GeForce RTX 3060 Ti.
+/home/lipid/learn/cuda/pairwise_framework_gpt/mace-ref/mace/calculators/mace.py:260: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  torch.load(f=model_path, map_location=device)
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+WARNING:root:Default dtype float32 does not match model dtype float64, converting models to float32.
+/home/lipid/learn/cuda/pairwise_framework_gpt/mace-ref/mace/calculators/mace.py:260: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  torch.load(f=model_path, map_location=device)
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+WARNING:root:Default dtype float32 does not match model dtype float64, converting models to float32.
+/home/lipid/learn/cuda/pairwise_framework_gpt/mace-ref/mace/modules/models.py:87: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "atomic_numbers", torch.tensor(atomic_numbers, dtype=torch.int64)
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+  a.shape = (-1,) + shape
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+  a.shape = (-1,) + shape
+W0906 15:07:00.617000 3530812 torch/_inductor/utils.py:1806] [0/0] Not enough SMs to use max_autotune_gemm mode
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+  a.shape = (-1,) + shape
+GPU information: NVIDIA RTX A6000, 8, 6, 45, 84, 300, 2100
+window 1/3 complete
+window 2/3 complete
+window 3/3 complete
+{
+  "framework": {
+    "wall_median_ms": 5.079601192846894,
+    "wall_p95_ms": 7.688410324044526,
+    "window_means_ms": [
+      6.376580474898219,
+      5.32206017524004,
+      5.178960273042321
+    ],
+    "device_mean_ms": 5.263816,
+    "diagnostics": {
+      "backend": "BruteForce",
+      "grid": [
+        1,
+        1,
+        5
+      ],
+      "reason": "reciprocal plane height below cutoff",
+      "max_occupancy": 7,
+      "occupied_bins": 5,
+      "mean_occupancy": 5.6,
+      "grid_candidates": 4194,
+      "brute_candidates": 58800,
+      "context_bytes": 9890887,
+      "context_peak_bytes": 9890887,
+      "parameter_bytes": 25860716,
+      "device_ms": 4.71539,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 120,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 124,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    }
+  },
+  "e3nn": {
+    "wall_median_ms": 46.247801976278424,
+    "wall_p95_ms": 52.95810292009264,
+    "window_means_ms": [
+      46.9260623678565,
+      46.60230237059295,
+      47.68122234381735
+    ],
+    "device_mean_ms": 47.149529774983726
+  },
+  "compile": {
+    "wall_median_ms": 21.251500817015767,
+    "wall_p95_ms": 26.092811324633658,
+    "window_means_ms": [
+      22.737621190026402,
+      20.59560096822679,
+      23.643941106274724
+    ],
+    "device_mean_ms": 22.39066874186198
+  }
+}

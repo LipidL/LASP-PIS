@@ -1,0 +1,586 @@
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+Failed to get GPU information from pynvml: Not Supported. Using default values for NVIDIA GeForce RTX 3060 Ti.
+/home/lipid/learn/cuda/pairwise_framework_gpt/mace-ref/mace/calculators/mace.py:260: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  torch.load(f=model_path, map_location=device)
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/torch/jit/_serialization.py:176: FutureWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+WARNING:root:Default dtype float32 does not match model dtype float64, converting models to float32.
+/home/lipid/learn/cuda/pairwise_framework_gpt/mace-ref/mace/modules/models.py:87: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "atomic_numbers", torch.tensor(atomic_numbers, dtype=torch.int64)
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+  a.shape = (-1,) + shape
+/home/lipid/learn/cuda/pairwise_framework_gpt/.venv/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+  a.shape = (-1,) + shape
+GPU information: NVIDIA RTX A6000, 8, 6, 45, 84, 300, 2100
+window 1/100 complete
+window 2/100 complete
+window 3/100 complete
+window 4/100 complete
+window 5/100 complete
+window 6/100 complete
+window 7/100 complete
+window 8/100 complete
+window 9/100 complete
+window 10/100 complete
+window 11/100 complete
+window 12/100 complete
+window 13/100 complete
+window 14/100 complete
+window 15/100 complete
+window 16/100 complete
+window 17/100 complete
+window 18/100 complete
+window 19/100 complete
+window 20/100 complete
+window 21/100 complete
+window 22/100 complete
+window 23/100 complete
+window 24/100 complete
+window 25/100 complete
+window 26/100 complete
+window 27/100 complete
+window 28/100 complete
+window 29/100 complete
+window 30/100 complete
+window 31/100 complete
+window 32/100 complete
+window 33/100 complete
+window 34/100 complete
+window 35/100 complete
+window 36/100 complete
+window 37/100 complete
+window 38/100 complete
+window 39/100 complete
+window 40/100 complete
+window 41/100 complete
+window 42/100 complete
+window 43/100 complete
+window 44/100 complete
+window 45/100 complete
+window 46/100 complete
+window 47/100 complete
+window 48/100 complete
+window 49/100 complete
+window 50/100 complete
+window 51/100 complete
+window 52/100 complete
+window 53/100 complete
+window 54/100 complete
+window 55/100 complete
+window 56/100 complete
+window 57/100 complete
+window 58/100 complete
+window 59/100 complete
+window 60/100 complete
+window 61/100 complete
+window 62/100 complete
+window 63/100 complete
+window 64/100 complete
+window 65/100 complete
+window 66/100 complete
+window 67/100 complete
+window 68/100 complete
+window 69/100 complete
+window 70/100 complete
+window 71/100 complete
+window 72/100 complete
+window 73/100 complete
+window 74/100 complete
+window 75/100 complete
+window 76/100 complete
+window 77/100 complete
+window 78/100 complete
+window 79/100 complete
+window 80/100 complete
+window 81/100 complete
+window 82/100 complete
+window 83/100 complete
+window 84/100 complete
+window 85/100 complete
+window 86/100 complete
+window 87/100 complete
+window 88/100 complete
+window 89/100 complete
+window 90/100 complete
+window 91/100 complete
+window 92/100 complete
+window 93/100 complete
+window 94/100 complete
+window 95/100 complete
+window 96/100 complete
+window 97/100 complete
+window 98/100 complete
+window 99/100 complete
+window 100/100 complete
+{
+  "framework": {
+    "wall_median_ms": 4.9615498865023255,
+    "wall_p95_ms": 9.022900019772349,
+    "window_means_ms": [
+      5.7576445350423455,
+      4.971159470733255,
+      6.304792824666947,
+      4.97922743903473,
+      4.978132755495608,
+      4.984585754573345,
+      4.985263089183718,
+      4.9951028800569475,
+      6.054421921726316,
+      6.052862000651658,
+      5.866679139435291,
+      5.288154189474881,
+      4.98181419679895,
+      5.925624035298824,
+      5.004749051295221,
+      6.085265320725739,
+      5.888918081764132,
+      4.982955879531801,
+      5.919927014037967,
+      4.961389019154012,
+      5.014336947351694,
+      5.805272713769227,
+      5.083238754887134,
+      4.978168022353202,
+      6.160381841473281,
+      6.229077980387956,
+      5.888472995720804,
+      5.049345993902534,
+      6.106508895754814,
+      6.014082960318774,
+      4.998029966372997,
+      5.923595915082842,
+      5.058334900531918,
+      4.996713828295469,
+      5.792657870333642,
+      4.988420943263918,
+      5.012493939138949,
+      5.0509969354607165,
+      5.933716977015138,
+      5.0238669780083,
+      6.107504041865468,
+      4.986578025855124,
+      5.930999859701842,
+      6.024671918712556,
+      4.989101965911686,
+      5.946767944842577,
+      5.017428961582482,
+      6.158765896689147,
+      5.035363142378628,
+      5.9728651493787766,
+      5.0063609587959945,
+      5.156359963584691,
+      4.988091967534274,
+      5.02860197564587,
+      5.894412179477513,
+      5.0617941352538764,
+      5.8015301544219255,
+      6.106537017039955,
+      5.033926987089217,
+      4.970545989926904,
+      4.973213989287615,
+      5.053469005506486,
+      5.073563125915825,
+      5.147557035088539,
+      5.033971013035625,
+      6.040900992229581,
+      4.995283996686339,
+      6.129873001482338,
+      5.877195026259869,
+      5.846017068251967,
+      6.07189699774608,
+      4.97538699535653,
+      5.00532299047336,
+      4.975611011032015,
+      5.14222202822566,
+      6.477483995258808,
+      5.7692650076933205,
+      5.427139988169074,
+      5.35513297887519,
+      5.917757994029671,
+      5.030277012847364,
+      6.068740990012884,
+      5.009824996814132,
+      6.00433295359835,
+      5.7088929787278175,
+      5.95751698827371,
+      6.046500965021551,
+      5.022304975427687,
+      6.107185001019388,
+      6.01726898457855,
+      5.025972004514188,
+      4.98693699715659,
+      5.053757023997605,
+      5.874798002187163,
+      6.552432992029935,
+      6.013918002136052,
+      5.0424210098572075,
+      5.0624919892288744,
+      5.031022022012621,
+      5.69412600947544
+    ],
+    "device_mean_ms": 5.22525444,
+    "diagnostics": {
+      "backend": "BruteForce",
+      "grid": [
+        1,
+        1,
+        5
+      ],
+      "reason": "reciprocal plane height below cutoff",
+      "max_occupancy": 7,
+      "occupied_bins": 5,
+      "mean_occupancy": 5.6,
+      "grid_candidates": 4194,
+      "brute_candidates": 58800,
+      "context_bytes": 9890887,
+      "context_peak_bytes": 9890887,
+      "parameter_bytes": 25860716,
+      "device_ms": 4.62122,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 120,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 124,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    }
+  },
+  "explicit": {
+    "wall_median_ms": 5.03879995085299,
+    "wall_p95_ms": 8.829159929882726,
+    "window_means_ms": [
+      5.0778234750032425,
+      5.077848483342677,
+      6.0800375626422465,
+      5.059466494712979,
+      5.924162715673447,
+      5.054961733985692,
+      6.020389520563185,
+      5.442829900421202,
+      5.068123557139188,
+      5.053237625397742,
+      5.213263011537492,
+      5.1198531640693545,
+      5.032499197404832,
+      5.041924035176635,
+      5.078330009710044,
+      5.05745928036049,
+      6.137485869694501,
+      5.0887269037775695,
+      6.272587864659727,
+      6.25408194726333,
+      6.114333823788911,
+      5.189439740497619,
+      5.762932039797306,
+      5.090649041812867,
+      5.871984816621989,
+      5.130816961172968,
+      5.127012983430177,
+      5.134127007331699,
+      6.007378934882581,
+      5.089450965169817,
+      5.12111698044464,
+      5.054985906463116,
+      6.0448898817412555,
+      5.117685871664435,
+      5.075403917580843,
+      6.138707923237234,
+      5.114414948038757,
+      5.960294916294515,
+      5.091531954240054,
+      5.055826955940574,
+      5.902001045178622,
+      5.113384060095996,
+      6.060378907714039,
+      5.183350935112685,
+      5.920796948485076,
+      5.113634942099452,
+      5.85693083005026,
+      5.073686835821718,
+      5.062912148423493,
+      5.990424097981304,
+      6.078057955019176,
+      5.109941957052797,
+      6.043775973375887,
+      5.14812397537753,
+      5.984734252560884,
+      5.058762137778103,
+      5.048426131252199,
+      5.0133790308609605,
+      5.935352009255439,
+      6.066569993272424,
+      6.022747994866222,
+      5.103059008251876,
+      6.243930174969137,
+      5.496777039952576,
+      6.180746010504663,
+      5.117596006020904,
+      5.118721991311759,
+      5.824976023286581,
+      5.152034026104957,
+      5.068869013339281,
+      5.089411004446447,
+      5.729801999405026,
+      6.377170993946493,
+      6.005921023897827,
+      5.1315700192935765,
+      6.082429124508053,
+      5.154127997811884,
+      5.207327976822853,
+      5.420134973246604,
+      5.552348981145769,
+      5.109151997603476,
+      5.147115993313491,
+      5.97497399430722,
+      5.097137002740055,
+      5.0955029763281345,
+      5.126528991386294,
+      5.120501988567412,
+      5.678254009690136,
+      5.063965998124331,
+      5.11069098720327,
+      5.961507998872548,
+      5.775889009237289,
+      6.042422009631991,
+      5.131927006877959,
+      5.117729005869478,
+      5.08257697802037,
+      5.814227012451738,
+      6.300791024696082,
+      5.1631420105695724,
+      6.528850100003183
+    ],
+    "device_mean_ms": 5.223649658,
+    "diagnostics": {
+      "backend": "BruteForce",
+      "grid": [
+        1,
+        1,
+        5
+      ],
+      "reason": "reciprocal plane height below cutoff; benchmark explicit connectivity",
+      "max_occupancy": 7,
+      "occupied_bins": 5,
+      "mean_occupancy": 5.6,
+      "grid_candidates": 4194,
+      "brute_candidates": 58800,
+      "context_bytes": 9912302,
+      "context_peak_bytes": 9932686,
+      "parameter_bytes": 25860716,
+      "device_ms": 4.67379,
+      "kernels": [
+        {
+          "name": "reference.count_edges",
+          "registers": 40,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 5120,
+          "blocks_per_sm": 12
+        },
+        {
+          "name": "reference.store_edges",
+          "registers": 40,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 5120,
+          "blocks_per_sm": 12
+        },
+        {
+          "name": "MH1.ZBL",
+          "registers": 67,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 98,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 115,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 149,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 147,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    }
+  },
+  "cueq": {
+    "wall_median_ms": 48.16875152755529,
+    "wall_p95_ms": 56.90590417943895,
+    "window_means_ms": [
+      49.645517407916486,
+      48.235289545264095,
+      47.03208486549556,
+      50.02906193956733,
+      50.02935213036835,
+      49.34442260535434,
+      47.27479907684028,
+      47.391537111252546,
+      47.64300254872069,
+      51.08668578090146,
+      51.84396600117907,
+      48.280748347751796,
+      47.69071750110015,
+      49.55639320425689,
+      48.78560354933143,
+      48.423750412184745,
+      48.64065046887845,
+      46.98725408874452,
+      47.098078010603786,
+      47.2979869809933,
+      48.06527663487941,
+      48.8119886466302,
+      47.91138160740957,
+      47.331002575811,
+      47.118225663434714,
+      49.530726936645806,
+      49.21256193425506,
+      49.69786167377606,
+      49.198525252286345,
+      48.60513868043199,
+      47.362752745393664,
+      47.04226769274101,
+      47.21399814588949,
+      48.08967859251425,
+      47.669947741087526,
+      48.049156945198774,
+      46.93645848892629,
+      46.68625762453303,
+      47.8877516486682,
+      49.31568081257865,
+      48.644861422944814,
+      47.72453877143562,
+      48.05469092912972,
+      47.437345259822905,
+      49.41500448156148,
+      47.3938734899275,
+      46.902922224253416,
+      47.43244462413713,
+      47.906154305674136,
+      47.21091596176848,
+      47.93382168514654,
+      47.88694969844073,
+      48.82997374050319,
+      47.23437026143074,
+      47.789556831121445,
+      48.67253934033215,
+      50.15016334829852,
+      50.339943771250546,
+      51.057176112663,
+      50.90303388889879,
+      50.39319701725617,
+      49.98762919800356,
+      50.011967883910984,
+      50.6519602634944,
+      47.42649402003735,
+      49.3727059988305,
+      50.200853997375816,
+      50.67028300836682,
+      49.91801520111039,
+      50.07105052471161,
+      48.83436233503744,
+      50.2674879739061,
+      50.15647302381694,
+      50.53992015309632,
+      50.52561785560101,
+      50.42767686769366,
+      49.99429600778967,
+      49.01657280744985,
+      52.73151777219027,
+      48.713364861905575,
+      48.18127000005916,
+      48.59411299228668,
+      48.13500300515443,
+      47.95854492345825,
+      47.81600279035047,
+      47.45259283808991,
+      49.36834579333663,
+      51.354661856312305,
+      50.83639698801562,
+      50.386937980074435,
+      51.09198598423973,
+      52.688559119123966,
+      51.93988123442978,
+      51.40109908999875,
+      51.004508992191404,
+      51.40006606001407,
+      50.79049406340346,
+      50.52960507571697,
+      51.72887806314975,
+      51.40206263633445
+    ],
+    "device_mean_ms": 49.14152033729553
+  }
+}

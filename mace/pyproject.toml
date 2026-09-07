@@ -1,0 +1,13 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "periodic-pairwise"
+version = "0.1.0"
+description = "Blocking ASE frontend for a streaming periodic CUDA PairOp runtime"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26", "ase>=3.23"]
+
+[tool.setuptools.packages.find]
+where = ["python"]
