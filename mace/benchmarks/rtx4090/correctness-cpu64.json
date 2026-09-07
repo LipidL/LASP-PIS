@@ -1,0 +1,318 @@
+[
+  {
+    "case": "Si8",
+    "atoms": 8,
+    "energy": -69.88685464859009,
+    "reference_energy": -69.88685379398669,
+    "reference_energy_node_sum": -69.88685379398669,
+    "energy_check": "total",
+    "errors": {
+      "energy_per_atom": 1.0682542495032976e-07,
+      "energy_node_sum_per_atom": 1.0682542495032976e-07,
+      "force_max": 3.7452573533602873e-06,
+      "virial_max": 9.95439087225769e-06
+    },
+    "wall_seconds": 0.05693755764514208,
+    "diagnostics": {
+      "backend": "BruteForce",
+      "grid": [
+        1,
+        1,
+        1
+      ],
+      "reason": "reciprocal plane height below cutoff",
+      "max_occupancy": 8,
+      "occupied_bins": 1,
+      "mean_occupancy": 8,
+      "grid_candidates": 1728,
+      "brute_candidates": 8000,
+      "context_bytes": 2826519,
+      "context_peak_bytes": 2826519,
+      "parameter_bytes": 25860716,
+      "device_ms": 56.6502,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 120,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 124,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    },
+    "reference_dtype": "float64",
+    "reference_device": "cpu",
+    "reference_cueq": false,
+    "reference_compile": null
+  },
+  {
+    "case": "Si64",
+    "atoms": 64,
+    "energy": -558.9819388389587,
+    "reference_energy": -558.981938697576,
+    "reference_energy_node_sum": -558.981938697576,
+    "energy_check": "total",
+    "errors": {
+      "energy_per_atom": 2.209105787187582e-09,
+      "energy_node_sum_per_atom": 2.209105787187582e-09,
+      "force_max": 9.15159823300371e-06,
+      "virial_max": 3.455599990420666e-05
+    },
+    "wall_seconds": 0.005824128165841103,
+    "diagnostics": {
+      "backend": "BruteForce",
+      "grid": [
+        1,
+        1,
+        1
+      ],
+      "reason": "brute force has comparable or lower estimated work",
+      "max_occupancy": 64,
+      "occupied_bins": 1,
+      "mean_occupancy": 64,
+      "grid_candidates": 110592,
+      "brute_candidates": 110592,
+      "context_bytes": 22606615,
+      "context_peak_bytes": 22621911,
+      "parameter_bytes": 25860716,
+      "device_ms": 5.71728,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 120,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 124,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    },
+    "reference_dtype": "float64",
+    "reference_device": "cpu",
+    "reference_cueq": false,
+    "reference_compile": null
+  },
+  {
+    "case": "Si216",
+    "atoms": 216,
+    "energy": -1886.6552681922913,
+    "reference_energy": -1886.6552612321457,
+    "reference_energy_node_sum": -1886.6552612321457,
+    "energy_check": "total",
+    "errors": {
+      "energy_per_atom": 3.222289621960415e-08,
+      "energy_node_sum_per_atom": 3.222289621960415e-08,
+      "force_max": 1.593455947179745e-05,
+      "virial_max": 7.35848564623609e-05
+    },
+    "wall_seconds": 0.007657409179955721,
+    "diagnostics": {
+      "backend": "CellList",
+      "grid": [
+        2,
+        2,
+        2
+      ],
+      "reason": "grid has lower occupancy-estimated work",
+      "max_occupancy": 31,
+      "occupied_bins": 8,
+      "mean_occupancy": 27,
+      "grid_candidates": 157024,
+      "brute_candidates": 1259710.0,
+      "context_bytes": 76295531,
+      "context_peak_bytes": 77722667,
+      "parameter_bytes": 25860716,
+      "device_ms": 7.53299,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 120,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 124,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    },
+    "reference_dtype": "float64",
+    "reference_device": "cpu",
+    "reference_cueq": false,
+    "reference_compile": null
+  },
+  {
+    "case": "mixed4",
+    "atoms": 4,
+    "energy": -21.992023706436157,
+    "reference_energy": -21.99202267018577,
+    "reference_energy_node_sum": -21.99202267018577,
+    "energy_check": "total",
+    "errors": {
+      "energy_per_atom": 2.5906259715213764e-07,
+      "energy_node_sum_per_atom": 2.5906259715213764e-07,
+      "force_max": 9.387572036612113e-06,
+      "virial_max": 6.4582826553305495e-06
+    },
+    "wall_seconds": 0.0022651758044958115,
+    "diagnostics": {
+      "backend": "BruteForce",
+      "grid": [
+        1,
+        1,
+        1
+      ],
+      "reason": "brute force has comparable or lower estimated work",
+      "max_occupancy": 4,
+      "occupied_bins": 1,
+      "mean_occupancy": 4,
+      "grid_candidates": 432,
+      "brute_candidates": 432,
+      "context_bytes": 76295531,
+      "context_peak_bytes": 77722667,
+      "parameter_bytes": 25860716,
+      "device_ms": 2.1568,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 120,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 124,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    },
+    "reference_dtype": "float64",
+    "reference_device": "cpu",
+    "reference_cueq": false,
+    "reference_compile": null
+  }
+]

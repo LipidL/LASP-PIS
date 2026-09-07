@@ -1,0 +1,30 @@
+Job 947225 on gpunode3; CUDA_VISIBLE_DEVICES=4; SLURM_JOB_GPUS=4
+Mon Sep  7 14:20:12 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 550.107.02             Driver Version: 550.107.02     CUDA Version: 12.4     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   4  NVIDIA GeForce RTX 4090        Off |   00000000:81:00.0 Off |                  Off |
+| 30%   27C    P8             20W /  450W |       2MiB /  24564MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+srun: ROUTE: split_hostlist: hl=gpunode3 tree_width 0
+START correctness-e3nn_compile: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/validate.py --check --energy-check node-sum --repeat-check report --device cuda --dtype float32 --structure structures/mptrj-mp-1005792.extxyz --supercell 3 3 1 --compile default --output benchmarks/rtx4090/correctness-e3nn_compile.json
+END correctness-e3nn_compile: exit=0, seconds=28.5
+START correctness-cueq_compile: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/validate.py --check --energy-check node-sum --repeat-check report --device cuda --dtype float32 --structure structures/mptrj-mp-1005792.extxyz --supercell 3 3 1 --cueq --compile default --output benchmarks/rtx4090/correctness-cueq_compile.json
+END correctness-cueq_compile: exit=0, seconds=68.5
+START repeat-variability: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/check_cluster_repeats.py
+END repeat-variability: exit=0, seconds=1.9
+START pilot-mptrj-28: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --implementations framework explicit e3nn cueq e3nn_compile cueq_compile --warmup 20 --windows 3 --steps 5 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/pilot-mptrj-28.json
+END pilot-mptrj-28: exit=0, seconds=128.9

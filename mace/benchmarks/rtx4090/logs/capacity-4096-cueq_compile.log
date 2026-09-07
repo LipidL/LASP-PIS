@@ -1,0 +1,44 @@
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/mace-ref/mace/calculators/mace.py:260: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  torch.load(f=model_path, map_location=device)
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+WARNING:root:Default dtype float32 does not match model dtype float64, converting models to float32.
+/home15/luohz/ppf_gpt_benchmark/mace-ref/mace/modules/models.py:87: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "atomic_numbers", torch.tensor(atomic_numbers, dtype=torch.int64)
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+  a.shape = (-1,) + shape
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/_inductor/compile_fx.py:321: UserWarning: TensorFloat32 tensor cores for float32 matrix multiplication available but not enabled. Consider setting `torch.set_float32_matmul_precision('high')` for better performance.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+  a.shape = (-1,) + shape
+window 1/5 complete
+window 2/5 complete
+window 3/5 complete
+window 4/5 complete
+window 5/5 complete
+{
+  "cueq_compile": {
+    "wall_median_ms": 111.08272895216942,
+    "wall_p95_ms": 111.57251042313874,
+    "window_means_ms": [
+      111.15932422690094,
+      111.39783286489546,
+      111.00081698969007,
+      111.08390567824244,
+      111.1234774813056
+    ],
+    "device_mean_ms": 111.24312622070312
+  }
+}

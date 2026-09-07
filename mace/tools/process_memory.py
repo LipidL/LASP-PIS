@@ -13,6 +13,8 @@ class ProcessMemory:
         self.initialized = False
         self.thread = None
         self.done = threading.Event()
+        self.gpu_uuids = set()
+        self.other_compute_pids = set()
         try:
             import pynvml
 
@@ -33,8 +35,12 @@ class ProcessMemory:
     def sample(self):
         values = []
         for handle in self.handles:
-            for process in self.nvml.nvmlDeviceGetComputeRunningProcesses(handle):
+            processes = self.nvml.nvmlDeviceGetComputeRunningProcesses(handle)
+            for process in processes:
                 if process.pid == os.getpid():
+                    uuid = self.nvml.nvmlDeviceGetUUID(handle)
+                    self.gpu_uuids.add(uuid.decode() if isinstance(uuid, bytes) else uuid)
+                    self.other_compute_pids.update(p.pid for p in processes if p.pid != os.getpid())
                     value = process.usedGpuMemory
                     if value is None or value >= (1 << 63):
                         raise RuntimeError("NVML process memory is unavailable")
@@ -69,5 +75,7 @@ class ProcessMemory:
             "samples": self.samples,
             "poll_interval_ms": 1000 * self.interval,
             "scope": "current process across physical GPUs; includes all resident implementations",
+            "gpu_uuids": sorted(self.gpu_uuids),
+            "other_compute_pids_on_process_gpus": sorted(self.other_compute_pids),
             "error": self.error,
         }

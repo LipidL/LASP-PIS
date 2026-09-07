@@ -1,0 +1,76 @@
+Job 947238 on gpunode3; CUDA_VISIBLE_DEVICES=4; SLURM_JOB_GPUS=4
+Mon Sep  7 14:29:23 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 550.107.02             Driver Version: 550.107.02     CUDA Version: 12.4     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   4  NVIDIA GeForce RTX 4090        Off |   00000000:81:00.0 Off |                  Off |
+| 30%   27C    P8             20W /  450W |       2MiB /  24564MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+srun: ROUTE: split_hostlist: hl=gpunode3 tree_width 0
+START replay-mptrj-28-v1: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --implementations framework explicit e3nn cueq e3nn_compile cueq_compile --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/replay-mptrj-28-v1.json
+END replay-mptrj-28-v1: exit=0, seconds=1128.1
+START replay-mptrj-252-v1: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 3 3 1 --implementations framework explicit e3nn cueq e3nn_compile cueq_compile --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/replay-mptrj-252-v1.json
+END replay-mptrj-252-v1: exit=0, seconds=1598.0
+START replay-dense-512-v1: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --repeat 4 --lattice-constant 4.6 --implementations framework explicit e3nn cueq e3nn_compile cueq_compile --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/replay-dense-512-v1.json
+END replay-dense-512-v1: exit=0, seconds=3076.4
+START capacity-4096-framework: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --repeat 8 --implementations framework --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-4096-framework.json
+END capacity-4096-framework: exit=0, seconds=4.8
+START capacity-4096-explicit: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --repeat 8 --implementations explicit --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-4096-explicit.json
+END capacity-4096-explicit: exit=0, seconds=4.5
+START capacity-4096-e3nn: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --repeat 8 --implementations e3nn --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-4096-e3nn.json
+END capacity-4096-e3nn: exit=0, seconds=9.9
+START capacity-4096-cueq: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --repeat 8 --implementations cueq --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-4096-cueq.json
+END capacity-4096-cueq: exit=0, seconds=31.3
+START capacity-4096-e3nn_compile: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --repeat 8 --implementations e3nn_compile --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-4096-e3nn_compile.json
+END capacity-4096-e3nn_compile: exit=0, seconds=71.0
+START capacity-4096-cueq_compile: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --repeat 8 --implementations cueq_compile --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-4096-cueq_compile.json
+END capacity-4096-cueq_compile: exit=0, seconds=91.5
+START capacity-12544-framework: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 8 8 7 --implementations framework --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-12544-framework.json
+END capacity-12544-framework: exit=0, seconds=10.6
+START capacity-12544-explicit: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 8 8 7 --implementations explicit --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-12544-explicit.json
+END capacity-12544-explicit: exit=0, seconds=10.3
+START capacity-12544-e3nn: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 8 8 7 --implementations e3nn --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-12544-e3nn.json
+END capacity-12544-e3nn: exit=0, seconds=10.0
+START capacity-12544-cueq: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 8 8 7 --implementations cueq --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-12544-cueq.json
+END capacity-12544-cueq: exit=0, seconds=28.6
+START capacity-12544-e3nn_compile: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 8 8 7 --implementations e3nn_compile --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-12544-e3nn_compile.json
+END capacity-12544-e3nn_compile: exit=0, seconds=25.8
+START capacity-12544-cueq_compile: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 8 8 7 --implementations cueq_compile --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-12544-cueq_compile.json
+END capacity-12544-cueq_compile: exit=0, seconds=65.9
+START capacity-25088-framework: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 8 14 8 --implementations framework --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-25088-framework.json
+END capacity-25088-framework: exit=0, seconds=19.2
+START capacity-25088-explicit: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 8 14 8 --implementations explicit --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-25088-explicit.json
+END capacity-25088-explicit: exit=0, seconds=18.7
+START capacity-25088-e3nn: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 8 14 8 --implementations e3nn --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-25088-e3nn.json
+END capacity-25088-e3nn: exit=0, seconds=10.5
+START capacity-25088-cueq: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 8 14 8 --implementations cueq --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-25088-cueq.json
+END capacity-25088-cueq: exit=0, seconds=15.8
+START capacity-25088-e3nn_compile: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 8 14 8 --implementations e3nn_compile --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-25088-e3nn_compile.json
+END capacity-25088-e3nn_compile: exit=0, seconds=25.7
+START capacity-25088-cueq_compile: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 8 14 8 --implementations cueq_compile --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-25088-cueq_compile.json
+END capacity-25088-cueq_compile: exit=0, seconds=72.8
+START capacity-50176-framework: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 14 16 8 --implementations framework --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-50176-framework.json
+END capacity-50176-framework: exit=0, seconds=36.6
+START capacity-50176-explicit: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 14 16 8 --implementations explicit --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-50176-explicit.json
+END capacity-50176-explicit: exit=0, seconds=35.9
+START capacity-50176-e3nn: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 14 16 8 --implementations e3nn --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-50176-e3nn.json
+END capacity-50176-e3nn: exit=0, seconds=12.4
+START capacity-50176-cueq: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 14 16 8 --implementations cueq --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-50176-cueq.json
+END capacity-50176-cueq: exit=0, seconds=14.7
+START capacity-50176-e3nn_compile: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 14 16 8 --implementations e3nn_compile --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-50176-e3nn_compile.json
+END capacity-50176-e3nn_compile: exit=0, seconds=27.7
+START capacity-50176-cueq_compile: /home15/luohz/ppf_gpt_benchmark/.venv-cu126/bin/python tools/benchmark.py --structure structures/mptrj-mp-1005792.extxyz --dataset-revision 10.6084/m9.figshare.23713842.v2 --structure-id mp-1005792/mp-1012897-0-0 --supercell 14 16 8 --implementations cueq_compile --warmup 10 --windows 5 --steps 10 --environment-lock benchmarks/rtx4090/environment.freeze.txt --output benchmarks/rtx4090/capacity-50176-cueq_compile.json
+END capacity-50176-cueq_compile: exit=0, seconds=30.0

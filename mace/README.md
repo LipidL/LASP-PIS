@@ -14,7 +14,8 @@ for checkpoint export and independent validation.
 ## Build and run
 
 CUDA Toolkit, cuBLAS, CMake 3.24+, a C++17 compiler and an NVIDIA GPU are required.
-The implementation has been tested on SM86 (RTX 3060 Ti). Select your architecture
+The implementation has been executed on SM86 (RTX 3060 Ti) and SM89 (RTX 4090).
+See the validation records for numerical qualifications. Select your architecture
 when building; the default build targets SM80, SM86, SM89 and SM90.
 
 ```sh
@@ -112,12 +113,16 @@ process-memory observations, seeds, checksums and versions. `--structure file.ex
 silicon. ASE's geometry cache is bypassed for every timed call.
 The bundled MPtrj fixture has [versioned provenance](structures/README.md).
 
-See [validation status](docs/VALIDATION.md) for measured results and open release
-gates. The 50,000-atom/24-GiB capacity gate requires hardware beyond the available
-8-GiB GPU. No comparison against another specialized implementation on this device
-was made. The benchmark container definition is in `Dockerfile`.
+See the [3060 Ti validation record](docs/VALIDATION.md) and
+[RTX 4090 cluster results](docs/RTX4090.md). On the RTX 4090, 50,176 atoms completed
+at a 16.922-GiB sampled process peak. The 252-atom full replay measured 4.645 ms
+for implicit CUDA, 44.198 ms for eager cuEquivariance, and 21.412 ms for compiled
+cuEquivariance. The cluster run uses a frozen CUDA 12 environment and records
+float32 energy-reduction and virial-repeat limitations. Comparison against an
+independent specialized implicit implementation remains open. Docker reproduction
+is pending; the original container definition is in `Dockerfile`.
 
-The full-protocol 252-atom MPtrj replay measured 14.45 ms versus 54.15 ms for
+On the RTX 3060 Ti, the full-protocol 252-atom MPtrj replay measured 14.45 ms versus 54.15 ms for
 cuEquivariance (3.75×), with 0.3% implicit overhead against our explicit-list build.
 The denser 512-atom development case measured 2.19× speedup. All six heads,
 analytical derivatives, invariances and CUDA sanitizer checks pass. See the

@@ -1,0 +1,267 @@
+{
+  "protocol": "development",
+  "atoms": 25088,
+  "edges": [
+    1141402,
+    1140740,
+    1140946,
+    1140732,
+    1141018,
+    1141276,
+    1141250,
+    1140938,
+    1141250,
+    1141268
+  ],
+  "warmup": 10,
+  "windows": 5,
+  "steps": 10,
+  "seed": 83071,
+  "trajectory_sha256": "ae30f0b5dd45f624f1c9037bd45e49183891dddb3672dd297752dd7065236496",
+  "structure": "structures/mptrj-mp-1005792.extxyz",
+  "frame": 0,
+  "supercell": [
+    8,
+    14,
+    8
+  ],
+  "checkpoint_sha256": "a522eb7f59c7879963d41586528f4980baf33e086c94aa92e3eafdeccad3be47",
+  "archive_sha256": "f797fa892d1f5e6d75e264721dd2afd40198d0aa1c8f0c929a08710c19dc8b93",
+  "head": "matpes_r2scan",
+  "requested_implementations": [
+    "cueq_compile"
+  ],
+  "construction_seconds": {
+    "cueq_compile": 4.622525305021554
+  },
+  "warmup_samples_ms": {
+    "cueq_compile": []
+  },
+  "compile_counters_after_warmup": {
+    "frames": {
+      "total": 1,
+      "ok": 1
+    },
+    "stats": {
+      "calls_captured": 875,
+      "unique_graphs": 1
+    },
+    "aot_autograd": {
+      "total": 1,
+      "autograd_cache_miss": 1,
+      "ok": 1
+    },
+    "inductor": {
+      "decompose_mm": 4,
+      "pattern_matcher_count": 1465,
+      "pattern_matcher_nodes": 1806,
+      "benchmarking.InductorBenchmarker.benchmark_gpu": 104,
+      "pad_mm_bench": 7,
+      "fxgraph_cache_miss": 1,
+      "async_compile_cache_miss": 270,
+      "extern_calls": 127,
+      "async_compile_cache_hit": 135,
+      "triton_bundler_save_kernel": 2064,
+      "triton_bundler_save_static_autotuner": 1,
+      "benchmarking.InductorBenchmarker.benchmark": 91
+    },
+    "graph_break": {},
+    "aten_mm_info": {
+      "aten.bmm_25089_1_3_3": 2,
+      "aten.bmm_2_3_3_3": 2,
+      "aten.bmm_1426752_1_3_3": 1,
+      "aten.mm_25089_6_89": 1,
+      "aten.mm_25089_512_89": 5,
+      "aten.mm_25089_512_512": 11,
+      "aten.mm_25089_128_512": 2,
+      "aten.mm_25089_2048_128": 5,
+      "aten.addmm_1426752_64_1034": 4,
+      "aten.addmm_1426752_64_64": 4,
+      "aten.addmm_1426752_512_64": 1,
+      "aten.addmm_1426752_1_64": 2,
+      "aten.mm_75267_512_128": 6,
+      "aten.mm_125445_512_128": 4,
+      "aten.mm_175623_512_128": 3,
+      "aten.mm_75267_512_512": 6,
+      "aten.mm_125445_512_512": 4,
+      "aten.mm_175623_512_512": 4,
+      "aten.mm_29_512_86": 1,
+      "aten.mm_75267_128_512": 6,
+      "aten.addmm_1426752_1280_64": 1,
+      "aten.mm_13_512_28": 1,
+      "aten.mm_25089_6_512": 1,
+      "aten.mm_25089_96_512": 1,
+      "aten.mm_25089_6_96": 1,
+      "aten.mm_25089_96_6": 1,
+      "aten.mm_25089_512_96": 1,
+      "aten.mm_25089_512_6": 1,
+      "aten.mm_175623_128_512": 3,
+      "aten.mm_125445_128_512": 4,
+      "aten.mm_25089_128_2048": 4,
+      "aten.mm_1426752_1034_64": 3,
+      "aten.mm_1426752_64_1280": 1,
+      "aten.mm_1426752_64_64": 4,
+      "aten.addmm_1426752_1034_64": 1,
+      "aten.mm_25089_89_512": 2,
+      "aten.mm_25089_512_128": 1,
+      "aten.mm_1426752_64_512": 1
+    }
+  },
+  "compile_counters_after_measurement": {
+    "frames": {
+      "total": 1,
+      "ok": 1
+    },
+    "stats": {
+      "calls_captured": 875,
+      "unique_graphs": 1
+    },
+    "aot_autograd": {
+      "total": 1,
+      "autograd_cache_miss": 1,
+      "ok": 1
+    },
+    "inductor": {
+      "decompose_mm": 4,
+      "pattern_matcher_count": 1465,
+      "pattern_matcher_nodes": 1806,
+      "benchmarking.InductorBenchmarker.benchmark_gpu": 104,
+      "pad_mm_bench": 7,
+      "fxgraph_cache_miss": 1,
+      "async_compile_cache_miss": 270,
+      "extern_calls": 127,
+      "async_compile_cache_hit": 135,
+      "triton_bundler_save_kernel": 2064,
+      "triton_bundler_save_static_autotuner": 1,
+      "benchmarking.InductorBenchmarker.benchmark": 91
+    },
+    "graph_break": {},
+    "aten_mm_info": {
+      "aten.bmm_25089_1_3_3": 2,
+      "aten.bmm_2_3_3_3": 2,
+      "aten.bmm_1426752_1_3_3": 1,
+      "aten.mm_25089_6_89": 1,
+      "aten.mm_25089_512_89": 5,
+      "aten.mm_25089_512_512": 11,
+      "aten.mm_25089_128_512": 2,
+      "aten.mm_25089_2048_128": 5,
+      "aten.addmm_1426752_64_1034": 4,
+      "aten.addmm_1426752_64_64": 4,
+      "aten.addmm_1426752_512_64": 1,
+      "aten.addmm_1426752_1_64": 2,
+      "aten.mm_75267_512_128": 6,
+      "aten.mm_125445_512_128": 4,
+      "aten.mm_175623_512_128": 3,
+      "aten.mm_75267_512_512": 6,
+      "aten.mm_125445_512_512": 4,
+      "aten.mm_175623_512_512": 4,
+      "aten.mm_29_512_86": 1,
+      "aten.mm_75267_128_512": 6,
+      "aten.addmm_1426752_1280_64": 1,
+      "aten.mm_13_512_28": 1,
+      "aten.mm_25089_6_512": 1,
+      "aten.mm_25089_96_512": 1,
+      "aten.mm_25089_6_96": 1,
+      "aten.mm_25089_96_6": 1,
+      "aten.mm_25089_512_96": 1,
+      "aten.mm_25089_512_6": 1,
+      "aten.mm_175623_128_512": 3,
+      "aten.mm_125445_128_512": 4,
+      "aten.mm_25089_128_2048": 4,
+      "aten.mm_1426752_1034_64": 3,
+      "aten.mm_1426752_64_1280": 1,
+      "aten.mm_1426752_64_64": 4,
+      "aten.addmm_1426752_1034_64": 1,
+      "aten.mm_25089_89_512": 2,
+      "aten.mm_25089_512_128": 1,
+      "aten.mm_1426752_64_512": 1
+    }
+  },
+  "hostname": "gpunode3",
+  "platform": "Linux-5.19.0-41-generic-x86_64-with-glibc2.35",
+  "cpu_affinity": [
+    36,
+    37,
+    38,
+    39,
+    132,
+    133,
+    134,
+    135
+  ],
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "4",
+    "CUDA_DEVICE_ORDER": "PCI_BUS_ID",
+    "SLURM_JOB_ID": "947238",
+    "SLURM_JOB_GPUS": "4",
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "OPENBLAS_NUM_THREADS": "4",
+    "TORCHINDUCTOR_COMPILE_THREADS": "4"
+  },
+  "precision": {
+    "model": "float32",
+    "torch_tf32": false,
+    "torch_threads": 4
+  },
+  "dataset_revision": "10.6084/m9.figshare.23713842.v2",
+  "structure_id": "mp-1005792/mp-1012897-0-0",
+  "structure_file_sha256": "5021adb6503120d7924a942f326958afd2cad8ea7b1654e89e8e27c8ea064588",
+  "mace_revision": "59ad3a473ca02101a1cf02db242197e8d616dd11",
+  "versions": {
+    "torch": "2.13.0+cu126",
+    "e3nn": "0.4.4",
+    "cuequivariance": "0.11.1",
+    "cuequivariance-torch": "0.11.1",
+    "cuequivariance-ops-torch-cu12": "0.10.0",
+    "cuequivariance-ops-cu12": "0.10.0",
+    "triton": "3.7.1",
+    "nvidia-cublas-cu12": "12.6.4.1",
+    "nvidia-cuda-runtime-cu12": "12.6.77",
+    "nvidia-cuda-nvrtc-cu12": "12.6.85",
+    "nvidia-ml-py": "13.610.43",
+    "ase": "3.29.0",
+    "numpy": "2.5.2"
+  },
+  "python": "3.12.13",
+  "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Mar_28_02:18:24_PDT_2024\nCuda compilation tools, release 12.4, V12.4.131\nBuild cuda_12.4.r12.4/compiler.34097967_0",
+  "gpu": "0, GPU-91904096-0d80-bb24-4e1f-1bafca2b4d39, 00000000:01:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 10984 MiB, 450.00 W, 2715 MHz, 10251 MHz, 54\n1, GPU-1fe3b6d9-a7b7-8b3c-f93b-4dd089da9797, 00000000:21:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 2244 MiB, 450.00 W, 2730 MHz, 10251 MHz, 52\n2, GPU-3545c5a7-68e6-6bfd-c08a-186e0cab6cdf, 00000000:41:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 1092 MiB, 450.00 W, 2520 MHz, 10251 MHz, 36\n3, GPU-11ca1df1-34ea-e8d8-6dda-80c195cb61e3, 00000000:61:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 666 MiB, 450.00 W, 2520 MHz, 10251 MHz, 34\n4, GPU-5708370a-8330-67ef-1f36-5af102dc6f18, 00000000:81:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 24122 MiB, 450.00 W, 2520 MHz, 10251 MHz, 36\n5, GPU-045dd892-d38f-7f1a-1dd9-875361b7651d, 00000000:A1:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 980 MiB, 450.00 W, 2520 MHz, 10251 MHz, 34\n6, GPU-d6eb0850-f82c-d1c7-827e-5e9c5e921bf5, 00000000:C1:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 2604 MiB, 450.00 W, 2760 MHz, 10251 MHz, 43\n7, GPU-c5569a09-6211-c640-50e9-c14a375ae594, 00000000:E1:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 4716 MiB, 450.00 W, 2760 MHz, 10251 MHz, 46",
+  "process_memory_observation": "2274066, 2366 MiB\n105529, 8606 MiB\n203409, 2236 MiB\n203993, 1084 MiB\n204163, 658 MiB\n218414, 24114 MiB\n212111, 972 MiB\n214430, 2596 MiB\n111612, 2108 MiB\n215074, 2596 MiB",
+  "results": {},
+  "failures": {
+    "cueq_compile": {
+      "status": "OOM",
+      "phase": "warmup",
+      "error": "CUDA out of memory. Tried to allocate 5.61 GiB. GPU 0 has a total capacity of 23.64 GiB of which 88.81 MiB is free. Including non-PyTorch memory, this process has 23.55 GiB memory in use. Of the allocated memory 22.98 GiB is allocated by PyTorch, and 125.17 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)"
+    }
+  },
+  "process_memory_sampling": {
+    "status": "ok",
+    "sampled_peak_bytes": 25362956288,
+    "samples": 1082,
+    "poll_interval_ms": 20.0,
+    "scope": "current process across physical GPUs; includes all resident implementations",
+    "gpu_uuids": [
+      "GPU-5708370a-8330-67ef-1f36-5af102dc6f18"
+    ],
+    "other_compute_pids_on_process_gpus": [],
+    "error": null
+  },
+  "source_sha256": "ab9ab61980ac335785c035fc575a3e5ea0a79351e561827292c413d48508bc1f",
+  "library_sha256": {},
+  "native_library_dependencies": {},
+  "compiler": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+  "environment_lock_file": "benchmarks/rtx4090/environment.freeze.txt",
+  "environment_lock_sha256": "70c9d9d719d017744f38a102dc4d1e38a54c4817516f2634bb4604c48d174678",
+  "torch_cuda": "12.6",
+  "torch_build": "2.13.0+cu126",
+  "torch_device": "_CudaDeviceProperties(name='NVIDIA GeForce RTX 4090', major=8, minor=9, total_memory=24210MB, multi_processor_count=128, uuid=5708370a-8330-67ef-1f36-5af102dc6f18, pci_bus_id=129, pci_device_id=0, pci_domain_id=0, L2_cache_size=72MB)",
+  "startup_combined_torch_memory": {
+    "peak_allocated": 24749357056,
+    "peak_reserved": 24882708480
+  },
+  "combined_torch_memory": {
+    "peak_allocated": 35236352,
+    "peak_reserved": 24805113856
+  }
+}

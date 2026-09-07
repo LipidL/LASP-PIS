@@ -1,0 +1,252 @@
+{
+  "protocol": "development",
+  "atoms": 4096,
+  "edges": [
+    188416,
+    188416,
+    188416,
+    188416,
+    188416,
+    188416,
+    188416,
+    188416,
+    188416,
+    188416
+  ],
+  "warmup": 10,
+  "windows": 5,
+  "steps": 10,
+  "seed": 83071,
+  "trajectory_sha256": "013050d9576db6dfa0b6a4f177dddbe5c25556319143a45c477c272c760425f4",
+  "structure": "synthetic diamond Si a=5.43 8x8x8",
+  "frame": 0,
+  "supercell": [
+    1,
+    1,
+    1
+  ],
+  "checkpoint_sha256": "a522eb7f59c7879963d41586528f4980baf33e086c94aa92e3eafdeccad3be47",
+  "archive_sha256": "f797fa892d1f5e6d75e264721dd2afd40198d0aa1c8f0c929a08710c19dc8b93",
+  "head": "matpes_r2scan",
+  "requested_implementations": [
+    "framework"
+  ],
+  "construction_seconds": {
+    "framework": 0.15815464919432998
+  },
+  "warmup_samples_ms": {
+    "framework": [
+      85.32577380537987,
+      44.449720066040754,
+      44.35882903635502,
+      44.41259987652302,
+      44.43820007145405,
+      44.227817095816135,
+      44.40827900543809,
+      44.546770863235,
+      44.67859258875251,
+      44.36611011624336
+    ]
+  },
+  "compile_counters_after_warmup": {},
+  "compile_counters_after_measurement": {},
+  "hostname": "gpunode3",
+  "platform": "Linux-5.19.0-41-generic-x86_64-with-glibc2.35",
+  "cpu_affinity": [
+    36,
+    37,
+    38,
+    39,
+    132,
+    133,
+    134,
+    135
+  ],
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "4",
+    "CUDA_DEVICE_ORDER": "PCI_BUS_ID",
+    "SLURM_JOB_ID": "947238",
+    "SLURM_JOB_GPUS": "4",
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "OPENBLAS_NUM_THREADS": "4",
+    "TORCHINDUCTOR_COMPILE_THREADS": "4"
+  },
+  "precision": {
+    "model": "float32",
+    "torch_tf32": null,
+    "torch_threads": null
+  },
+  "dataset_revision": "synthetic-v2",
+  "structure_id": null,
+  "structure_file_sha256": null,
+  "mace_revision": "59ad3a473ca02101a1cf02db242197e8d616dd11",
+  "versions": {
+    "torch": "2.13.0+cu126",
+    "e3nn": "0.4.4",
+    "cuequivariance": "0.11.1",
+    "cuequivariance-torch": "0.11.1",
+    "cuequivariance-ops-torch-cu12": "0.10.0",
+    "cuequivariance-ops-cu12": "0.10.0",
+    "triton": "3.7.1",
+    "nvidia-cublas-cu12": "12.6.4.1",
+    "nvidia-cuda-runtime-cu12": "12.6.77",
+    "nvidia-cuda-nvrtc-cu12": "12.6.85",
+    "nvidia-ml-py": "13.610.43",
+    "ase": "3.29.0",
+    "numpy": "2.5.2"
+  },
+  "python": "3.12.13",
+  "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Mar_28_02:18:24_PDT_2024\nCuda compilation tools, release 12.4, V12.4.131\nBuild cuda_12.4.r12.4/compiler.34097967_0",
+  "gpu": "0, GPU-91904096-0d80-bb24-4e1f-1bafca2b4d39, 00000000:01:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 10984 MiB, 450.00 W, 2715 MHz, 10251 MHz, 53\n1, GPU-1fe3b6d9-a7b7-8b3c-f93b-4dd089da9797, 00000000:21:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 2244 MiB, 450.00 W, 1823 MHz, 10251 MHz, 52\n2, GPU-3545c5a7-68e6-6bfd-c08a-186e0cab6cdf, 00000000:41:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 1092 MiB, 450.00 W, 2520 MHz, 10251 MHz, 36\n3, GPU-11ca1df1-34ea-e8d8-6dda-80c195cb61e3, 00000000:61:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 666 MiB, 450.00 W, 2520 MHz, 10251 MHz, 34\n4, GPU-5708370a-8330-67ef-1f36-5af102dc6f18, 00000000:81:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 1808 MiB, 450.00 W, 2775 MHz, 10251 MHz, 48\n5, GPU-045dd892-d38f-7f1a-1dd9-875361b7651d, 00000000:A1:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 980 MiB, 450.00 W, 2520 MHz, 10251 MHz, 34\n6, GPU-d6eb0850-f82c-d1c7-827e-5e9c5e921bf5, 00000000:C1:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 2604 MiB, 450.00 W, 2760 MHz, 10251 MHz, 43\n7, GPU-c5569a09-6211-c640-50e9-c14a375ae594, 00000000:E1:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 4716 MiB, 450.00 W, 2760 MHz, 10251 MHz, 45",
+  "process_memory_observation": "2274066, 2366 MiB\n105529, 8606 MiB\n203409, 2236 MiB\n203993, 1084 MiB\n204163, 658 MiB\n215376, 1800 MiB\n212111, 972 MiB\n214430, 2596 MiB\n111612, 2108 MiB\n215074, 2596 MiB",
+  "results": {
+    "framework": {
+      "wall_median_ms": 44.65549788437784,
+      "wall_p95_ms": 44.895815616473556,
+      "window_means_ms": [
+        44.6989213116467,
+        44.596592895686626,
+        44.61714434437454,
+        44.73643279634416,
+        44.684816151857376
+      ],
+      "samples_ms": [
+        44.44584995508194,
+        44.698433950543404,
+        44.831114821136,
+        44.694364070892334,
+        44.52733090147376,
+        44.732834212481976,
+        44.99460710212588,
+        44.66776270419359,
+        44.6940828114748,
+        44.70283258706331,
+        44.731364119797945,
+        44.65778265148401,
+        44.53896125778556,
+        44.529680628329515,
+        44.51618017628789,
+        44.710114132612944,
+        44.65321311727166,
+        44.49552018195391,
+        44.55052176490426,
+        44.58259092643857,
+        44.609331991523504,
+        44.450129847973585,
+        44.69366418197751,
+        44.7004740126431,
+        44.613131787627935,
+        44.66149304062128,
+        44.69052283093333,
+        44.59333186969161,
+        44.53251091763377,
+        44.626852963119745,
+        44.93680689483881,
+        44.845715165138245,
+        45.39250209927559,
+        44.60280202329159,
+        44.752294197678566,
+        44.55017205327749,
+        44.48744095861912,
+        44.573960825800896,
+        44.63506303727627,
+        44.58757070824504,
+        44.66043319553137,
+        44.630801770836115,
+        44.6440321393311,
+        44.68158399686217,
+        44.80266524478793,
+        44.74786389619112,
+        44.73735298961401,
+        44.48270099237561,
+        44.629072304815054,
+        44.831654988229275
+      ],
+      "device_mean_ms": 44.350547999999996,
+      "diagnostics": {
+        "backend": "CellList",
+        "grid": [
+          7,
+          7,
+          7
+        ],
+        "reason": "grid has lower occupancy-estimated work",
+        "max_occupancy": 18,
+        "occupied_bins": 343,
+        "mean_occupancy": 11.9417,
+        "grid_candidates": 1313010.0,
+        "brute_candidates": 452985000.0,
+        "context_bytes": 1446777631,
+        "context_peak_bytes": 1446777631,
+        "parameter_bytes": 25860716,
+        "device_ms": 44.5169,
+        "kernels": [
+          {
+            "name": "MH1.ZBL",
+            "registers": 61,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 11776,
+            "blocks_per_sm": 7
+          },
+          {
+            "name": "MH1.forward0",
+            "registers": 120,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 24116,
+            "blocks_per_sm": 4
+          },
+          {
+            "name": "MH1.forward1",
+            "registers": 124,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 48692,
+            "blocks_per_sm": 2
+          },
+          {
+            "name": "MH1.backward1",
+            "registers": 145,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 48688,
+            "blocks_per_sm": 2
+          },
+          {
+            "name": "MH1.backward0",
+            "registers": 145,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 24112,
+            "blocks_per_sm": 3
+          }
+        ]
+      }
+    }
+  },
+  "failures": {},
+  "process_memory_sampling": {
+    "status": "ok",
+    "sampled_peak_bytes": 1887436800,
+    "samples": 146,
+    "poll_interval_ms": 20.0,
+    "scope": "current process across physical GPUs; includes all resident implementations",
+    "gpu_uuids": [
+      "GPU-5708370a-8330-67ef-1f36-5af102dc6f18"
+    ],
+    "other_compute_pids_on_process_gpus": [],
+    "error": null
+  },
+  "source_sha256": "ab9ab61980ac335785c035fc575a3e5ea0a79351e561827292c413d48508bc1f",
+  "library_sha256": {
+    "framework": "bbc1af638f3db4c6e8e499c0edf1e544f5a6bbab7dd9731a1d724742c9ae946b"
+  },
+  "native_library_dependencies": {
+    "framework": "linux-vdso.so.1 (0x00007ffdeb12c000)\n\tlibcudart.so.12 => /home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/nvidia/cuda_runtime/lib/libcudart.so.12 (0x00007fee0fa00000)\n\tlibcublas.so.12 => /home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/nvidia/cublas/lib/libcublas.so.12 (0x00007fee09000000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fee08c00000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fee0fd68000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fee08f19000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fee08800000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fee1012b000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fee0fd63000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fee0fd5c000)\n\tlibrt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007fee0fd57000)\n\tlibcublasLt.so.12 => /home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/nvidia/cublas/lib/libcublasLt.so.12 (0x00007fede6e00000)"
+  },
+  "compiler": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+  "environment_lock_file": "benchmarks/rtx4090/environment.freeze.txt",
+  "environment_lock_sha256": "70c9d9d719d017744f38a102dc4d1e38a54c4817516f2634bb4604c48d174678"
+}

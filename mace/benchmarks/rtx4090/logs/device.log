@@ -1,0 +1,5 @@
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+2.13.0+cu126 12.6
+_CudaDeviceProperties(name='NVIDIA GeForce RTX 4090', major=8, minor=9, total_memory=24210MB, multi_processor_count=128, uuid=1fe3b6d9-a7b7-8b3c-f93b-4dd089da9797, pci_bus_id=33, pci_device_id=0, pci_domain_id=0, L2_cache_size=72MB)
+16.0

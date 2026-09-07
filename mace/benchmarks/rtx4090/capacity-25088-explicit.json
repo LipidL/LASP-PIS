@@ -1,0 +1,268 @@
+{
+  "protocol": "development",
+  "atoms": 25088,
+  "edges": [
+    1141402,
+    1140740,
+    1140946,
+    1140732,
+    1141018,
+    1141276,
+    1141250,
+    1140938,
+    1141250,
+    1141268
+  ],
+  "warmup": 10,
+  "windows": 5,
+  "steps": 10,
+  "seed": 83071,
+  "trajectory_sha256": "ae30f0b5dd45f624f1c9037bd45e49183891dddb3672dd297752dd7065236496",
+  "structure": "structures/mptrj-mp-1005792.extxyz",
+  "frame": 0,
+  "supercell": [
+    8,
+    14,
+    8
+  ],
+  "checkpoint_sha256": "a522eb7f59c7879963d41586528f4980baf33e086c94aa92e3eafdeccad3be47",
+  "archive_sha256": "f797fa892d1f5e6d75e264721dd2afd40198d0aa1c8f0c929a08710c19dc8b93",
+  "head": "matpes_r2scan",
+  "requested_implementations": [
+    "explicit"
+  ],
+  "construction_seconds": {
+    "explicit": 0.16430876776576042
+  },
+  "warmup_samples_ms": {
+    "explicit": [
+      301.29836313426495,
+      260.8149698935449,
+      260.416645091027,
+      260.2646737359464,
+      260.01296006143093,
+      260.2302827872336,
+      259.96167911216617,
+      260.0037599913776,
+      260.0097502581775,
+      260.11931197717786
+    ]
+  },
+  "compile_counters_after_warmup": {},
+  "compile_counters_after_measurement": {},
+  "hostname": "gpunode3",
+  "platform": "Linux-5.19.0-41-generic-x86_64-with-glibc2.35",
+  "cpu_affinity": [
+    36,
+    37,
+    38,
+    39,
+    132,
+    133,
+    134,
+    135
+  ],
+  "environment": {
+    "CUDA_VISIBLE_DEVICES": "4",
+    "CUDA_DEVICE_ORDER": "PCI_BUS_ID",
+    "SLURM_JOB_ID": "947238",
+    "SLURM_JOB_GPUS": "4",
+    "OMP_NUM_THREADS": "4",
+    "MKL_NUM_THREADS": "4",
+    "OPENBLAS_NUM_THREADS": "4",
+    "TORCHINDUCTOR_COMPILE_THREADS": "4"
+  },
+  "precision": {
+    "model": "float32",
+    "torch_tf32": null,
+    "torch_threads": null
+  },
+  "dataset_revision": "10.6084/m9.figshare.23713842.v2",
+  "structure_id": "mp-1005792/mp-1012897-0-0",
+  "structure_file_sha256": "5021adb6503120d7924a942f326958afd2cad8ea7b1654e89e8e27c8ea064588",
+  "mace_revision": "59ad3a473ca02101a1cf02db242197e8d616dd11",
+  "versions": {
+    "torch": "2.13.0+cu126",
+    "e3nn": "0.4.4",
+    "cuequivariance": "0.11.1",
+    "cuequivariance-torch": "0.11.1",
+    "cuequivariance-ops-torch-cu12": "0.10.0",
+    "cuequivariance-ops-cu12": "0.10.0",
+    "triton": "3.7.1",
+    "nvidia-cublas-cu12": "12.6.4.1",
+    "nvidia-cuda-runtime-cu12": "12.6.77",
+    "nvidia-cuda-nvrtc-cu12": "12.6.85",
+    "nvidia-ml-py": "13.610.43",
+    "ase": "3.29.0",
+    "numpy": "2.5.2"
+  },
+  "python": "3.12.13",
+  "nvcc": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2024 NVIDIA Corporation\nBuilt on Thu_Mar_28_02:18:24_PDT_2024\nCuda compilation tools, release 12.4, V12.4.131\nBuild cuda_12.4.r12.4/compiler.34097967_0",
+  "gpu": "0, GPU-91904096-0d80-bb24-4e1f-1bafca2b4d39, 00000000:01:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 10984 MiB, 450.00 W, 2715 MHz, 10251 MHz, 53\n1, GPU-1fe3b6d9-a7b7-8b3c-f93b-4dd089da9797, 00000000:21:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 2244 MiB, 450.00 W, 2730 MHz, 10251 MHz, 51\n2, GPU-3545c5a7-68e6-6bfd-c08a-186e0cab6cdf, 00000000:41:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 1092 MiB, 450.00 W, 2520 MHz, 10251 MHz, 36\n3, GPU-11ca1df1-34ea-e8d8-6dda-80c195cb61e3, 00000000:61:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 666 MiB, 450.00 W, 2520 MHz, 10251 MHz, 34\n4, GPU-5708370a-8330-67ef-1f36-5af102dc6f18, 00000000:81:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 8910 MiB, 450.00 W, 2760 MHz, 10251 MHz, 48\n5, GPU-045dd892-d38f-7f1a-1dd9-875361b7651d, 00000000:A1:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 980 MiB, 450.00 W, 2520 MHz, 10251 MHz, 34\n6, GPU-d6eb0850-f82c-d1c7-827e-5e9c5e921bf5, 00000000:C1:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 2604 MiB, 450.00 W, 2760 MHz, 10251 MHz, 44\n7, GPU-c5569a09-6211-c640-50e9-c14a375ae594, 00000000:E1:00.0, NVIDIA GeForce RTX 4090, 550.107.02, 24564 MiB, 4716 MiB, 450.00 W, 2760 MHz, 10251 MHz, 46",
+  "process_memory_observation": "2274066, 2366 MiB\n105529, 8606 MiB\n203409, 2236 MiB\n203993, 1084 MiB\n204163, 658 MiB\n218170, 8902 MiB\n212111, 972 MiB\n214430, 2596 MiB\n111612, 2108 MiB\n215074, 2596 MiB",
+  "results": {
+    "explicit": {
+      "wall_median_ms": 261.4931834395975,
+      "wall_p95_ms": 263.046227931045,
+      "window_means_ms": [
+        261.09304460696876,
+        261.5245271474123,
+        261.3323184661567,
+        261.57073895446956,
+        262.5538804102689
+      ],
+      "samples_ms": [
+        260.19714307039976,
+        260.56319614872336,
+        260.74561988934875,
+        261.41812838613987,
+        261.9314449839294,
+        261.9337039068341,
+        260.8887106180191,
+        260.8419908210635,
+        261.0274921171367,
+        261.383016128093,
+        261.50748832151294,
+        261.7550422437489,
+        261.94863533601165,
+        260.7586490921676,
+        260.47989586368203,
+        260.71237912401557,
+        261.3157560117543,
+        262.3757403343916,
+        262.7291539683938,
+        261.6625311784446,
+        261.3846268504858,
+        261.52608916163445,
+        261.1786341294646,
+        261.41706807538867,
+        261.6956909187138,
+        260.99655218422413,
+        260.9318010509014,
+        260.5208563618362,
+        261.29005616530776,
+        262.38180976361036,
+        262.77619414031506,
+        261.57117867842317,
+        261.4856380969286,
+        261.8389818817377,
+        262.24083779379725,
+        261.8275419808924,
+        261.1132627353072,
+        260.62521804124117,
+        260.87020011618733,
+        261.3583360798657,
+        263.3605217561126,
+        262.88971584290266,
+        261.36334612965584,
+        262.96630688011646,
+        263.1116178818047,
+        262.0641849935055,
+        261.5007287822664,
+        262.24250672385097,
+        263.7405660934746,
+        262.29930901899934
+      ],
+      "device_mean_ms": 260.57056,
+      "diagnostics": {
+        "backend": "CellList",
+        "grid": [
+          5,
+          9,
+          46
+        ],
+        "reason": "grid has lower occupancy-estimated work; benchmark explicit connectivity",
+        "max_occupancy": 24,
+        "occupied_bins": 2070,
+        "mean_occupancy": 12.1198,
+        "grid_candidates": 8249520.0,
+        "brute_candidates": 16994000000.0,
+        "context_bytes": 8879972538,
+        "context_peak_bytes": 8879972538,
+        "parameter_bytes": 25860716,
+        "device_ms": 261.176,
+        "kernels": [
+          {
+            "name": "reference.count_edges",
+            "registers": 40,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 5120,
+            "blocks_per_sm": 12
+          },
+          {
+            "name": "reference.store_edges",
+            "registers": 40,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 5120,
+            "blocks_per_sm": 12
+          },
+          {
+            "name": "MH1.ZBL",
+            "registers": 61,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 11776,
+            "blocks_per_sm": 7
+          },
+          {
+            "name": "MH1.forward0",
+            "registers": 98,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 24116,
+            "blocks_per_sm": 4
+          },
+          {
+            "name": "MH1.forward1",
+            "registers": 115,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 48692,
+            "blocks_per_sm": 2
+          },
+          {
+            "name": "MH1.backward1",
+            "registers": 149,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 48688,
+            "blocks_per_sm": 2
+          },
+          {
+            "name": "MH1.backward0",
+            "registers": 147,
+            "threads": 128,
+            "static_shared": 256,
+            "dynamic_shared": 24112,
+            "blocks_per_sm": 3
+          }
+        ]
+      }
+    }
+  },
+  "failures": {},
+  "process_memory_sampling": {
+    "status": "ok",
+    "sampled_peak_bytes": 9334423552,
+    "samples": 741,
+    "poll_interval_ms": 20.0,
+    "scope": "current process across physical GPUs; includes all resident implementations",
+    "gpu_uuids": [
+      "GPU-5708370a-8330-67ef-1f36-5af102dc6f18"
+    ],
+    "other_compute_pids_on_process_gpus": [],
+    "error": null
+  },
+  "source_sha256": "ab9ab61980ac335785c035fc575a3e5ea0a79351e561827292c413d48508bc1f",
+  "library_sha256": {
+    "explicit": "89ee66dcc63d7fdc4244537191b22a3e302e241307495f933630d648e84fb8e3"
+  },
+  "native_library_dependencies": {
+    "explicit": "linux-vdso.so.1 (0x00007ffe6532d000)\n\tlibcudart.so.12 => /home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/nvidia/cuda_runtime/lib/libcudart.so.12 (0x00007fa66e600000)\n\tlibcublas.so.12 => /home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/nvidia/cublas/lib/libcublas.so.12 (0x00007fa667c00000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007fa667800000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007fa66e9a3000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007fa66e8bc000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007fa667400000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007fa66ef30000)\n\tlibdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fa66e8b7000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007fa66e5fb000)\n\tlibrt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007fa66e5f6000)\n\tlibcublasLt.so.12 => /home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/nvidia/cublas/lib/libcublasLt.so.12 (0x00007fa645a00000)"
+  },
+  "compiler": "c++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+  "environment_lock_file": "benchmarks/rtx4090/environment.freeze.txt",
+  "environment_lock_sha256": "70c9d9d719d017744f38a102dc4d1e38a54c4817516f2634bb4604c48d174678"
+}

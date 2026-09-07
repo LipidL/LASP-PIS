@@ -1,0 +1,938 @@
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/e3nn/o3/_wigner.py:10: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  _Jd, _W3j_flat, _W3j_indices = torch.load(os.path.join(os.path.dirname(__file__), 'constants.pt'))
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/mace-ref/mace/calculators/mace.py:260: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  torch.load(f=model_path, map_location=device)
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+WARNING:root:Default dtype float32 does not match model dtype float64, converting models to float32.
+/home15/luohz/ppf_gpt_benchmark/mace-ref/mace/calculators/mace.py:260: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  torch.load(f=model_path, map_location=device)
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+WARNING:root:Default dtype float32 does not match model dtype float64, converting models to float32.
+/home15/luohz/ppf_gpt_benchmark/mace-ref/mace/modules/models.py:87: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "atomic_numbers", torch.tensor(atomic_numbers, dtype=torch.int64)
+/home15/luohz/ppf_gpt_benchmark/mace-ref/mace/calculators/mace.py:260: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  torch.load(f=model_path, map_location=device)
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+WARNING:root:Default dtype float32 does not match model dtype float64, converting models to float32.
+/home15/luohz/ppf_gpt_benchmark/mace-ref/mace/modules/models.py:87: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "atomic_numbers", torch.tensor(atomic_numbers, dtype=torch.int64)
+/home15/luohz/ppf_gpt_benchmark/mace-ref/mace/calculators/mace.py:260: UserWarning: Environment variable TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD detected, since the`weights_only` argument was not explicitly passed to `torch.load`, forcing weights_only=False.
+  torch.load(f=model_path, map_location=device)
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_serialization.py:176: DeprecationWarning: `torch.jit.load` is deprecated. Please switch to `torch.export`.
+  warnings.warn(
+WARNING:root:Default dtype float32 does not match model dtype float64, converting models to float32.
+/home15/luohz/ppf_gpt_benchmark/mace-ref/mace/modules/models.py:87: UserWarning: To copy construct from a tensor, it is recommended to use sourceTensor.detach().clone() or sourceTensor.detach().clone().requires_grad_(True), rather than torch.tensor(sourceTensor).
+  "atomic_numbers", torch.tensor(atomic_numbers, dtype=torch.int64)
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+  a.shape = (-1,) + shape
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+  a.shape = (-1,) + shape
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+  a.shape = (-1,) + shape
+/home15/luohz/ppf_gpt_benchmark/.venv-cu126/lib/python3.12/site-packages/ase/atoms.py:432: DeprecationWarning: Setting the shape on a NumPy array has been deprecated in NumPy 2.5.
+As an alternative, you can create a new view using np.reshape (with copy=False if needed).
+  a.shape = (-1,) + shape
+window 1/100 complete
+window 2/100 complete
+window 3/100 complete
+window 4/100 complete
+window 5/100 complete
+window 6/100 complete
+window 7/100 complete
+window 8/100 complete
+window 9/100 complete
+window 10/100 complete
+window 11/100 complete
+window 12/100 complete
+window 13/100 complete
+window 14/100 complete
+window 15/100 complete
+window 16/100 complete
+window 17/100 complete
+window 18/100 complete
+window 19/100 complete
+window 20/100 complete
+window 21/100 complete
+window 22/100 complete
+window 23/100 complete
+window 24/100 complete
+window 25/100 complete
+window 26/100 complete
+window 27/100 complete
+window 28/100 complete
+window 29/100 complete
+window 30/100 complete
+window 31/100 complete
+window 32/100 complete
+window 33/100 complete
+window 34/100 complete
+window 35/100 complete
+window 36/100 complete
+window 37/100 complete
+window 38/100 complete
+window 39/100 complete
+window 40/100 complete
+window 41/100 complete
+window 42/100 complete
+window 43/100 complete
+window 44/100 complete
+window 45/100 complete
+window 46/100 complete
+window 47/100 complete
+window 48/100 complete
+window 49/100 complete
+window 50/100 complete
+window 51/100 complete
+window 52/100 complete
+window 53/100 complete
+window 54/100 complete
+window 55/100 complete
+window 56/100 complete
+window 57/100 complete
+window 58/100 complete
+window 59/100 complete
+window 60/100 complete
+window 61/100 complete
+window 62/100 complete
+window 63/100 complete
+window 64/100 complete
+window 65/100 complete
+window 66/100 complete
+window 67/100 complete
+window 68/100 complete
+window 69/100 complete
+window 70/100 complete
+window 71/100 complete
+window 72/100 complete
+window 73/100 complete
+window 74/100 complete
+window 75/100 complete
+window 76/100 complete
+window 77/100 complete
+window 78/100 complete
+window 79/100 complete
+window 80/100 complete
+window 81/100 complete
+window 82/100 complete
+window 83/100 complete
+window 84/100 complete
+window 85/100 complete
+window 86/100 complete
+window 87/100 complete
+window 88/100 complete
+window 89/100 complete
+window 90/100 complete
+window 91/100 complete
+window 92/100 complete
+window 93/100 complete
+window 94/100 complete
+window 95/100 complete
+window 96/100 complete
+window 97/100 complete
+window 98/100 complete
+window 99/100 complete
+window 100/100 complete
+{
+  "framework": {
+    "wall_median_ms": 4.6446118503808975,
+    "wall_p95_ms": 5.075910687446594,
+    "window_means_ms": [
+      4.649152220226824,
+      4.790052096359432,
+      4.704943588003516,
+      4.6799849439412355,
+      4.842075891792774,
+      4.757207282818854,
+      4.6511858236044645,
+      4.750319328159094,
+      4.814095199108124,
+      4.693710617721081,
+      4.695524568669498,
+      4.783574570901692,
+      4.781843670643866,
+      4.798095468431711,
+      4.65697355568409,
+      4.678657408803701,
+      4.775470783933997,
+      4.678968410007656,
+      4.814197984524071,
+      4.693223442882299,
+      4.848222006112337,
+      4.698347547091544,
+      4.701282293535769,
+      4.7904178919270635,
+      4.675832740031183,
+      4.783763187006116,
+      4.668699698522687,
+      4.711121595464647,
+      4.692031089216471,
+      4.743837141431868,
+      4.678803286515176,
+      4.691677559167147,
+      4.839417207986116,
+      4.790519061498344,
+      4.693427849560976,
+      4.8164614057168365,
+      4.760215086862445,
+      4.731220095418394,
+      4.746126565150917,
+      4.792073406279087,
+      4.767007916234434,
+      4.67637684661895,
+      4.680681927129626,
+      4.77708924561739,
+      4.683410944417119,
+      4.754394539631903,
+      4.680854161269963,
+      4.6806130185723305,
+      4.72713106777519,
+      4.690137426368892,
+      4.695861893706024,
+      4.683092813938856,
+      4.68349002301693,
+      4.751809709705412,
+      4.926617136225104,
+      4.707719720900059,
+      4.866564804688096,
+      4.763038046658039,
+      4.677798100747168,
+      4.696658570319414,
+      4.761945777572691,
+      4.691567369736731,
+      4.673868361860514,
+      4.6782210329547524,
+      4.676458151079714,
+      4.677716828882694,
+      4.6853211941197515,
+      4.841662119142711,
+      4.840031308121979,
+      4.6933775302022696,
+      4.681923184543848,
+      4.835869618691504,
+      4.678995702415705,
+      4.716646717861295,
+      4.67546550091356,
+      4.747376493178308,
+      4.7296682465821505,
+      4.739044224843383,
+      4.870120449922979,
+      4.862049664370716,
+      4.731576517224312,
+      4.842817853204906,
+      4.735003956593573,
+      4.736688146367669,
+      4.878964265808463,
+      4.808870786800981,
+      4.797505419701338,
+      4.700581170618534,
+      4.7570122219622135,
+      4.658753466792405,
+      4.676691140048206,
+      4.715539370663464,
+      4.667561529204249,
+      4.659599848091602,
+      4.860446117818356,
+      4.690295732580125,
+      4.730306696146727,
+      4.7166916355490685,
+      4.782376401126385,
+      4.751507504843175
+    ],
+    "device_mean_ms": 4.636548703000001,
+    "diagnostics": {
+      "backend": "CellList",
+      "grid": [
+        1,
+        1,
+        5
+      ],
+      "reason": "grid has lower occupancy-estimated work",
+      "max_occupancy": 63,
+      "occupied_bins": 5,
+      "mean_occupancy": 50.4,
+      "grid_candidates": 339714,
+      "brute_candidates": 1714610.0,
+      "context_bytes": 89011331,
+      "context_peak_bytes": 89011351,
+      "parameter_bytes": 25860716,
+      "device_ms": 4.54179,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 120,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 124,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    }
+  },
+  "explicit": {
+    "wall_median_ms": 5.046878242865205,
+    "wall_p95_ms": 5.6598238879814735,
+    "window_means_ms": [
+      5.191494608297944,
+      5.076534375548363,
+      5.238872268237174,
+      5.131792933680117,
+      5.082115610130131,
+      5.108699663542211,
+      5.2540600299835205,
+      5.080568282864988,
+      5.168591192923486,
+      5.236969250254333,
+      5.2474976889789104,
+      5.152920205146074,
+      5.11104735545814,
+      5.125004593282938,
+      5.185065688565373,
+      5.128038669936359,
+      5.110678565688431,
+      5.077302251011133,
+      5.0976300006732345,
+      5.167320193722844,
+      5.138435144908726,
+      5.102772298268974,
+      5.168232806026936,
+      5.062576155178249,
+      5.099926693364978,
+      5.107873110100627,
+      5.075339465402067,
+      5.198941603302956,
+      5.17332945484668,
+      5.117151411250234,
+      5.104958806186914,
+      5.304435528814793,
+      5.0893903616815805,
+      5.280029349960387,
+      5.233840895816684,
+      5.214630039408803,
+      5.194300259463489,
+      5.136207728646696,
+      5.247671012766659,
+      5.2548559894785285,
+      5.345868617296219,
+      5.226700990460813,
+      5.211387984454632,
+      5.216570729389787,
+      5.242946180514991,
+      5.0888406205922365,
+      5.122283459641039,
+      5.11054752394557,
+      5.288929515518248,
+      5.303651234135032,
+      5.141613059677184,
+      5.470413616858423,
+      5.211568744853139,
+      5.1339695462957025,
+      5.1148014748468995,
+      5.133690717630088,
+      5.165034062229097,
+      5.125080505385995,
+      5.160049982368946,
+      5.24442779365927,
+      5.233849971555173,
+      5.2456614607945085,
+      5.2286601066589355,
+      5.147022204473615,
+      5.199127085506916,
+      5.111629385501146,
+      5.191361750476062,
+      5.1209705881774426,
+      5.173807838000357,
+      5.095653282478452,
+      5.104620391502976,
+      5.161992157809436,
+      5.150150735862553,
+      5.175933293066919,
+      5.121351880952716,
+      5.2702186070382595,
+      5.162072046659887,
+      5.186706567183137,
+      5.121012623421848,
+      5.190450684167445,
+      5.1562503492459655,
+      5.278019127435982,
+      5.192045364528894,
+      5.149137214757502,
+      5.273008905351162,
+      5.175954028964043,
+      5.128646069206297,
+      5.130272600799799,
+      5.26127471588552,
+      5.276009412482381,
+      5.247327592223883,
+      5.16217574942857,
+      5.2575069246813655,
+      5.086283050477505,
+      5.254986830987036,
+      5.195293924771249,
+      5.260188952088356,
+      5.202227686531842,
+      5.172996618784964,
+      5.120846736244857
+    ],
+    "device_mean_ms": 5.074964560000001,
+    "diagnostics": {
+      "backend": "CellList",
+      "grid": [
+        1,
+        1,
+        5
+      ],
+      "reason": "grid has lower occupancy-estimated work; benchmark explicit connectivity",
+      "max_occupancy": 63,
+      "occupied_bins": 5,
+      "mean_occupancy": 50.4,
+      "grid_candidates": 339714,
+      "brute_candidates": 1714610.0,
+      "context_bytes": 89197674,
+      "context_peak_bytes": 89381194,
+      "parameter_bytes": 25860716,
+      "device_ms": 4.94074,
+      "kernels": [
+        {
+          "name": "reference.count_edges",
+          "registers": 40,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 5120,
+          "blocks_per_sm": 12
+        },
+        {
+          "name": "reference.store_edges",
+          "registers": 40,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 5120,
+          "blocks_per_sm": 12
+        },
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 98,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 115,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 149,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 147,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    }
+  },
+  "e3nn": {
+    "wall_median_ms": 47.866518376395106,
+    "wall_p95_ms": 49.23442236613482,
+    "window_means_ms": [
+      49.502571346238256,
+      49.48575340677053,
+      47.579868668690324,
+      47.407329767011106,
+      47.67384740523994,
+      47.52712216693908,
+      49.24190421588719,
+      47.90437763556838,
+      47.85643287934363,
+      47.998505579307675,
+      47.74112031329423,
+      47.92388196103275,
+      47.69416340161115,
+      47.50034919939935,
+      47.517189611680806,
+      47.54014305304736,
+      47.506510047242045,
+      48.15806376282126,
+      47.72682975511998,
+      47.67300627660006,
+      47.701008347794414,
+      47.6050570840016,
+      47.753057703375816,
+      47.727682325057685,
+      47.8453315095976,
+      47.48457617126405,
+      47.447848096489906,
+      47.66595640219748,
+      47.594463750720024,
+      47.55684611853212,
+      47.637823023833334,
+      47.604519221931696,
+      47.60132782161236,
+      47.59444758296013,
+      47.60177310090512,
+      47.57027947809547,
+      47.44765908923,
+      47.58485533297062,
+      47.572203166782856,
+      47.48201986774802,
+      47.519794390536845,
+      47.547860369086266,
+      47.480464335530996,
+      48.303965451195836,
+      48.32042803987861,
+      48.3488579466939,
+      48.34570967592299,
+      48.35591957438737,
+      48.338531414046884,
+      48.290948146022856,
+      48.34686760324985,
+      48.26104742009193,
+      47.46199741959572,
+      47.50490866601467,
+      47.482134411111474,
+      47.422303264029324,
+      47.45719106402248,
+      47.748127011582255,
+      47.6210884610191,
+      47.70820991601795,
+      47.64744889456779,
+      47.654940257780254,
+      47.896077213808894,
+      47.56291423924267,
+      47.649933993816376,
+      47.575555900111794,
+      47.809850121848285,
+      47.51918858382851,
+      47.443231171928346,
+      47.43745571002364,
+      47.475197170861065,
+      47.49352224171162,
+      47.3679482517764,
+      47.43559650145471,
+      47.54646895453334,
+      47.70335447508842,
+      47.653284668922424,
+      47.58272496983409,
+      47.653364897705615,
+      47.9228589264676,
+      48.061900241300464,
+      48.08360686060041,
+      48.02828517742455,
+      48.002715655602515,
+      48.07468393817544,
+      47.44680243078619,
+      47.21081691328436,
+      46.487704147584736,
+      47.76199039071798,
+      48.629401633515954,
+      48.837397526949644,
+      48.77393230330199,
+      48.368109283037484,
+      48.29681562259793,
+      46.217376068234444,
+      46.27569405827671,
+      47.71844929549843,
+      48.27798997052014,
+      48.34442506078631,
+      48.796327034942806
+    ],
+    "device_mean_ms": 47.841401034545896
+  },
+  "cueq": {
+    "wall_median_ms": 44.19790906831622,
+    "wall_p95_ms": 45.599164720624685,
+    "window_means_ms": [
+      45.059376577846706,
+      44.68895452097058,
+      43.86211410164833,
+      44.36589580029249,
+      43.67397936992347,
+      43.85216847527772,
+      44.476953595876694,
+      43.914720276370645,
+      44.31213042233139,
+      44.2450762912631,
+      44.097559712827206,
+      43.905885741114616,
+      43.82757108658552,
+      43.942992123775184,
+      43.63500448875129,
+      43.751269984059036,
+      43.83599862921983,
+      44.48786903638393,
+      44.10965535324067,
+      44.06019052024931,
+      44.17384539730847,
+      43.880599001422524,
+      43.88949824497104,
+      44.31195837445557,
+      43.910699798725545,
+      43.9201514236629,
+      43.900942308828235,
+      43.73109644278884,
+      44.08501791302115,
+      43.992403890006244,
+      44.035843131132424,
+      43.99791636504233,
+      44.10660357680172,
+      44.0770796732977,
+      44.17495172005147,
+      44.13075604941696,
+      44.006820153445005,
+      43.88981775380671,
+      44.366369443014264,
+      43.847954543307424,
+      43.837486947886646,
+      43.62738487776369,
+      43.76233069226146,
+      44.674679334275424,
+      44.64050957933068,
+      44.581363778561354,
+      44.79372290428728,
+      44.56618323456496,
+      44.6402898337692,
+      44.512135474942625,
+      44.44302536547184,
+      43.798798844218254,
+      43.70627477299422,
+      43.61567178275436,
+      43.63688662648201,
+      43.62496582325548,
+      43.58709980733693,
+      43.65655109286308,
+      43.69188835378736,
+      43.73579600825906,
+      43.85840923991054,
+      43.96962980274111,
+      43.59099548775703,
+      43.7277563707903,
+      43.94595507532358,
+      43.81144624669105,
+      43.54822636116296,
+      43.59405942261219,
+      43.389262366108596,
+      43.62377988640219,
+      43.6277840891853,
+      43.691341346129775,
+      43.41754282824695,
+      44.28633280098438,
+      43.84736424777657,
+      43.64831432234496,
+      43.82093755993992,
+      44.07199190463871,
+      43.963762265630066,
+      44.21395383309573,
+      44.15491617284715,
+      44.22001761384308,
+      44.09374929498881,
+      44.32458587922156,
+      44.24070140346885,
+      43.657555473037064,
+      43.668200564570725,
+      36.42106131184846,
+      42.5213954038918,
+      45.077426792122424,
+      44.8245956748724,
+      45.15634817071259,
+      45.16764600761235,
+      44.32505991309881,
+      44.40018354449421,
+      38.66260171402246,
+      37.98617820255458,
+      44.80011887382716,
+      44.391892943531275,
+      44.435966117307544
+    ],
+    "device_mean_ms": 43.89689745826721
+  },
+  "e3nn_compile": {
+    "wall_median_ms": 28.82280945777893,
+    "wall_p95_ms": 29.644662118516862,
+    "window_means_ms": [
+      28.5027118306607,
+      29.099620170891285,
+      28.40264783706516,
+      28.44264740590006,
+      28.614044631831348,
+      29.082180983386934,
+      29.035152471624315,
+      28.474582307972014,
+      28.61457685008645,
+      28.606899669393897,
+      28.624567543156445,
+      28.601454636082053,
+      28.446251307614148,
+      28.46344968304038,
+      28.429145109839737,
+      28.467521579004824,
+      28.507572333328426,
+      29.00125694926828,
+      29.058448625728488,
+      28.612433946691453,
+      28.579984134994447,
+      28.47520505078137,
+      28.607958904467523,
+      28.520684065297246,
+      28.525677076540887,
+      28.47381222527474,
+      28.476082012057304,
+      28.83889182470739,
+      28.499536169692874,
+      28.48546840250492,
+      28.51112548261881,
+      28.51148452144116,
+      28.53644873481244,
+      28.465305329300463,
+      28.49190654233098,
+      28.46862129867077,
+      28.431856334209442,
+      28.433671789243817,
+      28.416806529276073,
+      28.456360083073378,
+      28.399435174651444,
+      28.44219102524221,
+      28.441845602355897,
+      29.112884970381856,
+      29.099258594214916,
+      29.075582236982882,
+      29.065964869223535,
+      29.113504253327847,
+      29.102852800861,
+      29.084310582838953,
+      29.06275564339012,
+      28.406163342297077,
+      28.402658035047352,
+      28.374466286040843,
+      28.400657172314823,
+      28.399500474333763,
+      28.4524668706581,
+      28.37762014940381,
+      28.41915872413665,
+      28.39273337740451,
+      28.380822646431625,
+      28.428271957673132,
+      28.427245165221393,
+      28.379104775376618,
+      28.40157776605338,
+      28.387038074433804,
+      28.389673801138997,
+      28.392442045733333,
+      28.38513419497758,
+      28.40690742712468,
+      28.42191284056753,
+      28.432858888991177,
+      28.832545918412507,
+      29.050422431901097,
+      29.010320189408958,
+      28.427766640670598,
+      28.409252841956913,
+      28.406905424781144,
+      28.44150152988732,
+      28.63437016494572,
+      28.67662808392197,
+      28.63569602370262,
+      28.67557660676539,
+      28.72564854566008,
+      28.653777199797332,
+      28.46432169433683,
+      28.436673083342612,
+      28.61658975481987,
+      28.72711144387722,
+      28.80500682629645,
+      28.71942028403282,
+      28.934166422113776,
+      28.703239755705,
+      28.68254983332008,
+      28.712506503798068,
+      28.75412207096815,
+      28.964706347323954,
+      28.944572806358337,
+      28.996379799209535,
+      29.323848336935043
+    ],
+    "device_mean_ms": 28.66930318546295
+  },
+  "cueq_compile": {
+    "wall_median_ms": 21.411858964711428,
+    "wall_p95_ms": 23.068067734129727,
+    "window_means_ms": [
+      22.46319865807891,
+      22.230301359668374,
+      21.986185437999666,
+      21.631804928183556,
+      22.253985116258264,
+      22.083363053388894,
+      22.34528566710651,
+      21.209391970187426,
+      21.280862540006638,
+      21.222450016066432,
+      21.212541298009455,
+      21.198137952014804,
+      20.892211771570146,
+      20.94169862102717,
+      21.035923678427935,
+      21.051176371984184,
+      20.90691569726914,
+      22.390639847144485,
+      22.513981284573674,
+      21.456428808160126,
+      21.44762717653066,
+      20.952909444458783,
+      21.434212205931544,
+      21.558647798374295,
+      21.051934878341854,
+      21.00313739385456,
+      20.995734576135874,
+      20.96317525021732,
+      21.004134071990848,
+      21.258110012859106,
+      20.940212281420827,
+      21.029016403481364,
+      21.158907860517502,
+      21.21279831044376,
+      20.945937437936664,
+      20.909495698288083,
+      21.14075301680714,
+      21.019793823361397,
+      21.065588798373938,
+      20.89844771195203,
+      20.90439255349338,
+      21.07427131384611,
+      21.51088899001479,
+      22.53553324844688,
+      22.58290738798678,
+      22.554985210299492,
+      22.658996200188994,
+      22.41208726540208,
+      22.509380225092173,
+      22.493848665617406,
+      22.448010914959013,
+      22.49868524260819,
+      20.91830188408494,
+      20.90473390184343,
+      21.13159168511629,
+      21.021339409053326,
+      21.03367312811315,
+      21.04139615315944,
+      20.82855981308967,
+      20.838234508410096,
+      20.88380402419716,
+      20.814302475191653,
+      20.788593743927777,
+      20.955008482560515,
+      20.76438805554062,
+      20.792162022553384,
+      20.851381276734173,
+      21.02251967880875,
+      20.81886892206967,
+      20.78653134405613,
+      20.818245746195316,
+      20.838836911134422,
+      20.74480299372226,
+      22.3124081781134,
+      20.91380849480629,
+      20.730499275960028,
+      20.918735130690038,
+      20.87665653321892,
+      21.070997063070536,
+      21.29280987661332,
+      21.401329739019275,
+      21.400903849862516,
+      21.350096282549202,
+      21.400292459875345,
+      21.496117268688977,
+      20.86131454911083,
+      20.835439348593354,
+      21.64150125347078,
+      22.287988383322954,
+      21.650175754912198,
+      22.310377205722034,
+      22.45617366861552,
+      22.292872853577137,
+      22.194033358246088,
+      22.317812251858413,
+      22.28150759357959,
+      22.692699027247727,
+      22.90150330401957,
+      22.865570234134793,
+      23.581403018906713
+    ],
+    "device_mean_ms": 21.50662104949951
+  }
+}

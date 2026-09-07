@@ -1,0 +1,81 @@
+[
+  {
+    "case": "structures/mptrj-mp-1005792.extxyz",
+    "atoms": 252,
+    "energy": -5211.599374771118,
+    "reference_energy": -5211.599391103323,
+    "reference_energy_node_sum": -5211.599391103323,
+    "energy_check": "total",
+    "errors": {
+      "energy_per_atom": 6.481033620181575e-08,
+      "energy_node_sum_per_atom": 6.481033620181575e-08,
+      "force_max": 7.916863177304112e-06,
+      "virial_max": 0.00047076637980136664
+    },
+    "wall_seconds": 0.05752609483897686,
+    "diagnostics": {
+      "backend": "CellList",
+      "grid": [
+        1,
+        1,
+        5
+      ],
+      "reason": "grid has lower occupancy-estimated work",
+      "max_occupancy": 63,
+      "occupied_bins": 5,
+      "mean_occupancy": 50.4,
+      "grid_candidates": 339714,
+      "brute_candidates": 1714610.0,
+      "context_bytes": 89011271,
+      "context_peak_bytes": 89011271,
+      "parameter_bytes": 25860716,
+      "device_ms": 57.2071,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 120,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 124,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    },
+    "reference_dtype": "float64",
+    "reference_device": "cpu",
+    "reference_cueq": false,
+    "reference_compile": null
+  }
+]

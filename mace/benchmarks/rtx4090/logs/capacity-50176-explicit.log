@@ -1,0 +1,95 @@
+window 1/5 complete
+window 2/5 complete
+window 3/5 complete
+window 4/5 complete
+window 5/5 complete
+{
+  "explicit": {
+    "wall_median_ms": 522.1499959006906,
+    "wall_p95_ms": 524.6720065362751,
+    "window_means_ms": [
+      521.1300984956324,
+      522.2369271330535,
+      522.5055828690529,
+      523.2215120922774,
+      522.9676806367934
+    ],
+    "device_mean_ms": 520.54162,
+    "diagnostics": {
+      "backend": "CellList",
+      "grid": [
+        9,
+        10,
+        46
+      ],
+      "reason": "grid has lower occupancy-estimated work; benchmark explicit connectivity",
+      "max_occupancy": 24,
+      "occupied_bins": 4140,
+      "mean_occupancy": 12.1198,
+      "grid_candidates": 16497900.0,
+      "brute_candidates": 67976000000.0,
+      "context_bytes": 17759941250,
+      "context_peak_bytes": 17796459234,
+      "parameter_bytes": 25860716,
+      "device_ms": 522.212,
+      "kernels": [
+        {
+          "name": "reference.count_edges",
+          "registers": 40,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 5120,
+          "blocks_per_sm": 12
+        },
+        {
+          "name": "reference.store_edges",
+          "registers": 40,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 5120,
+          "blocks_per_sm": 12
+        },
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 98,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 115,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 149,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 147,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    }
+  }
+}

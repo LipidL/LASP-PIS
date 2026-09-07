@@ -1,5 +1,8 @@
 # Virtual environments
 .venv/
+.venv-cu126/
+.python/
+.cache/
 
 # Byte-compiled / cache
 __pycache__/

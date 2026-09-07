@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import shutil
 import subprocess
 import sys
 import time
@@ -70,36 +71,54 @@ def main(args):
         b"".join(a.positions.tobytes() + a.cell.array.tobytes() for a in frames)
     ).hexdigest()
     implementations = {}
+    failures = {}
+    construction_seconds = {}
     native = {"framework", "explicit"}
-    for name in args.implementations:
-        if name in native:
-            library = (
-                str(ROOT / "build/libpairwise_explicit.so")
-                if name == "explicit"
-                else None
-            )
-            implementations[name] = PairwiseCalculator(
-                args.archive, backend=args.backend, library=library
-            )
+    compiled = {"compile", "cueq_compile", "e3nn_compile"}
     torch = None
     if any(name not in native for name in args.implementations):
         import torch
 
         torch.serialization.add_safe_globals([slice])
-        torch.set_num_threads(4)
+        torch.set_num_threads(args.threads)
+        torch.backends.cuda.matmul.allow_tf32 = False
+        torch.backends.cudnn.allow_tf32 = False
+        torch.set_float32_matmul_precision("highest")
         from mace.calculators import MACECalculator
 
-        for name in args.implementations:
+    def is_oom(exc):
+        return any(s in str(exc).lower() for s in ("out of memory", "memory allocation"))
+
+    def counters():
+        if torch is None or not any(n in compiled for n in args.implementations):
+            return {}
+        from torch._dynamo.utils import counters as dynamo_counters
+
+        return {k: dict(v) for k, v in dynamo_counters.items()}
+
+    for name in args.implementations:
+        start = time.perf_counter()
+        try:
             if name in native:
-                continue
-            implementations[name] = MACECalculator(
-                model_paths=args.checkpoint,
-                device="cuda",
-                default_dtype="float32",
-                head=args.head,
-                enable_cueq=name in ("cueq", "compile"),
-                compile_mode="default" if name == "compile" else None,
-            )
+                library = str(ROOT / "build/libpairwise_explicit.so") if name == "explicit" else None
+                implementations[name] = PairwiseCalculator(args.archive, backend=args.backend, library=library)
+            else:
+                implementations[name] = MACECalculator(
+                    model_paths=args.checkpoint,
+                    device="cuda",
+                    default_dtype="float32",
+                    head=args.head,
+                    enable_cueq=name in ("cueq", "compile", "cueq_compile"),
+                    compile_mode="default" if name in compiled else None,
+                )
+        except RuntimeError as exc:
+            if not is_oom(exc):
+                raise
+            failures[name] = {"status": "OOM", "phase": "construction", "error": str(exc)}
+            gc.collect()
+            if torch:
+                torch.cuda.empty_cache()
+        construction_seconds[name] = time.perf_counter() - start
 
     def call(name, atoms):
         calc = implementations[name]
@@ -111,16 +130,16 @@ def main(args):
         return result
 
     process_memory = ProcessMemory()
-    failures = {}
+    warmup_ms = {}
     for name in list(implementations):
+        warmup_ms[name] = []
         try:
             for step in range(args.warmup):
+                start = time.perf_counter()
                 call(name, frames[step % len(frames)])
+                warmup_ms[name].append((time.perf_counter() - start) * 1000)
         except RuntimeError as exc:
-            if (
-                "out of memory" not in str(exc).lower()
-                and "memory allocation" not in str(exc).lower()
-            ):
+            if not is_oom(exc):
                 raise
             failures[name] = {"status": "OOM", "phase": "warmup", "error": str(exc)}
             del implementations[name]
@@ -130,7 +149,10 @@ def main(args):
     timing = {name: [] for name in implementations}
     device = {name: [] for name in implementations}
     events = {}
+    after_warmup_counters = counters()
+    startup_torch_memory = None
     if torch:
+        startup_torch_memory = {"peak_allocated": torch.cuda.max_memory_allocated(), "peak_reserved": torch.cuda.max_memory_reserved()}
         torch.cuda.reset_peak_memory_stats()
         events = {
             name: (
@@ -148,11 +170,22 @@ def main(args):
                 if name in events:
                     events[name][0].record()
                 start = time.perf_counter()
-                result = call(name, frames[step % len(frames)])
+                try:
+                    result = call(name, frames[step % len(frames)])
+                except RuntimeError as exc:
+                    if not is_oom(exc):
+                        raise
+                    failures[name] = {"status": "OOM", "phase": "measurement", "error": str(exc), "completed_calls": len(timing[name])}
+                    del implementations[name], timing[name], device[name]
+                    gc.collect()
+                    if torch:
+                        torch.cuda.empty_cache()
+                    break
                 elapsed = time.perf_counter() - start
                 assert (
                     np.isfinite(result["energy"])
                     and np.isfinite(result["forces"]).all()
+                    and np.isfinite(result["stress"]).all()
                 )
                 timing[name].append(elapsed * 1000)
                 if name in native:
@@ -162,6 +195,7 @@ def main(args):
                     events[name][1].synchronize()
                     device[name].append(events[name][0].elapsed_time(events[name][1]))
         print(f"window {window+1}/{args.windows} complete", flush=True)
+    after_measurement_counters = counters()
     results = {}
     for name, samples in timing.items():
         windows = np.asarray(samples).reshape(args.windows, args.steps).mean(axis=1)
@@ -184,6 +218,13 @@ def main(args):
         "e3nn",
         "cuequivariance",
         "cuequivariance-torch",
+        "cuequivariance-ops-torch-cu12",
+        "cuequivariance-ops-cu12",
+        "triton",
+        "nvidia-cublas-cu12",
+        "nvidia-cuda-runtime-cu12",
+        "nvidia-cuda-nvrtc-cu12",
+        "nvidia-ml-py",
         "ase",
         "numpy",
     ):
@@ -220,6 +261,16 @@ def main(args):
         ).hexdigest(),
         "archive_sha256": hashlib.sha256(Path(args.archive).read_bytes()).hexdigest(),
         "head": args.head,
+        "requested_implementations": args.implementations,
+        "construction_seconds": construction_seconds,
+        "warmup_samples_ms": warmup_ms,
+        "compile_counters_after_warmup": after_warmup_counters,
+        "compile_counters_after_measurement": after_measurement_counters,
+        "hostname": platform.node(),
+        "platform": platform.platform(),
+        "cpu_affinity": sorted(os.sched_getaffinity(0)) if hasattr(os, "sched_getaffinity") else None,
+        "environment": {k: os.environ.get(k) for k in ("CUDA_VISIBLE_DEVICES", "CUDA_DEVICE_ORDER", "SLURM_JOB_ID", "SLURM_JOB_GPUS", "OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS", "TORCHINDUCTOR_COMPILE_THREADS")},
+        "precision": {"model": "float32", "torch_tf32": False if torch else None, "torch_threads": args.threads if torch else None},
         "dataset_revision": args.dataset_revision
         or ("synthetic-v2" if not args.structure else None),
         "structure_id": args.structure_id,
@@ -233,11 +284,11 @@ def main(args):
         ),
         "versions": versions,
         "python": platform.python_version(),
-        "nvcc": output(["/usr/local/cuda/bin/nvcc", "--version"]),
+        "nvcc": output([shutil.which("nvcc") or "/usr/local/cuda/bin/nvcc", "--version"]),
         "gpu": output(
             [
                 "nvidia-smi",
-                "--query-gpu=name,driver_version,memory.total,memory.used",
+                "--query-gpu=index,uuid,pci.bus_id,name,driver_version,memory.total,memory.used,power.limit,clocks.sm,clocks.mem,temperature.gpu",
                 "--format=csv,noheader",
             ]
         ),
@@ -272,11 +323,18 @@ def main(args):
         for name in implementations
         if name in native
     }
+    report["native_library_dependencies"] = {
+        name: output(["ldd", implementations[name].lib._name])
+        for name in implementations if name in native
+    }
     report["compiler"] = output(["c++", "--version"])
-    report["environment_lock_sha256"] = hashlib.sha256(
-        (ROOT / "docker/requirements.lock").read_bytes()
-    ).hexdigest()
+    report["environment_lock_file"] = args.environment_lock
+    report["environment_lock_sha256"] = hashlib.sha256(Path(args.environment_lock).read_bytes()).hexdigest()
     if torch:
+        report["torch_cuda"] = torch.version.cuda
+        report["torch_build"] = torch.__version__
+        report["torch_device"] = str(torch.cuda.get_device_properties(torch.cuda.current_device()))
+        report["startup_combined_torch_memory"] = startup_torch_memory
         report["combined_torch_memory"] = {
             "peak_allocated": torch.cuda.max_memory_allocated(),
             "peak_reserved": torch.cuda.max_memory_reserved(),
@@ -290,6 +348,7 @@ def main(args):
             results["framework"]["wall_median_ms"]
             / results["explicit"]["wall_median_ms"]
         )
+    Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     Path(args.output).write_text(json.dumps(report, indent=2) + "\n")
     print(
         json.dumps(
@@ -311,7 +370,7 @@ if __name__ == "__main__":
     p.add_argument(
         "--implementations",
         nargs="+",
-        choices=["framework", "explicit", "e3nn", "cueq", "compile"],
+        choices=["framework", "explicit", "e3nn", "cueq", "compile", "cueq_compile", "e3nn_compile"],
         default=["framework", "cueq"],
     )
     p.add_argument("--repeat", type=int, default=2)
@@ -326,5 +385,7 @@ if __name__ == "__main__":
     p.add_argument("--steps", type=int, default=100)
     p.add_argument("--seed", type=int, default=83071)
     p.add_argument("--quick", action="store_true")
+    p.add_argument("--threads", type=int, default=4)
+    p.add_argument("--environment-lock", default="docker/requirements.lock")
     p.add_argument("--output", default="benchmarks/replay.json")
     main(p.parse_args())

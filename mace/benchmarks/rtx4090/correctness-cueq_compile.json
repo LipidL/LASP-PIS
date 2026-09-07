@@ -1,0 +1,88 @@
+[
+  {
+    "case": "structures/mptrj-mp-1005792.extxyz",
+    "atoms": 252,
+    "energy": -5211.599370002747,
+    "reference_energy": -5211.5908203125,
+    "reference_energy_node_sum": -5211.5995671749115,
+    "energy_check": "node-sum",
+    "errors": {
+      "energy_per_atom": 3.392734224834139e-05,
+      "energy_node_sum_per_atom": 7.824292258610801e-07,
+      "force_max": 7.3015689849853516e-06,
+      "virial_max": 0.0006246697792846589
+    },
+    "wall_seconds": 0.04836250515654683,
+    "diagnostics": {
+      "backend": "CellList",
+      "grid": [
+        1,
+        1,
+        5
+      ],
+      "reason": "grid has lower occupancy-estimated work",
+      "max_occupancy": 63,
+      "occupied_bins": 5,
+      "mean_occupancy": 50.4,
+      "grid_candidates": 339714,
+      "brute_candidates": 1714610.0,
+      "context_bytes": 89011271,
+      "context_peak_bytes": 89011271,
+      "parameter_bytes": 25860716,
+      "device_ms": 48.0735,
+      "kernels": [
+        {
+          "name": "MH1.ZBL",
+          "registers": 61,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 11776,
+          "blocks_per_sm": 7
+        },
+        {
+          "name": "MH1.forward0",
+          "registers": 120,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24116,
+          "blocks_per_sm": 4
+        },
+        {
+          "name": "MH1.forward1",
+          "registers": 124,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48692,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward1",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 48688,
+          "blocks_per_sm": 2
+        },
+        {
+          "name": "MH1.backward0",
+          "registers": 145,
+          "threads": 128,
+          "static_shared": 256,
+          "dynamic_shared": 24112,
+          "blocks_per_sm": 3
+        }
+      ]
+    },
+    "reference_dtype": "float32",
+    "reference_device": "cuda",
+    "reference_cueq": true,
+    "reference_compile": "default",
+    "repeat_errors": {
+      "energy_per_atom": 1.3245476616753471e-08,
+      "force_max": 6.258487701416016e-07,
+      "virial_max": 1.9073486328125e-06
+    },
+    "repeat_strict_pass": true,
+    "comparison_pass": true
+  }
+]

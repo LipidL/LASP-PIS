@@ -1,6 +1,11 @@
 # Validation status
 
-These results describe this checkout. They do not certify every v1 release gate
+This page preserves the RTX 3060 Ti / WSL2 validation record. The later
+[RTX 4090 cluster campaign](RTX4090.md) measures 50,176-atom capacity and all six
+eager/compiled timing entries in a CUDA 12 environment, with its numerical
+qualifications reported separately.
+
+These results do not certify every v1 release gate
 in `FRAMEWORK_SPEC.md`. Independent development used the supplied official
 `mace-ref` and checkpoint; other implementations on the device were not consulted.
 
@@ -169,14 +174,16 @@ calculator. Container PID namespaces may prevent NVML from identifying the proce
 
 ## Remaining release gates
 
-* Measure approximately 50,000-atom capacity on a 24-GiB GPU with a supported
-  process-level peak-memory observer. The 8-GiB device cannot certify that gate.
+* The 50,000-atom capacity target has since been measured on the RTX 4090:
+  50,176 atoms and a 16.922-GiB sampled process peak. See the cluster record for
+  the protocol and remaining numerical qualifications.
 * Evaluate the 10% overhead gate against a separately supplied specialized
   baseline. The user's instruction to avoid existing implementations was preserved.
 * Extend matched replay to large MPtrj cases and more source structures. Small
   and medium supercells pass the full protocol; one fixture does not establish
   dataset-wide performance.
-* Run SM80/89/90 hardware and longer NVE trajectories before broad release claims.
+* Run SM80/90 hardware and longer NVE trajectories before broad release claims.
+  SM89 execution is covered by the cluster record.
 * Build and execute the Docker recipe. Package pins mirror the supplied environment.
   `docker version` reports that Docker is unavailable in this WSL distro and asks
   for Docker Desktop WSL integration; the image could not be built here.
