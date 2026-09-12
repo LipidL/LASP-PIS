@@ -1,6 +1,7 @@
-#include "pairwise/pair.cuh"
+#include "lj.hpp"
+#include "lapis/pair.cuh"
 #include <cmath>
-namespace pairwise {
+namespace lapis {
 struct LJOp {
   static constexpr int threads = 128, tile_edges = 32, scratch_alignment = 16;
   static const char *name() { return "LennardJones"; }
@@ -75,4 +76,4 @@ Result LennardJones::evaluate() {
   execute(context_, LJOp{epsilon_, sigma_, cutoff_, uc, duc, e, f, v, context_.geometry.status});
   return context_.finish(e, f, v);
 }
-} // namespace pairwise
+} // namespace lapis

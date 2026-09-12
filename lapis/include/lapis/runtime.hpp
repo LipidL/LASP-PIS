@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace pairwise {
+namespace lapis {
 struct Error : std::runtime_error {
   using std::runtime_error::runtime_error;
 };
@@ -121,11 +121,4 @@ public:
   const Diagnostics &diagnostics() const { return context_.diagnostics; }
   const std::vector<KernelResources> &resources() const { return context_.resources; }
 };
-class LennardJones final : public Calculator {
-  float epsilon_, sigma_;
-  Result evaluate() override;
-
-public:
-  LennardJones(float epsilon = 1, float sigma = 1, float cutoff = 2.5, Options options = {});
-};
-} // namespace pairwise
+} // namespace lapis

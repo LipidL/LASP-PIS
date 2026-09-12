@@ -7,7 +7,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "python"))
-from pairwise import PairwiseCalculator
+from mace_inference import MH1Calculator
 
 
 def records(blob):
@@ -33,7 +33,7 @@ def main():
         def rejected(blob, expected):
             path.write_bytes(blob)
             try:
-                calc = PairwiseCalculator(path)
+                calc = MH1Calculator(path)
             except RuntimeError as exc:
                 assert expected in str(exc), str(exc)
                 print("Rejected:", expected)

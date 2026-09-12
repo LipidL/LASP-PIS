@@ -2,8 +2,8 @@
 # Submit from login2 with an explicit one-GPU allocation on gpunode3.
 # sbatch -p gpu -w gpunode3 --gres=gpu:rtx4090:1 -c 8 --mem=64G ... job.sh native
 set -euo pipefail
-cd /home15/luohz/ppf_gpt_benchmark
-source scripts/cluster/environment.sh
+source "$(dirname -- "${BASH_SOURCE[0]}")/environment.sh"
+cd "$MACE_CLUSTER_ROOT"
 mkdir -p benchmarks/rtx4090/logs
 printf 'Job %s on %s; CUDA_VISIBLE_DEVICES=%s; SLURM_JOB_GPUS=%s\n' \
     "$SLURM_JOB_ID" "$(hostname)" "$CUDA_VISIBLE_DEVICES" "$SLURM_JOB_GPUS"
@@ -19,12 +19,12 @@ if [[ -n "$gpu_processes" ]]; then
 fi
 case "${1:?Specify native or a Python script}" in
     native)
-        cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=89 \
+        cmake -S .. -B ../build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=89 \
             -DCMAKE_CUDA_COMPILER=/usr/local/cuda/bin/nvcc -DCUDAToolkit_ROOT=/usr/local/cuda \
             -DCMAKE_CXX_COMPILER=/usr/bin/g++-11 -DCMAKE_CUDA_HOST_COMPILER=/usr/bin/g++-11 \
-            -DPAIRWISE_BUILD_EXPLICIT_REFERENCE=ON
-        cmake --build build -j4
-        srun --cpu-bind=cores build/pairwise_tests
+            -DMACE_BUILD_EXPLICIT_REFERENCE=ON -DLAPIS_BUILD_HPNN=OFF
+        cmake --build ../build -j4
+        srun --cpu-bind=cores ../build/lapis/lapis_tests
         ;;
     *)
         srun --cpu-bind=cores python "$@"

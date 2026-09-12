@@ -1,9 +1,10 @@
-#include "pairwise/c_api.h"
-#include "pairwise/mh1.hpp"
+#include "mace/c_api.h"
+#include "mace/mh1.hpp"
 #include <algorithm>
 #include <cstring>
 #include <sstream>
-using namespace pairwise;
+using namespace lapis;
+using mace::MH1;
 namespace {
 thread_local std::string error;
 Options options(int b) {
@@ -15,16 +16,7 @@ Options options(int b) {
 }
 } // namespace
 extern "C" {
-void *pw_create_lj(float e, float s, float c, int b) {
-  try {
-    error.clear();
-    return new LennardJones(e, s, c, options(b));
-  } catch (const std::exception &e) {
-    error = e.what();
-    return nullptr;
-  }
-}
-void *pw_create_mh1(const char *path, int b) {
+void *mace_create_mh1(const char *path, int b) {
   try {
     error.clear();
     if (!path)
@@ -35,13 +27,13 @@ void *pw_create_mh1(const char *path, int b) {
     return nullptr;
   }
 }
-void pw_destroy(void *h) {
-  delete static_cast<Calculator *>(h);
+void mace_destroy(void *h) {
+  delete static_cast<MH1 *>(h);
 }
-const char *pw_last_error() {
+const char *mace_last_error() {
   return error.c_str();
 }
-int pw_calculate(void *h, int n, const float *xyz, const int *z, const float *cell, double *energy,
+int mace_calculate(void *h, int n, const float *xyz, const int *z, const float *cell, double *energy,
                  float *per_atom, float *force, float *virial) {
   try {
     error.clear();
@@ -52,7 +44,7 @@ int pw_calculate(void *h, int n, const float *xyz, const int *z, const float *ce
     s.positions = xyz;
     s.elements = z;
     std::copy(cell, cell + 9, s.cell.begin());
-    auto r = static_cast<Calculator *>(h)->calculate(s);
+    auto r = static_cast<MH1 *>(h)->calculate(s);
     *energy = r.energy;
     std::copy(r.energies.begin(), r.energies.end(), per_atom);
     std::copy(r.forces.begin(), r.forces.end(), force);
@@ -63,16 +55,14 @@ int pw_calculate(void *h, int n, const float *xyz, const int *z, const float *ce
     return -1;
   }
 }
-int pw_diagnostics(void *h, char *buffer, size_t capacity) {
+int mace_diagnostics(void *h, char *buffer, size_t capacity) {
   try {
     if (!h || !buffer)
       throw Error("Null diagnostics pointer");
-    auto *c = static_cast<Calculator *>(h);
+    auto *c = static_cast<MH1 *>(h);
     auto &d = c->diagnostics();
     std::ostringstream s;
-    size_t weights = 0;
-    if (auto *m = dynamic_cast<MH1 *>(c))
-      weights = m->parameter_bytes();
+    const size_t weights = c->parameter_bytes();
     s << "{\"backend\":\"" << (d.selected == NeighborBackend::CellList ? "CellList" : "BruteForce")
       << "\",\"grid\":[" << d.grid[0] << "," << d.grid[1] << "," << d.grid[2] << "],\"reason\":\""
       << d.reason << "\",\"max_occupancy\":" << d.max_occupancy

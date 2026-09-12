@@ -4,6 +4,8 @@ import argparse
 from pathlib import Path
 import subprocess
 import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "python"))
+from mace_inference.library import library_path
 
 
 def main(args):
@@ -23,7 +25,6 @@ def main(args):
         print(f"Passed {name}", flush=True)
 
     py = sys.executable
-    run("framework", ["build/pairwise_tests"])
     run("archive", [py, "tools/check_archive.py"])
     run(
         "mh1-reference",
@@ -38,7 +39,7 @@ def main(args):
             "Si216",
             "--check",
             "--library",
-            str(root / "build/libpairwise_explicit.so"),
+            str(library_path("libmace_explicit.so")),
             "--output",
             "benchmarks/correctness-explicit.json",
         ],
@@ -82,24 +83,9 @@ def main(args):
             "benchmarks/invariants.json",
         ],
     )
-    run(
-        "lj-invariants",
-        [py, "tools/check_invariants.py", "--output", "benchmarks/invariants-lj.json"],
-    )
     run("md", [py, "tools/md.py"])
     if args.sanitizers:
         for tool in ("memcheck", "racecheck", "synccheck"):
-            run(
-                tool,
-                [
-                    "/usr/local/cuda/bin/compute-sanitizer",
-                    "--tool",
-                    tool,
-                    "--error-exitcode",
-                    "1",
-                    "build/pairwise_tests",
-                ],
-            )
             run(
                 "mh1-" + tool,
                 [

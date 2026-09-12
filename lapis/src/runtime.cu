@@ -1,4 +1,4 @@
-#include "pairwise/runtime.hpp"
+#include "lapis/runtime.hpp"
 #include <algorithm>
 #include <climits>
 #include <cmath>
@@ -6,8 +6,8 @@
 #include <limits>
 #include <numeric>
 
-namespace pairwise {
-#ifdef PW_EXPLICIT_REFERENCE
+namespace lapis {
+#ifdef LAPIS_EXPLICIT_REFERENCE
 void build_explicit_reference(Context &);
 #endif
 bool Buffer::reserve(size_t bytes) {
@@ -253,7 +253,7 @@ void Context::prepare(const Structure &s, float cutoff, const Options &opts) {
   std::copy(images, images + 3, geometry.images);
   // Pageable temporary inputs must remain alive until their stream copies complete.
   check(cudaStreamSynchronize(stream));
-#ifdef PW_EXPLICIT_REFERENCE
+#ifdef LAPIS_EXPLICIT_REFERENCE
   build_explicit_reference(*this);
   diagnostics.reason += "; benchmark explicit connectivity";
 #endif
@@ -326,4 +326,4 @@ Result Calculator::calculate(const Structure &s) {
     throw;
   }
 }
-} // namespace pairwise
+} // namespace lapis

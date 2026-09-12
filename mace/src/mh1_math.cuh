@@ -1,6 +1,7 @@
 #pragma once
-#include "pairwise/pair.cuh"
-namespace pairwise {
+#include <lapis/pair.cuh>
+namespace mace {
+using namespace lapis;
 // Small model-local tangents. The runtime itself provides no differentiation.
 struct D1 {
   float v, d;
@@ -170,4 +171,4 @@ __device__ inline void radial_hidden(const RadialWeights &w, int zs, int zr, Rad
     __syncwarp();
   }
 }
-} // namespace pairwise
+} // namespace mace

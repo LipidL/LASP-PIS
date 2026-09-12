@@ -3,7 +3,7 @@
 #include <climits>
 #include <type_traits>
 
-namespace pairwise {
+namespace lapis {
 __device__ inline int thread_rank() {
   return threadIdx.x + blockDim.x * (threadIdx.y + blockDim.y * threadIdx.z);
 }
@@ -70,7 +70,7 @@ template <class Op> __global__ void pair_kernel(DeviceGeometry g, Op op) {
   typename Op::State state;
   op.prepare(i, state, scratch);
   __syncthreads();
-#ifdef PW_EXPLICIT_REFERENCE
+#ifdef LAPIS_EXPLICIT_REFERENCE
   if (g.explicit_offsets) {
     int begin = g.explicit_offsets[i], end = g.explicit_offsets[i + 1];
     for (int base = begin; base < end; base += TE) {
@@ -223,4 +223,4 @@ template <class Op> void execute(Context &ctx, Op op) {
   check(cudaGetLastError());
   op.postprocess(ctx, workspace);
 }
-} // namespace pairwise
+} // namespace lapis

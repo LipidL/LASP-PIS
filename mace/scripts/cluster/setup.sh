@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Run on gpunode9; no GPU work is performed here.
 set -euo pipefail
-cd /home15/luohz/ppf_gpt_benchmark
-source scripts/cluster/environment.sh
+source "$(dirname -- "${BASH_SOURCE[0]}")/environment.sh"
+cd "$MACE_CLUSTER_ROOT"
 mkdir -p .python .cache benchmarks/rtx4090/logs
 if [[ ! -x .python/cpython-3.12.13-linux-x86_64-gnu/bin/python3.12 ]]; then
     cp -a /home2/luohz/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu .python/

@@ -26,7 +26,7 @@ from process_memory import ProcessMemory
 
 
 def main(args):
-    from pairwise import PairwiseCalculator
+    from mace_inference import MH1Calculator, library_path
 
     manifest_path = Path(str(args.archive) + ".json")
     if manifest_path.exists():
@@ -100,8 +100,8 @@ def main(args):
         start = time.perf_counter()
         try:
             if name in native:
-                library = str(ROOT / "build/libpairwise_explicit.so") if name == "explicit" else None
-                implementations[name] = PairwiseCalculator(args.archive, backend=args.backend, library=library)
+                library = str(library_path("libmace_explicit.so")) if name == "explicit" else None
+                implementations[name] = MH1Calculator(args.archive, backend=args.backend, library=library)
             else:
                 implementations[name] = MACECalculator(
                     model_paths=args.checkpoint,
@@ -305,7 +305,7 @@ def main(args):
     }
     source_files = sorted(
         p
-        for folder in ("src", "include", "python/pairwise", "tools")
+        for folder in ("src", "include", "python/mace_inference", "tools")
         for p in (ROOT / folder).rglob("*")
         if p.suffix in (".cpp", ".cu", ".cuh", ".hpp", ".h", ".py")
     )

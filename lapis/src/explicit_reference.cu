@@ -1,7 +1,7 @@
 // Optional benchmark-only materialized connectivity. No edge features are saved.
-#include "pairwise/pair.cuh"
+#include "lapis/pair.cuh"
 #include <cub/device/device_scan.cuh>
-namespace pairwise {
+namespace lapis {
 template <bool Store> struct Connectivity {
   static constexpr int threads = 128, tile_edges = 32, scratch_alignment = 16;
   static const char *name() { return Store ? "reference.store_edges" : "reference.count_edges"; }
@@ -55,4 +55,4 @@ void build_explicit_reference(Context &c) {
   c.geometry.explicit_offsets = offsets;
   c.geometry.explicit_edges = edges;
 }
-} // namespace pairwise
+} // namespace lapis

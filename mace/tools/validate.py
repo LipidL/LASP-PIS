@@ -14,7 +14,7 @@ import numpy as np
 from ase import Atoms
 from ase.build import bulk
 from ase.io import read
-from pairwise import PairwiseCalculator
+from mace_inference import MH1Calculator
 
 
 def structures():
@@ -46,7 +46,7 @@ def main(args):
     torch.set_float32_matmul_precision("highest")
     from mace.calculators import MACECalculator
 
-    new = PairwiseCalculator(args.archive, backend=args.backend, library=args.library)
+    new = MH1Calculator(args.archive, backend=args.backend, library=args.library)
     ref = MACECalculator(
         model_paths=args.checkpoint,
         device=args.device,

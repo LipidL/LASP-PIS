@@ -1,5 +1,5 @@
 #include "mh1_math.cuh"
-#include "pairwise/mh1.hpp"
+#include "mace/mh1.hpp"
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
@@ -8,7 +8,8 @@
 #include <fstream>
 #include <numeric>
 
-namespace pairwise {
+namespace mace {
+using namespace lapis;
 namespace {
 void blas_check(cublasStatus_t s) {
   if (s != CUBLAS_STATUS_SUCCESS)
@@ -51,7 +52,7 @@ struct Layer {
 // Event creation is completely absent from ordinary calculator calls.
 struct StageTimer {
   cudaStream_t stream;
-  bool enabled = std::getenv("PAIRWISE_PROFILE_MH1") != nullptr;
+  bool enabled = std::getenv("MACE_PROFILE_MH1") != nullptr;
   std::vector<std::pair<std::string, cudaEvent_t>> events;
   explicit StageTimer(cudaStream_t s) : stream(s) { mark("start"); }
   void mark(const std::string &name) {
@@ -892,4 +893,4 @@ Result MH1::evaluate() {
   }
   return result;
 }
-} // namespace pairwise
+} // namespace mace

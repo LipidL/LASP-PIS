@@ -1,54 +1,51 @@
 import ctypes as ct
 import json
 import os
-from pathlib import Path
+from .library import library_path
 import numpy as np
 from ase.calculators.calculator import Calculator, all_changes
 from ase.stress import full_3x3_to_voigt_6_stress
 
 
-class PairwiseCalculator(Calculator):
+class MH1Calculator(Calculator):
     implemented_properties = ["energy", "energies", "forces", "stress"]
 
     def __init__(
         self,
-        model=None,
+        model,
         *,
         backend="auto",
-        epsilon=1.0,
-        sigma=1.0,
-        cutoff=2.5,
         library=None,
         **kwargs
     ):
         super().__init__(**kwargs)
         path = (
             library
-            or os.environ.get("PAIRWISE_LIBRARY")
-            or Path(__file__).resolve().parents[2] / "build/libpairwise.so"
+            or os.environ.get("MACE_LIBRARY")
+            or library_path()
         )
         self.lib = ct.CDLL(str(path))
-        self.lib.pw_last_error.restype = ct.c_char_p
-        self.lib.pw_create_lj.argtypes = [ct.c_float] * 3 + [ct.c_int]
-        self.lib.pw_create_lj.restype = ct.c_void_p
-        self.lib.pw_create_mh1.argtypes = [ct.c_char_p, ct.c_int]
-        self.lib.pw_create_mh1.restype = ct.c_void_p
-        self.lib.pw_destroy.argtypes = [ct.c_void_p]
-        self.lib.pw_calculate.argtypes = [ct.c_void_p, ct.c_int] + [ct.c_void_p] * 7
-        self.lib.pw_diagnostics.argtypes = [ct.c_void_p, ct.c_void_p, ct.c_size_t]
+        self.lib.mace_last_error.restype = ct.c_char_p
+        self.lib.mace_create_mh1.argtypes = [ct.c_char_p, ct.c_int]
+        self.lib.mace_create_mh1.restype = ct.c_void_p
+        self.lib.mace_destroy.argtypes = [ct.c_void_p]
+        self.lib.mace_calculate.argtypes = [ct.c_void_p, ct.c_int] + [ct.c_void_p] * 7
+        self.lib.mace_diagnostics.argtypes = [ct.c_void_p, ct.c_void_p, ct.c_size_t]
         b = {"auto": 0, "brute": 1, "cell": 2}[backend]
-        self.handle = (
-            self.lib.pw_create_mh1(os.fsencode(model), b)
-            if model is not None
-            else self.lib.pw_create_lj(epsilon, sigma, cutoff, b)
-        )
+        self.handle = self.lib.mace_create_mh1(os.fsencode(model), b)
         if not self.handle:
-            raise RuntimeError(self.lib.pw_last_error().decode())
+            raise RuntimeError(self.lib.mace_last_error().decode())
 
     def close(self):
         if getattr(self, "handle", None):
-            self.lib.pw_destroy(self.handle)
+            self.lib.mace_destroy(self.handle)
             self.handle = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.close()
 
     def __del__(self):
         self.close()
@@ -67,10 +64,10 @@ class PairwiseCalculator(Calculator):
         forces = np.empty((len(atoms), 3), np.float32)
         virial = np.empty((3, 3), np.float32)
         arrays = [xyz, z, cell, energy, energies, forces, virial]
-        if self.lib.pw_calculate(
+        if self.lib.mace_calculate(
             self.handle, len(atoms), *[a.ctypes.data for a in arrays]
         ):
-            raise RuntimeError(self.lib.pw_last_error().decode())
+            raise RuntimeError(self.lib.mace_last_error().decode())
         return dict(
             energy=energy[0],
             energies=energies,
@@ -86,6 +83,6 @@ class PairwiseCalculator(Calculator):
     @property
     def diagnostics(self):
         buf = ct.create_string_buffer(16384)
-        if self.lib.pw_diagnostics(self.handle, buf, len(buf)):
-            raise RuntimeError(self.lib.pw_last_error().decode())
+        if self.lib.mace_diagnostics(self.handle, buf, len(buf)):
+            raise RuntimeError(self.lib.mace_last_error().decode())
         return json.loads(buf.value)

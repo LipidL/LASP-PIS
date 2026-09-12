@@ -1,4 +1,5 @@
-#include "pairwise/pair.cuh"
+#include "lj.hpp"
+#include "lapis/pair.cuh"
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -8,7 +9,7 @@
 #include <set>
 #include <thread>
 #include <tuple>
-using namespace pairwise;
+using namespace lapis;
 void require(bool b, const char *what) {
   if (!b)
     throw Error(what);

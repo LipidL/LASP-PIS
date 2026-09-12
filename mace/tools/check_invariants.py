@@ -7,23 +7,13 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "python"))
 import numpy as np
-from ase import Atoms
 from ase.build import bulk
-from pairwise import PairwiseCalculator
+from mace_inference import MH1Calculator
 
 
 def run(args):
-    calc = PairwiseCalculator(args.archive) if args.archive else PairwiseCalculator()
-    atoms = (
-        bulk("Si", "diamond", a=5.43, cubic=True)
-        if args.archive
-        else Atoms(
-            "Ar4",
-            positions=[[1, 1, 1], [2.2, 1.1, 1], [1.2, 2.4, 1.3], [2.1, 2.2, 2.2]],
-            cell=[8, 8, 8],
-            pbc=True,
-        )
-    )
+    calc = MH1Calculator(args.archive)
+    atoms = bulk("Si", "diamond", a=5.43, cubic=True)
     atoms.rattle(0.02, seed=691)
     first = calc.evaluate(atoms)
     capacity = calc.diagnostics["context_bytes"]
@@ -108,7 +98,7 @@ def run(args):
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--archive")
+    p.add_argument("--archive", required=True)
     p.add_argument("--output")
     p.add_argument(
         "--smoke",

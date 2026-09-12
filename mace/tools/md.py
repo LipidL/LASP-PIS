@@ -11,12 +11,12 @@ from ase import units
 from ase.build import bulk
 from ase.md.velocitydistribution import MaxwellBoltzmannDistribution, Stationary
 from ase.md.verlet import VelocityVerlet
-from pairwise import PairwiseCalculator
+from mace_inference import MH1Calculator
 
 
 def run(args):
     atoms = bulk("Si", "diamond", a=5.43, cubic=True).repeat((args.repeat,) * 3)
-    atoms.calc = PairwiseCalculator(args.archive)
+    atoms.calc = MH1Calculator(args.archive)
     MaxwellBoltzmannDistribution(
         atoms, temperature_K=args.temperature, rng=np.random.default_rng(args.seed)
     )

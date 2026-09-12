@@ -11,6 +11,8 @@ from pathlib import Path
 import subprocess
 import sys
 import time
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "python"))
+from mace_inference.library import library_path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "benchmarks/rtx4090"
@@ -47,7 +49,7 @@ def benchmark(name, options, implementations, protocol=()):
 def smoke():
     run("device", [PYTHON, "-c", "import torch, cuequivariance_ops_torch; print(torch.__version__, torch.version.cuda); print(torch.cuda.get_device_properties(0)); x=torch.ones(16, device='cuda'); print((x*x).sum().item())"])
     run("correctness-cpu64", [PYTHON, "tools/validate.py", "--check", "--output", "benchmarks/rtx4090/correctness-cpu64.json"])
-    run("correctness-explicit", [PYTHON, "tools/validate.py", "--check", "--case", "Si216", "--library", str(ROOT / "build/libpairwise_explicit.so"), "--output", "benchmarks/rtx4090/correctness-explicit.json"])
+    run("correctness-explicit", [PYTHON, "tools/validate.py", "--check", "--case", "Si216", "--library", str(library_path("libmace_explicit.so")), "--output", "benchmarks/rtx4090/correctness-explicit.json"])
     run("correctness-mptrj-cpu64", [PYTHON, "tools/validate.py", "--check", "--structure", "structures/mptrj-mp-1005792.extxyz", "--supercell", "3", "3", "1", "--output", "benchmarks/rtx4090/correctness-mptrj-cpu64.json"])
     run("invariants-mh1", [PYTHON, "tools/check_invariants.py", "--archive", "model/mh1.pwm", "--output", "benchmarks/rtx4090/invariants-mh1.json"])
     run("invariants-lj", [PYTHON, "tools/check_invariants.py", "--output", "benchmarks/rtx4090/invariants-lj.json"])

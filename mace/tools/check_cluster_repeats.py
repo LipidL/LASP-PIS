@@ -8,14 +8,14 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "python"))
 import numpy as np
 from ase.io import read
-from pairwise import PairwiseCalculator
+from mace_inference import MH1Calculator, library_path
 
 atoms = read(ROOT / "structures/mptrj-mp-1005792.extxyz").repeat((3, 3, 1))
 atoms.positions = np.asarray(atoms.positions, np.float32).astype(float)
 atoms.cell = np.asarray(atoms.cell.array, np.float32).astype(float)
 report = {}
-for implementation, filename in [("framework", "libpairwise.so"), ("explicit", "libpairwise_explicit.so")]:
-    calc = PairwiseCalculator(ROOT / "model/mh1.pwm", library=str(ROOT / "build" / filename))
+for implementation, filename in [("framework", "libmace.so"), ("explicit", "libmace_explicit.so")]:
+    calc = MH1Calculator(ROOT / "model/mh1.pwm", library=str(library_path(filename)))
     values = [calc.evaluate(atoms) for _ in range(100)]
     energy = np.asarray([r["energy"] for r in values])
     forces = np.asarray([r["forces"] for r in values])
