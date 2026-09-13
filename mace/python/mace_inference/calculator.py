@@ -16,6 +16,7 @@ class MH1Calculator(Calculator):
         *,
         backend="auto",
         library=None,
+        head=None,
         **kwargs
     ):
         super().__init__(**kwargs)
@@ -32,7 +33,12 @@ class MH1Calculator(Calculator):
         self.lib.mace_calculate.argtypes = [ct.c_void_p, ct.c_int] + [ct.c_void_p] * 7
         self.lib.mace_diagnostics.argtypes = [ct.c_void_p, ct.c_void_p, ct.c_size_t]
         b = {"auto": 0, "brute": 1, "cell": 2}[backend]
-        self.handle = self.lib.mace_create_mh1(os.fsencode(model), b)
+        if head is None:
+            self.handle = self.lib.mace_create_mh1(os.fsencode(model), b)
+        else:
+            self.lib.mace_create_mh1_head.argtypes = [ct.c_char_p, ct.c_int, ct.c_char_p]
+            self.lib.mace_create_mh1_head.restype = ct.c_void_p
+            self.handle = self.lib.mace_create_mh1_head(os.fsencode(model), b, head.encode())
         if not self.handle:
             raise RuntimeError(self.lib.mace_last_error().decode())
 

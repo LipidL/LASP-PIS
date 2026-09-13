@@ -1,0 +1,70 @@
+{
+  "date": "2026-09-12",
+  "gpu": "NVIDIA GeForce RTX 3060 Ti (SM86)",
+  "cuda_toolkit": "12.6",
+  "structure_sha256": "c0b5f7de412f3ba309c7dc585402c291d0c49184ad8a25ac47de4f4b4f045e31",
+  "structure_frames": 100,
+  "structure_atoms_per_frame": 165,
+  "checkpoint_sha256": "a522eb7f59c7879963d41586528f4980baf33e086c94aa92e3eafdeccad3be47",
+  "extraction": {
+    "records_per_head": 117,
+    "all_six_heads_records_byte_exact": true,
+    "changed_weights_round_trip": true
+  },
+  "cli_vs_python_export": {
+    "matpes_r2scan": {
+      "energy": 0.0,
+      "atomic_energies": 0.0,
+      "forces": 9.5367431640625e-07,
+      "virial": 7.62939453125e-06
+    },
+    "mp_pbe_refit_add": {
+      "energy": 0.0,
+      "atomic_energies": 0.0,
+      "forces": 7.152557373046875e-07,
+      "virial": 7.62939453125e-06
+    },
+    "spice_wB97M": {
+      "energy": 3.129243850708008e-06,
+      "atomic_energies": 2.384185791015625e-06,
+      "forces": 1.9073486328125e-06,
+      "virial": 7.62939453125e-06
+    },
+    "oc20_usemppbe": {
+      "energy": 1.1324882507324219e-05,
+      "atomic_energies": 1.9073486328125e-06,
+      "forces": 1.1771917343139648e-06,
+      "virial": 2.86102294921875e-06
+    },
+    "omol": {
+      "energy": 0.0,
+      "atomic_energies": 0.0,
+      "forces": 1.1920928955078125e-06,
+      "virial": 7.62939453125e-06
+    },
+    "omat_pbe": {
+      "energy": 0.0,
+      "atomic_energies": 0.0,
+      "forces": 7.152557373046875e-07,
+      "virial": 1.52587890625e-05
+    }
+  },
+  "independent_official_float64_oracle": [
+    {
+      "case": "Si8",
+      "atoms": 8,
+      "errors": {
+        "energy_per_atom": 1.0682542317397292e-07,
+        "energy_node_sum_per_atom": 1.0682542495032976e-07,
+        "force_max": 3.5664434197002493e-06,
+        "virial_max": 9.954390870703378e-06
+      },
+      "comparison_pass": true,
+      "repeat_errors": {
+        "energy_per_atom": 0.0,
+        "force_max": 1.1920928955078125e-07,
+        "virial_max": 3.5762786865234375e-07
+      }
+    }
+  ]
+}

@@ -17,11 +17,14 @@ Options options(int b) {
 } // namespace
 extern "C" {
 void *mace_create_mh1(const char *path, int b) {
+  return mace_create_mh1_head(path, b, nullptr);
+}
+void *mace_create_mh1_head(const char *path, int b, const char *head) {
   try {
     error.clear();
     if (!path)
       throw Error("Null archive path");
-    return new MH1(path, options(b));
+    return new MH1(path, options(b), head ? head : "");
   } catch (const std::exception &e) {
     error = e.what();
     return nullptr;

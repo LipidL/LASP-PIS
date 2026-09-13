@@ -6,6 +6,8 @@
 #include <cstring>
 #include <cublas_v2.h>
 #include <fstream>
+#include <sstream>
+#include "weights.hpp"
 #include <numeric>
 
 namespace mace {
@@ -621,8 +623,8 @@ struct MH1::Model {
     r.output_bias = f(key + "." + std::to_string(depth * 3) + ".bias");
     return r;
   }
-  Model(const std::string &path, cudaStream_t stream) {
-    std::ifstream in(path, std::ios::binary);
+  Model(const std::string &path, cudaStream_t stream, const std::string &head) {
+    std::istringstream in(mace_detail::weight_data(path, head), std::ios::binary|std::ios::in);
     if (!in)
       throw Error("Cannot open MH1 archive: " + path);
     char magic[8]{};
@@ -742,8 +744,9 @@ struct MH1::Model {
       cublasDestroy(blas);
   }
 };
-MH1::MH1(const std::string &archive, Options o)
-    : Calculator(6, o), model_(std::make_unique<Model>(archive, context_.stream)) {}
+MH1::MH1(const std::string &archive, Options o, const std::string &head)
+    : Calculator(6, o), model_(std::make_unique<Model>(archive, context_.stream, head)) {}
+MH1::MH1(const std::string &archive, Options o) : MH1(archive, o, {}) {}
 MH1::~MH1() = default;
 size_t MH1::parameter_bytes() const {
   return model_->bytes;
