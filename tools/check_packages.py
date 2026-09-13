@@ -16,7 +16,7 @@ def run(*args):
 def check(folder, arch, jobs):
     prefix = folder / 'original-prefix'
     relocated = folder / 'relocated-prefix'
-    for project in ('lapis', 'mace', 'hpnn'):
+    for project in ('lapis', 'chemio', 'checkpoint', 'mace', 'hpnn'):
         source = folder / project
         source.mkdir()
         for name in ('CMakeLists.txt', 'cmake', 'include', 'src'):
@@ -40,6 +40,8 @@ def check(folder, arch, jobs):
             prefix.rename(relocated)
             # Consumers see only the installation, not the source/runtime build.
             source.rename(folder / 'framework-source-not-in-search-path')
+        if project in ('mace', 'hpnn'):
+            run(relocated / 'bin' / (project + '-main'), '--help')
     client = folder / 'client'
     client.mkdir()
     (client / 'CMakeLists.txt').write_text("""cmake_minimum_required(VERSION 3.24)
@@ -87,7 +89,7 @@ void launch(lapis::Context& ctx) { lapis::execute(ctx, Op{}); }
     run('cmake', '--build', folder / 'build-client', '-j', jobs)
     run(folder / 'build-client/c_client')
     run(folder / 'build-client/cpp_client')
-    print('Installed Lapis, both isolated consumers, and C/C++/CUDA package clients passed.')
+    print('Installed Lapis, Chemio, checkpoint, isolated model libraries/executables, and C/C++/CUDA clients passed.')
 
 
 if __name__ == '__main__':
