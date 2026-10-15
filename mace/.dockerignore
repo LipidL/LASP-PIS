@@ -1,7 +1,0 @@
-/.git
-.venv
-mace-ref/.venv
-build*
-**/__pycache__
-*.nsys-rep
-*.sqlite
