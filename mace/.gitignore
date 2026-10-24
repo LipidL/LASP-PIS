@@ -1,0 +1,17 @@
+# Virtual environments
+.venv/
+.venv-cu126/
+.python/
+.cache/
+
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+
+# Generated CUDA builds and model archives
+build*/
+*.pwm
+*.pwm.json
+*.nsys-rep
+*.sqlite
+*.egg-info/

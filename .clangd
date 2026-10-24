@@ -1,0 +1,36 @@
+CompileFlags:
+  # CMake emits nvcc options that clangd's driver does not understand. Drop
+  # them so the compile command can be replayed by clang.
+  Remove:
+    - -forward-unknown-to-host-compiler
+    - --options-file
+    - --generate-code=*
+    - --expt-relaxed-constexpr
+    - -Xcompiler=*
+    - -lineinfo
+  Add:
+    # CMake omits -std when the compiler default already satisfies cxx_std_17,
+    # but clang (and therefore clangd) defaults to C++14.
+    - -std=c++17
+    # CUDA 12.6 headers declare variadic device functions (e.g. __any(...)
+    # in libcudacxx). clangd 14 rejects them, so keep parsing past the
+    # error limit and filter the false positives below.
+    - -ferror-limit=0
+
+Diagnostics:
+  Suppress:
+    - variadic_device_fn
+    # INT_MAX/4 is used deliberately as an integer bound. The division never
+    # leaves integer arithmetic, it is only compared or converted afterwards.
+    - bugprone-integer-division
+
+---
+# Headers are not part of the compilation database; clangd guesses a
+# compilation command for them and may pick a non-CUDA translation unit.
+# Force CUDA mode for the one public header that includes CUDA directly.
+If:
+  PathMatch: .*lapis/include/lapis/runtime\.hpp
+CompileFlags:
+  Add:
+    - -x
+    - cuda

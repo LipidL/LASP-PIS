@@ -1,0 +1,9 @@
+/build*/
+/install*/
+/migration-backup/
+/.agents/
+/.codex/
+__pycache__/
+*.py[cod]
+.venv*/
+mace/model/
