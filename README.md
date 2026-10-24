@@ -1,4 +1,4 @@
-# Lapis workspace
+# LASP-PIS workspace
 
 Four independently buildable projects share this repository:
 
