@@ -25,7 +25,8 @@ struct Collect {
   int *count;
   int capacity;
   const int *map;
-  WorkspaceSpec plan(int) const { return {0, 64, 64}; }
+  size_t scratch_bytes = 64;
+  WorkspaceSpec plan(int) const { return {0, scratch_bytes, 64}; }
   void setup(Context &c, void *) { c.clear(count, 4); }
   void postprocess(Context &, void *) {}
   __device__ void prepare(int, State &, void *p) {
@@ -213,6 +214,26 @@ int main() {
         rejected = true;
       }
       require(rejected, "excessive scratch accepted");
+      // The same kernel can request different dynamic shared storage between
+      // calls. Cached validation must retain that distinction and still reject
+      // an invalid request after a successful launch.
+      Collect op{c.array<int>("cache.edges", 100), c.array<int>("cache.count", 1),
+                 20, c.internal_to_original};
+      for (size_t scratch : {size_t(64), size_t(4096), size_t(64)}) {
+        op.scratch_bytes = scratch;
+        execute(c, op);
+        c.synchronize();
+        size_t expected = align_up(sizeof(EdgeQueue<Collect::threads + Collect::tile_edges - 1>),
+                                   Collect::scratch_alignment) + scratch;
+        require(c.resources.back().dynamic_shared == expected, "stale cached kernel resources");
+        int count = 0;
+        check(cudaMemcpy(&count, op.count, sizeof(count), cudaMemcpyDeviceToHost));
+        require(count == 2, "cached kernel launch changed neighbors");
+      }
+      op.scratch_bytes = 1024 * 1024;
+      rejected = false;
+      try { execute(c, op); } catch (const Error &) { rejected = true; }
+      require(rejected, "cached kernel skipped resource validation");
     }
     // All candidates accepted: tile boundaries, full batches and carried remainders.
     for (int count : {1, 2, 17, 18, 33, 34, 35, 128, 129, 144, 145}) {

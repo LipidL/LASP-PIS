@@ -1,6 +1,7 @@
 #include "mh1_math.cuh"
 #include "mace/mh1.hpp"
 #include <algorithm>
+#include <climits>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -28,6 +29,7 @@ struct Linear {
   int input, output;
   std::vector<LinearPath> paths;
   const float *weight;
+  bool forward_partition = false, backward_partition = false;
 };
 struct TPEntry {
   int path, input, sh, output;
@@ -87,21 +89,28 @@ void linear(Context &ctx, cublasHandle_t handle, const Linear &l, const float *x
   int n = ctx.geometry.n;
   if (!n)
     return;
-  if (!add)
+  // A partition writes every destination exactly once. Otherwise preserve the
+  // general sparse-path accumulation, including uncovered output components.
+  bool overwrite = !add && (backward ? l.backward_partition : l.forward_partition);
+  if (!add && !overwrite)
     ctx.clear(y, size_t(n) * (backward ? l.input : l.output) * 4);
-  const float one = 1;
+  const float one = 1, beta = overwrite ? 0 : 1;
   for (const auto &p : l.paths) {
     const float *w = l.weight + p.weight_offset;
+    // Components are adjacent column-major matrices sharing the same weights.
+    // Folding components into columns gives cuBLAS a larger ordinary GEMM.
+    if (n > INT_MAX / p.dim)
+      throw Error("MH1 linear matrix dimension overflow");
     if (!backward)
-      blas_check(cublasSgemmStridedBatched(
-          handle, CUBLAS_OP_N, CUBLAS_OP_N, p.out_mul, n, p.in_mul, &one, w, p.out_mul, 0,
-          x + size_t(p.in_offset) * n, p.in_mul, size_t(n) * p.in_mul, &one,
-          y + size_t(p.out_offset) * n, p.out_mul, size_t(n) * p.out_mul, p.dim));
+      blas_check(cublasSgemm(
+          handle, CUBLAS_OP_N, CUBLAS_OP_N, p.out_mul, n * p.dim, p.in_mul,
+          &one, w, p.out_mul, x + size_t(p.in_offset) * n, p.in_mul, &beta,
+          y + size_t(p.out_offset) * n, p.out_mul));
     else
-      blas_check(cublasSgemmStridedBatched(
-          handle, CUBLAS_OP_T, CUBLAS_OP_N, p.in_mul, n, p.out_mul, &one, w, p.out_mul, 0,
-          x + size_t(p.out_offset) * n, p.out_mul, size_t(n) * p.out_mul, &one,
-          y + size_t(p.in_offset) * n, p.in_mul, size_t(n) * p.in_mul, p.dim));
+      blas_check(cublasSgemm(
+          handle, CUBLAS_OP_T, CUBLAS_OP_N, p.in_mul, n * p.dim, p.out_mul,
+          &one, w, p.out_mul, x + size_t(p.out_offset) * n, p.out_mul, &beta,
+          y + size_t(p.in_offset) * n, p.in_mul));
   }
 }
 __global__ void embed_kernel(DeviceGeometry g, const int *lookup, const float *embedding,
@@ -316,7 +325,7 @@ template <int LayerIndex, bool Backward> struct MH1Pair {
         }
       }
       __syncwarp();
-      radial_hidden<Backward>(layer.radial, zs, zr, s.radial[worker]);
+      radial_hidden<Backward, 3>(layer.radial, zs, zr, s.radial[worker]);
     } else {
       for (int k = lane; k < 64; k += 32) {
         s.radial[worker].a[k] = 0;
@@ -329,14 +338,14 @@ template <int LayerIndex, bool Backward> struct MH1Pair {
     }
     __syncthreads();
     // One projection-weight load serves all four transient edges.
-    for (int p = 0; p < layer.paths; ++p) {
+    for (int p = 0; p < NW / 128; ++p) {
       int k = p * 128 + c;
       float w[4], dw[4] = {};
 #pragma unroll
       for (int e = 0; e < 4; ++e)
         w[e] = layer.radial.output_bias[k];
       for (int a = 0; a < 64; ++a) {
-        float v = layer.radial.output_weight[a * layer.radial.outputs + k];
+        float v = layer.radial.output_weight[a * NW + k];
 #pragma unroll
         for (int e = 0; e < 4; ++e) {
           w[e] += v * s.radial[e].a[a];
@@ -353,7 +362,7 @@ template <int LayerIndex, bool Backward> struct MH1Pair {
     }
     __syncthreads();
     if (worker < tile.size()) {
-      radial_hidden<Backward>(layer.density, zs, zr, s.radial[worker]);
+      radial_hidden<Backward, 1>(layer.density, zs, zr, s.radial[worker]);
       if (lane == 0) {
         float a = layer.density.output_bias[0], da = 0;
         for (int k = 0; k < 64; ++k) {
@@ -590,7 +599,17 @@ struct MH1::Model {
           int64_t(p.out_offset) + int64_t(p.out_mul) * p.dim > dims[1] ||
           size_t(p.weight_offset) + size_t(p.in_mul) * p.out_mul > weights)
         throw Error("Invalid linear path: " + key);
-    return {dims[0], dims[1], paths, f(key + ".weight")};
+    auto partition = [&](bool backward) {
+      std::vector<int> coverage(backward ? input : output, 0);
+      for (const auto &p : paths) {
+        int offset = backward ? p.in_offset : p.out_offset;
+        int count = p.dim * (backward ? p.in_mul : p.out_mul);
+        for (int i = offset; i < offset + count; ++i)
+          if (++coverage[i] != 1) return false;
+      }
+      return std::all_of(coverage.begin(), coverage.end(), [](int v) { return v == 1; });
+    };
+    return {dims[0], dims[1], paths, f(key + ".weight"), partition(false), partition(true)};
   }
   RadialWeights get_radial(const std::string &key, int depth, int outputs) {
     require_size(key + ".source", size_t(species) * 64);

@@ -118,7 +118,7 @@ __device__ inline float warp_sum(float x) {
     x += __shfl_down_sync(0xffffffff, x, step);
   return __shfl_sync(0xffffffff, x, 0);
 }
-template <bool Derivative>
+template <bool Derivative, int Depth>
 __device__ inline void radial_hidden(const RadialWeights &w, int zs, int zr, RadialScratch &s) {
   int lane = threadIdx.x & 31;
   float a[2], da[2] = {};
@@ -133,7 +133,7 @@ __device__ inline void radial_hidden(const RadialWeights &w, int zs, int zr, Rad
         da[q] += v * s.dinput[k];
     }
   }
-  for (int layer = 0; layer < w.depth; ++layer) {
+  for (int layer = 0; layer < Depth; ++layer) {
     if (layer) {
 #pragma unroll
       for (int q = 0; q < 2; ++q) {

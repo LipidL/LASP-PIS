@@ -193,29 +193,9 @@ template <class Op> void execute(Context &ctx, Op op) {
   size_t shared =
       align_up(sizeof(EdgeQueue<Op::threads + Op::tile_edges - 1>), Op::scratch_alignment) +
       plan.scratch_bytes;
-  cudaFuncAttributes attr{};
-  check(cudaFuncGetAttributes(&attr, pair_kernel<Op>));
-  int device;
-  check(cudaGetDevice(&device));
-  cudaDeviceProp props{};
-  check(cudaGetDeviceProperties(&props, device));
-  if (block.x > unsigned(props.maxThreadsDim[0]) || block.y > unsigned(props.maxThreadsDim[1]) ||
-      block.z > unsigned(props.maxThreadsDim[2]))
-    throw Error("PairOp block dimension exceeds device limit");
-  if (props.major < 7 || Op::threads > attr.maxThreadsPerBlock ||
-      shared + attr.sharedSizeBytes > props.sharedMemPerBlockOptin ||
-      size_t(attr.numRegs) * Op::threads > size_t(props.regsPerBlock))
-    throw Error("PairOp exceeds device kernel resource limits");
-  if (shared + attr.sharedSizeBytes > props.sharedMemPerBlock)
-    check(cudaFuncSetAttribute(pair_kernel<Op>, cudaFuncAttributeMaxDynamicSharedMemorySize,
-                               int(shared)));
-  int active;
-  check(
-      cudaOccupancyMaxActiveBlocksPerMultiprocessor(&active, pair_kernel<Op>, Op::threads, shared));
-  if (active < 1)
-    throw Error("PairOp has no resident block capacity");
-  ctx.resources.push_back(
-      {Op::name(), attr.numRegs, Op::threads, active, attr.sharedSizeBytes, shared});
+  auto resource = ctx.kernel_resources(reinterpret_cast<const void *>(pair_kernel<Op>), block, shared);
+  resource.name = Op::name();
+  ctx.resources.push_back(std::move(resource));
   void *workspace = ctx.reserve(std::string("op.") + Op::name(), plan.global_bytes);
   op.setup(ctx, workspace);
   if (ctx.geometry.n)

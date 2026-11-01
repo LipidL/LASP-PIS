@@ -34,6 +34,36 @@ Context::~Context() {
   cudaEventDestroy(stop);
   cudaStreamDestroy(stream);
 }
+KernelResources Context::kernel_resources(const void *kernel, dim3 block, size_t shared) {
+  int device;
+  check(cudaGetDevice(&device));
+  KernelKey key{device, kernel, shared, block.x, block.y, block.z};
+  auto cached = kernel_resources_.find(key);
+  if (cached != kernel_resources_.end()) return cached->second;
+  cudaFuncAttributes attr{};
+  check(cudaFuncGetAttributes(&attr, kernel));
+  cudaDeviceProp props{};
+  check(cudaGetDeviceProperties(&props, device));
+  unsigned threads = block.x * block.y * block.z;
+  if (block.x > unsigned(props.maxThreadsDim[0]) || block.y > unsigned(props.maxThreadsDim[1]) ||
+      block.z > unsigned(props.maxThreadsDim[2]))
+    throw Error("PairOp block dimension exceeds device limit");
+  if (props.major < 7 || threads > unsigned(attr.maxThreadsPerBlock) ||
+      shared + attr.sharedSizeBytes > props.sharedMemPerBlockOptin ||
+      size_t(attr.numRegs) * threads > size_t(props.regsPerBlock))
+    throw Error("PairOp exceeds device kernel resource limits");
+  // The attribute belongs to the kernel, not this Context. Always opt in to
+  // the device limit so another calculator cannot lower a cached launch limit.
+  if (shared + attr.sharedSizeBytes > props.sharedMemPerBlock)
+    check(cudaFuncSetAttribute(kernel, cudaFuncAttributeMaxDynamicSharedMemorySize,
+                               int(props.sharedMemPerBlockOptin - attr.sharedSizeBytes)));
+  int active;
+  check(cudaOccupancyMaxActiveBlocksPerMultiprocessor(&active, kernel, threads, shared));
+  if (active < 1) throw Error("PairOp has no resident block capacity");
+  KernelResources result{"", attr.numRegs, int(threads), active, attr.sharedSizeBytes, shared};
+  kernel_resources_.emplace(key, result);
+  return result;
+}
 void *Context::reserve(const std::string &name, size_t bytes) {
   auto &b = buffers_[name];
   size_t previous = b.capacity;

@@ -6,6 +6,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace lapis {
@@ -76,6 +77,8 @@ struct WorkspaceSpec {
 };
 class Context {
   std::map<std::string, Buffer> buffers_;
+  using KernelKey = std::tuple<int, const void *, size_t, unsigned, unsigned, unsigned>;
+  std::map<KernelKey, KernelResources> kernel_resources_;
   void *pinned_ = nullptr;
   size_t pinned_capacity_ = 0;
 
@@ -104,6 +107,7 @@ public:
   void prepare(const Structure &, float, const Options &);
   Result finish(float *energies, float *forces, float *node_virials);
   void synchronize();
+  KernelResources kernel_resources(const void *kernel, dim3 block, size_t shared);
 };
 class Calculator {
   std::atomic_flag busy_ = ATOMIC_FLAG_INIT;

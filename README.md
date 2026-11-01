@@ -111,3 +111,6 @@ installed model packages. No GPU is required for that build check.
 See [migration provenance](docs/MIGRATION.md) for the imported histories and naming
 changes. Historical benchmark reports retain their original names and measurements;
 they are not new measurements of this extraction.
+
+See [inference optimization measurements](docs/INFERENCE_OPTIMIZATION.md) for
+the current SM86 baseline comparison, validation, and reproduction commands.
