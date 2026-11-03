@@ -24,6 +24,9 @@ Diagnostics:
     # leaves integer arithmetic, it is only compared or converted afterwards.
     - bugprone-integer-division
 
+Documentation:
+  CommentFormat: Doxygen
+
 ---
 # Headers are not part of the compilation database; clangd guesses a
 # compilation command for them and may pick a non-CUDA translation unit.

@@ -64,6 +64,7 @@ template <class Op> __global__ void pair_kernel(DeviceGeometry g, Op op) {
   constexpr int B = Op::threads, TE = Op::tile_edges, Q = B + TE - 1;
   extern __shared__ __align__(256) unsigned char storage[];
   auto &queue = *reinterpret_cast<EdgeQueue<Q> *>(storage);
+  // shared mem scratch excluding edge tile
   void *scratch = storage + align_up(sizeof(EdgeQueue<Q>), Op::scratch_alignment);
   __shared__ int counts[B / 32], prefix[B / 32], accepted;
   int t = BlockShape<Op>::flat ? int(threadIdx.x) : thread_rank(), i = blockIdx.x, carry = 0;
