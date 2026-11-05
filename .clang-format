@@ -1,0 +1,60 @@
+---
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: c++17
+
+# 1. Accommodate long CUDA qualifiers and math equations
+ColumnLimit: 100
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# 2. Keep pointer/reference qualifiers with the type
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# 3. Prevent clang-format from mangling CUDA kernel launch chevrons: kernel<<<grid, block>>>(...)
+SpaceAfterTemplateKeyword: false
+SpacesInAngles: Never
+
+# 4. Align dense mathematical expressions, basis set tables, and force-field matrices
+AlignArrayOfStructures: Left
+AlignConsecutiveAssignments:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+AlignConsecutiveDeclarations:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+AlignOperands: Align
+
+# 5. Pack long parameter lists
+PackArguments:
+    BinPack: true
+BinPackParameters: BinPack
+AllowAllParametersOfDeclarationOnNextLine: true
+IndentWrappedFunctionNames: false
+
+# 6. Scientific readability: keep short getters/math helpers compact, break large templates cleanly
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortLoopsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: Never
+BreakTemplateDeclarations: Yes
+BreakBeforeBinaryOperators: NonAssignment
+PenaltyBreakBeforeFirstCallParameter: 100
+
+# 7. Group headers logically: Standard C/C++ -> CUDA -> External (MPI/BLAS) -> Local
+IncludeBlocks: Regroup
+IncludeCategories:
+  - Regex: '^<.*\.h>'
+    Priority: 1
+  - Regex: '^<.*>'
+    Priority: 2
+  - Regex: '^<(cuda|cublas|cufft|curand|cusolver|cusparse|thrust|cooperative_groups).*'
+    Priority: 3
+  - Regex: '^<mpi\.h>'
+    Priority: 4
+  - Regex: '.*'
+    Priority: 5
+...

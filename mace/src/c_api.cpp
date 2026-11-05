@@ -36,8 +36,8 @@ void mace_destroy(void *h) {
 const char *mace_last_error() {
   return error.c_str();
 }
-int mace_calculate(void *h, int n, const float *xyz, const int *z, const float *cell, double *energy,
-                 float *per_atom, float *force, float *virial) {
+int mace_calculate(void *h, int n, const float *xyz, const int *z, const float *cell,
+                   double *energy, float *per_atom, float *force, float *virial) {
   try {
     error.clear();
     if (!h || !cell || !energy || !virial || (n && (!per_atom || !force)))

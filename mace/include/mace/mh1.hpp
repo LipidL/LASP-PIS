@@ -1,6 +1,6 @@
 #pragma once
-#include <mace/export.h>
 #include <lapis/runtime.hpp>
+#include <mace/export.h>
 #include <memory>
 namespace mace {
 class MACE_EXPORT MH1 final : public lapis::Calculator {

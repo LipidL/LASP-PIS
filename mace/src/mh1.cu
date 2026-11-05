@@ -1,5 +1,6 @@
-#include "mh1_math.cuh"
 #include "mace/mh1.hpp"
+#include "mh1_math.cuh"
+#include "weights.hpp"
 #include <algorithm>
 #include <climits>
 #include <cstdio>
@@ -7,9 +8,8 @@
 #include <cstring>
 #include <cublas_v2.h>
 #include <fstream>
-#include <sstream>
-#include "weights.hpp"
 #include <numeric>
+#include <sstream>
 
 namespace mace {
 using namespace lapis;
@@ -102,15 +102,13 @@ void linear(Context &ctx, cublasHandle_t handle, const Linear &l, const float *x
     if (n > INT_MAX / p.dim)
       throw Error("MH1 linear matrix dimension overflow");
     if (!backward)
-      blas_check(cublasSgemm(
-          handle, CUBLAS_OP_N, CUBLAS_OP_N, p.out_mul, n * p.dim, p.in_mul,
-          &one, w, p.out_mul, x + size_t(p.in_offset) * n, p.in_mul, &beta,
-          y + size_t(p.out_offset) * n, p.out_mul));
+      blas_check(cublasSgemm(handle, CUBLAS_OP_N, CUBLAS_OP_N, p.out_mul, n * p.dim, p.in_mul, &one,
+                             w, p.out_mul, x + size_t(p.in_offset) * n, p.in_mul, &beta,
+                             y + size_t(p.out_offset) * n, p.out_mul));
     else
-      blas_check(cublasSgemm(
-          handle, CUBLAS_OP_T, CUBLAS_OP_N, p.in_mul, n * p.dim, p.out_mul,
-          &one, w, p.out_mul, x + size_t(p.out_offset) * n, p.out_mul, &beta,
-          y + size_t(p.in_offset) * n, p.in_mul));
+      blas_check(cublasSgemm(handle, CUBLAS_OP_T, CUBLAS_OP_N, p.in_mul, n * p.dim, p.out_mul, &one,
+                             w, p.out_mul, x + size_t(p.out_offset) * n, p.out_mul, &beta,
+                             y + size_t(p.in_offset) * n, p.in_mul));
   }
 }
 __global__ void embed_kernel(DeviceGeometry g, const int *lookup, const float *embedding,
@@ -605,7 +603,8 @@ struct MH1::Model {
         int offset = backward ? p.in_offset : p.out_offset;
         int count = p.dim * (backward ? p.in_mul : p.out_mul);
         for (int i = offset; i < offset + count; ++i)
-          if (++coverage[i] != 1) return false;
+          if (++coverage[i] != 1)
+            return false;
       }
       return std::all_of(coverage.begin(), coverage.end(), [](int v) { return v == 1; });
     };
@@ -643,7 +642,7 @@ struct MH1::Model {
     return r;
   }
   Model(const std::string &path, cudaStream_t stream, const std::string &head) {
-    std::istringstream in(mace_detail::weight_data(path, head), std::ios::binary|std::ios::in);
+    std::istringstream in(mace_detail::weight_data(path, head), std::ios::binary | std::ios::in);
     if (!in)
       throw Error("Cannot open MH1 archive: " + path);
     char magic[8]{};
