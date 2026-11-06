@@ -1,4 +1,0 @@
-BasedOnStyle: LLVM
-ColumnLimit: 100
-IndentWidth: 2
-AllowShortFunctionsOnASingleLine: Inline

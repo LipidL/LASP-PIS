@@ -9,5 +9,6 @@ description = "MACE MH1 inference using Lapis"
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.26", "ase>=3.23"]
 
-[tool.setuptools.packages.find]
-where = ["python"]
+[tool.setuptools]
+package-dir = {"" = "python"}
+py-modules = ["mace_inference", "mace_inference_ase", "structure_io"]
