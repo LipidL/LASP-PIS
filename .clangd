@@ -1,6 +1,9 @@
 CompileFlags:
   # CMake emits nvcc options that clangd's driver does not understand. Drop
   # them so the compile command can be replayed by clang.
+  # NOTE: --options-file is where CMake stores the CUDA include paths when it
+  # writes includes_CUDA.rsp. Removing it does not inline them, it silently
+  # drops every -I for .cu files. The build disables that response file.
   Remove:
     - -forward-unknown-to-host-compiler
     - --options-file
