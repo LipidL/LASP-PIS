@@ -15,3 +15,6 @@ build*/
 *.nsys-rep
 *.sqlite
 *.egg-info/
+
+# Model file
+model/
