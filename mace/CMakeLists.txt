@@ -77,28 +77,25 @@ set_target_properties(mace-main PROPERTIES
   INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
 install(TARGETS mace-main RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
 if(BUILD_TESTING)
-  add_executable(mace_weights_dump tests/weights.cpp src/weights.cpp)
-  target_include_directories(mace_weights_dump PRIVATE src)
-  target_link_libraries(mace_weights_dump PRIVATE checkpoint::checkpoint)
   set(MACE_TEST_CHECKPOINT "" CACHE FILEPATH
-    "Original MH1 checkpoint for native C ABI checks")
+    "Legacy checkpoint alias for MACE_TEST_MODEL")
+  set(MACE_TEST_ARCHIVE "" CACHE FILEPATH
+    "Legacy archive alias for MACE_TEST_MODEL")
+  set(DEFAULT_MODEL "${CMAKE_CURRENT_SOURCE_DIR}/model/mace-mh1.model")
   if(MACE_TEST_CHECKPOINT)
-    find_package(Python3 COMPONENTS Interpreter REQUIRED)
-    add_test(NAME mace.checkpoint_native COMMAND ${Python3_EXECUTABLE}
-      ${CMAKE_CURRENT_SOURCE_DIR}/tests/native.py --library $<TARGET_FILE:mace>
-      --archive ${MACE_TEST_CHECKPOINT})
+    set(DEFAULT_MODEL "${MACE_TEST_CHECKPOINT}")
+  elseif(MACE_TEST_ARCHIVE)
+    set(DEFAULT_MODEL "${MACE_TEST_ARCHIVE}")
   endif()
-endif()
-
-set(MACE_TEST_ARCHIVE "" CACHE FILEPATH "MH1 archive for native C ABI checks")
-if(BUILD_TESTING AND MACE_TEST_ARCHIVE)
-  find_package(Python3 COMPONENTS Interpreter REQUIRED)
-  add_test(NAME mace.native COMMAND ${Python3_EXECUTABLE}
-    ${CMAKE_CURRENT_SOURCE_DIR}/tests/native.py
-    --library $<TARGET_FILE:mace> --archive ${MACE_TEST_ARCHIVE})
+  set(MACE_TEST_MODEL "${DEFAULT_MODEL}" CACHE FILEPATH
+    "MH1 checkpoint/archive for GoogleTest")
+  include(../tests/native.cmake)
+  add_potential_tests(mace_tests MACE mace::mace "${MACE_TEST_MODEL}")
   if(TARGET mace_explicit)
-    add_test(NAME mace.explicit COMMAND ${Python3_EXECUTABLE}
-      ${CMAKE_CURRENT_SOURCE_DIR}/tests/native.py
-      --library $<TARGET_FILE:mace_explicit> --archive ${MACE_TEST_ARCHIVE})
+    add_potential_tests(mace_explicit_tests MACE mace_explicit
+      "${MACE_TEST_MODEL}")
+    target_include_directories(mace_explicit_tests PRIVATE
+      include "${CMAKE_CURRENT_BINARY_DIR}/include")
+    target_link_libraries(mace_explicit_tests PRIVATE lapis::explicit)
   endif()
 endif()

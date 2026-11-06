@@ -28,13 +28,20 @@ endif()
 if(LAPIS_BUILD_HPNN)
   add_subdirectory(hpnn)
 endif()
-if(BUILD_TESTING AND LAPIS_BUILD_MACE AND LAPIS_BUILD_HPNN
-   AND MACE_TEST_ARCHIVE)
-  find_package(Python3 COMPONENTS Interpreter REQUIRED)
-  foreach(first IN ITEMS mace hpnn)
-    add_test(NAME workspace.${first}_first COMMAND ${Python3_EXECUTABLE}
-      ${CMAKE_CURRENT_SOURCE_DIR}/tests/coexistence.py
-      --mace $<TARGET_FILE:mace> --hpnn $<TARGET_FILE:hpnn>
-      --archive ${MACE_TEST_ARCHIVE} --first ${first})
-  endforeach()
+if(BUILD_TESTING AND LAPIS_BUILD_MACE AND LAPIS_BUILD_HPNN AND UNIX)
+  add_executable(coexistence_tests tests/coexistence.cpp)
+  target_compile_features(coexistence_tests PRIVATE cxx_std_17)
+  target_link_libraries(coexistence_tests PRIVATE
+    GTest::gtest_main ${CMAKE_DL_LIBS})
+  target_compile_definitions(coexistence_tests PRIVATE
+    MACE_LIBRARY_PATH="$<TARGET_FILE:mace>"
+    HPNN_LIBRARY_PATH="$<TARGET_FILE:hpnn>"
+    MACE_MODEL_PATH="${MACE_TEST_MODEL}"
+    HPNN_MODEL_PATH="${HPNN_TEST_MODEL}")
+  add_dependencies(coexistence_tests mace hpnn)
+  include(GoogleTest)
+  gtest_discover_tests(coexistence_tests
+    TEST_PREFIX "workspace." DISCOVERY_MODE PRE_TEST
+    PROPERTIES
+      LABELS "native_coexistence" RESOURCE_LOCK lapis_gpu TIMEOUT 300)
 endif()

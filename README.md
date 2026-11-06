@@ -29,10 +29,11 @@ ctest --test-dir build --output-on-failure
 cmake --install build --prefix "$PWD/install"
 ```
 
-Tests require GPU access. HPNN validation additionally requires Python, NumPy and
-PyTorch. Use `-DBUILD_TESTING=OFF` for a library-only build. MACE's archive-dependent
-native checks are enabled by `-DMACE_TEST_ARCHIVE=/absolute/path/model.pwm`.
-Upstream MACE validation additionally requires its separate reference environment.
+HPNN and MACE use native GoogleTest suites and require GPU access, GoogleTest,
+and their model weights. Run them with `ctest --test-dir build -L native
+--output-on-failure`. See [native testing](tests/README.md) for model overrides,
+coverage, and adding structures. The checkpoint reader tests still use Python.
+Use `-DBUILD_TESTING=OFF` for a library-only build.
 
 Outputs are `build/lapis/liblapis.a`, `build/mace/libmace.so` and
 `build/hpnn/libhpnn.so`, plus `build/mace-main` and `build/hpnn-main`.

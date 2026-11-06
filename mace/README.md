@@ -115,6 +115,9 @@ The C API exports `mace_create_mh1`, `mace_calculate`, `mace_diagnostics`,
 `lapis-mace-inference` and imports as `mace_inference`, avoiding a collision with
 the upstream `mace` reference package.
 
-Set `MACE_TEST_ARCHIVE` at configure time to register native C API tests with CTest.
+With `BUILD_TESTING=ON` (the default), `mace_tests` runs the native GoogleTest
+physics suite using `model/mace-mh1.model`. Override weights with `MACE_TEST_MODEL`.
+Run `ctest --test-dir build -L MACE --output-on-failure`; see
+[native testing](../tests/README.md) for coverage and adding structures.
 For standalone explicit benchmarks, install Lapis with
 `LAPIS_BUILD_EXPLICIT_REFERENCE=ON` before configuring MACE.
