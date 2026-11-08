@@ -50,6 +50,20 @@ blocks per SM. Launch and asynchronous errors become exceptions at the blocking
 calculator boundary. L1-detected errors use `atomicCAS(geometry.status, 0, code)`;
 do not return a host CUDA error from a device callback.
 
+Use `execute(context, Traversal{cutoff}, operation)` for a per-execution radius.
+The radius must be finite, positive and no greater than `context.prepared_cutoff()`;
+invalid requests throw before planning, setup or launching the operation. The
+two-argument form uses the preparation radius. Prepare once at the largest radius,
+then execute successive operations at their own radii on the same stream and node
+ordering. The radius is inclusive and filters candidates before edge compaction,
+including in the optional explicit-connectivity runtime. It does not mutate the
+prepared geometry or rebuild its spatial index.
+
+Candidate enumeration, image bounds and backend selection still use the
+preparation radius. A smaller execution radius saves tile and operation work but
+does not reduce candidate search work. Different indices and stencils are future
+work. Geometry must be prepared again after changing coordinates or the cell.
+
 One CTA owns each receiver. Every CTA thread calls prepare, every consume and
 finalize in the same dynamic order. All threads must reach any block-wide barriers
 inside an operation. Threads may skip padded numerical work while other threads

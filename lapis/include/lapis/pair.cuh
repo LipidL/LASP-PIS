@@ -1,5 +1,6 @@
 #pragma once
 #include <climits>
+#include <cmath>
 #include <type_traits>
 
 #include "runtime.hpp"
@@ -79,32 +80,6 @@ __global__ void pair_kernel(DeviceGeometry g, Op op) {
     typename Op::State state;
     op.prepare(i, state, scratch);
     __syncthreads();
-#ifdef LAPIS_EXPLICIT_REFERENCE
-    if (g.explicit_offsets) {
-        int begin = g.explicit_offsets[i], end = g.explicit_offsets[i + 1];
-        for (int base = begin; base < end; base += TE) {
-            int count = min(TE, end - base);
-            for (int e = t; e < count; e += B) {
-                int4   edge     = g.explicit_edges[base + e];
-                int    j        = edge.x;
-                float3 d        = displacement(g, i, j, edge.y, edge.z, edge.w);
-                queue.sender[e] = j;
-                queue.sx[e]     = edge.y + g.winding[3 * i] - g.winding[3 * j];
-                queue.sy[e]     = edge.z + g.winding[3 * i + 1] - g.winding[3 * j + 1];
-                queue.sz[e]     = edge.w + g.winding[3 * i + 2] - g.winding[3 * j + 2];
-                queue.dx[e]     = d.x;
-                queue.dy[e]     = d.y;
-                queue.dz[e]     = d.z;
-                queue.r2[e]     = d.x * d.x + d.y * d.y + d.z * d.z;
-            }
-            __syncthreads();
-            op.consume(i, TileView<Q>{&queue, 0, count}, state, scratch);
-            __syncthreads();
-        }
-        op.finalize(i, state, scratch);
-        return;
-    }
-#endif
     int bx = 0, by = 0, bz = 0;
     if (g.backend == NeighborBackend::CellList) {
         int b = g.bins[i];
@@ -116,6 +91,10 @@ __global__ void pair_kernel(DeviceGeometry g, Op op) {
     int nx = g.backend == NeighborBackend::CellList ? 1 : g.images[0];
     int ny = g.backend == NeighborBackend::CellList ? 1 : g.images[1];
     int nz = g.backend == NeighborBackend::CellList ? 1 : g.images[2];
+#ifdef LAPIS_EXPLICIT_REFERENCE
+    if (g.explicit_offsets)
+        nx = ny = nz = 0;
+#endif
     for (int x = -nx; x <= nx; ++x)
         for (int y = -ny; y <= ny; ++y)
             for (int z = -nz; z <= nz; ++z) {
@@ -130,15 +109,31 @@ __global__ void pair_kernel(DeviceGeometry g, Op op) {
                     begin   = g.offsets[bin];
                     end     = g.offsets[bin + 1];
                 }
+#ifdef LAPIS_EXPLICIT_REFERENCE
+                if (g.explicit_offsets) {
+                    begin = g.explicit_offsets[i];
+                    end   = g.explicit_offsets[i + 1];
+                }
+#endif
                 for (int64_t base = begin; base < end; base += B) {
-                    int    j     = int(base + t);
+                    int    j  = int(base + t);
+                    int    ix = sx, iy = sy, iz = sz;
                     float3 d     = make_float3(0, 0, 0);
                     float  r2    = 0;
                     bool   valid = j < end;
                     if (valid) {
-                        d     = displacement(g, i, j, sx, sy, sz);
+#ifdef LAPIS_EXPLICIT_REFERENCE
+                        if (g.explicit_offsets) {
+                            int4 edge = g.explicit_edges[j];
+                            j         = edge.x;
+                            ix        = edge.y;
+                            iy        = edge.z;
+                            iz        = edge.w;
+                        }
+#endif
+                        d     = displacement(g, i, j, ix, iy, iz);
                         r2    = d.x * d.x + d.y * d.y + d.z * d.z;
-                        valid = r2 <= g.cutoff2 && !(i == j && sx == 0 && sy == 0 && sz == 0);
+                        valid = r2 <= g.cutoff2 && !(i == j && ix == 0 && iy == 0 && iz == 0);
                     }
                     unsigned mask = __ballot_sync(0xffffffff, valid);
                     int      lane = t % 32, warp = t / 32;
@@ -157,9 +152,9 @@ __global__ void pair_kernel(DeviceGeometry g, Op op) {
                     if (valid) {
                         int e           = carry + prefix[warp] + __popc(mask & ((1u << lane) - 1));
                         queue.sender[e] = j;
-                        queue.sx[e]     = sx + g.winding[3 * i] - g.winding[3 * j];
-                        queue.sy[e]     = sy + g.winding[3 * i + 1] - g.winding[3 * j + 1];
-                        queue.sz[e]     = sz + g.winding[3 * i + 2] - g.winding[3 * j + 2];
+                        queue.sx[e]     = ix + g.winding[3 * i] - g.winding[3 * j];
+                        queue.sy[e]     = iy + g.winding[3 * i + 1] - g.winding[3 * j + 1];
+                        queue.sz[e]     = iz + g.winding[3 * i + 2] - g.winding[3 * j + 2];
                         queue.dx[e]     = d.x;
                         queue.dy[e]     = d.y;
                         queue.dz[e]     = d.z;
@@ -187,7 +182,12 @@ __global__ void pair_kernel(DeviceGeometry g, Op op) {
 }
 // Op supplies plan/setup/postprocess even when a phase is empty. No virtual dispatch.
 template<class Op>
-void execute(Context& ctx, Op op) {
+void execute(Context& ctx, Traversal traversal, Op op) {
+    if (!std::isfinite(traversal.cutoff) || traversal.cutoff <= 0
+        || traversal.cutoff > ctx.prepared_cutoff() || ctx.prepared_cutoff() <= 0)
+        throw Error("Traversal cutoff must be finite, positive and <= prepared cutoff");
+    auto geometry    = ctx.geometry;
+    geometry.cutoff2 = traversal.cutoff * traversal.cutoff;
     static_assert(Op::threads > 0 && Op::threads % 32 == 0 && Op::threads <= 1024);
     static_assert(Op::tile_edges > 0);
     static_assert(Op::scratch_alignment >= 16 && Op::scratch_alignment <= 256
@@ -211,8 +211,12 @@ void execute(Context& ctx, Op op) {
     void* workspace = ctx.reserve(std::string("op.") + Op::name(), plan.global_bytes);
     op.setup(ctx, workspace);
     if (ctx.geometry.n)
-        pair_kernel<Op><<<ctx.geometry.n, block, shared, ctx.stream>>>(ctx.geometry, op);
+        pair_kernel<Op><<<ctx.geometry.n, block, shared, ctx.stream>>>(geometry, op);
     check(cudaGetLastError());
     op.postprocess(ctx, workspace);
+}
+template<class Op>
+void execute(Context& ctx, Op op) {
+    execute(ctx, Traversal{ctx.prepared_cutoff()}, op);
 }
 } // namespace lapis

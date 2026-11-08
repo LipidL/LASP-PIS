@@ -79,7 +79,12 @@ struct DeviceGeometry {
 struct WorkspaceSpec {
     size_t global_bytes = 0, scratch_bytes = 0, scratch_alignment = 16;
 };
+// A traversal may filter the prepared neighborhood but cannot enlarge it.
+struct Traversal {
+    float cutoff; // Angstrom, finite and positive, <= Context::prepared_cutoff()
+};
 class Context {
+    float                         prepared_cutoff_ = 0;
     std::map<std::string, Buffer> buffers_;
     using KernelKey = std::tuple<int, const void*, size_t, unsigned, unsigned, unsigned>;
     std::map<KernelKey, KernelResources> kernel_resources_;
@@ -110,6 +115,7 @@ class Context {
             check(cudaMemsetAsync(p, 0, bytes, stream));
     }
     void            prepare(const Structure&, float, const Options&);
+    float           prepared_cutoff() const { return prepared_cutoff_; }
     Result          finish(float* energies, float* forces, float* node_virials);
     void            synchronize();
     KernelResources kernel_resources(const void* kernel, dim3 block, size_t shared);

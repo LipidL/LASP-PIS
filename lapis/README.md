@@ -32,6 +32,12 @@ CUDA templates compile inside consumers. Public CUDA compilation requirements an
 CUDA runtime linkage propagate through the CMake target. Rebuild consumers when
 changing Lapis; binary compatibility is not promised.
 
+Operations can use `execute(context, Traversal{radius}, op)` to filter a geometry
+prepared at a larger cutoff. Existing `execute(context, op)` calls retain the full
+prepared radius. See the [PairOp contract](docs/PAIR_OP.md) for cutoff semantics
+and the remaining candidate-enumeration cost. The separate [D3 consumer](../d3/README.md)
+uses coordination, dispersion and coordination-backward passes at two radii.
+
 `LAPIS_BUILD_EXAMPLES` builds the small Lennard-Jones example in `examples/lj`.
 Framework tests use it to check forces and virial alongside traversal invariants.
 It is not part of the installed runtime API. `LAPIS_BUILD_EXPLICIT_REFERENCE=ON`

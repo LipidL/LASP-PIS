@@ -3,6 +3,7 @@
 #include <cmath>
 #include <future>
 #include <iostream>
+#include <limits>
 #include <random>
 #include <set>
 #include <thread>
@@ -54,13 +55,15 @@ struct Collect {
     }
     __device__ void finalize(int, State&, void*) {}
 };
-std::vector<Edge> collect(const Structure& s, float rc, Options o) {
-    Context c;
-    c.prepare(s, rc, o);
-    int  cap   = 2000000;
-    int* edges = c.array<int>("test.edges", size_t(cap) * 5);
-    int* count = c.array<int>("test.count", 1);
-    execute(c, Collect{edges, count, cap, c.internal_to_original});
+std::vector<Edge> collect(Context& c, float rc = 0) {
+    int     cap   = 2000000;
+    int*    edges = c.array<int>("test.edges", size_t(cap) * 5);
+    int*    count = c.array<int>("test.count", 1);
+    Collect op{edges, count, cap, c.internal_to_original};
+    if (rc == 0)
+        execute(c, op);
+    else
+        execute(c, Traversal{rc}, op);
     c.synchronize();
     int n = 0;
     check(cudaMemcpy(&n, count, 4, cudaMemcpyDeviceToHost));
@@ -70,6 +73,11 @@ std::vector<Edge> collect(const Structure& s, float rc, Options o) {
         check(cudaMemcpy(out.data(), edges, size_t(n) * sizeof(Edge), cudaMemcpyDeviceToHost));
     std::sort(out.begin(), out.end());
     return out;
+}
+std::vector<Edge> collect(const Structure& s, float rc, Options o) {
+    Context c;
+    c.prepare(s, rc, o);
+    return collect(c);
 }
 std::vector<Edge> reference(const Structure& s, float rc, int bound = 5) {
     std::vector<Edge> out;
@@ -157,6 +165,24 @@ int main() {
                 grid.backend = NeighborBackend::CellList;
                 require(collect(s, 2.5, grid) == ref, "grid edge multiset mismatch");
             }
+            for (auto backend :
+                 {NeighborBackend::BruteForce, NeighborBackend::Auto, NeighborBackend::CellList}) {
+                if (backend == NeighborBackend::CellList && h < 4.7f)
+                    continue;
+                Options opts = automatic;
+                opts.backend = backend;
+                Context shared;
+                shared.prepare(s, 4.7f, opts);
+                auto original_geometry = shared.geometry;
+                for (float radius : {2.5f, 4.7f, .7f, 2.5f})
+                    require(collect(shared, radius) == reference(s, radius),
+                            "per-execution cutoff edge multiset mismatch");
+                require(collect(shared) == reference(s, 4.7f), "default cutoff changed");
+                require(shared.geometry.cutoff2 == original_geometry.cutoff2
+                            && shared.geometry.xyz == original_geometry.xyz
+                            && shared.geometry.elements == original_geometry.elements,
+                        "execution modified prepared geometry");
+            }
             std::cout << "neighbor scenario " << scenario << " passed (" << got.size()
                       << " edges)\n";
         }
@@ -210,7 +236,27 @@ int main() {
         }
         {
             Context c;
+            for (float rc : {0.f, -1.f, std::numeric_limits<float>::quiet_NaN(),
+                             std::numeric_limits<float>::infinity(), 2.5f}) {
+                bool rejected = false;
+                try {
+                    execute(c, Traversal{rc}, Collect{});
+                } catch (const Error&) {
+                    rejected = true;
+                }
+                require(rejected, "unprepared context accepted");
+            }
             c.prepare(s, 2.5, {});
+            for (float rc : {0.f, -1.f, std::numeric_limits<float>::quiet_NaN(),
+                             std::numeric_limits<float>::infinity(), std::nextafter(2.5f, 3.f)}) {
+                bool rejected = false;
+                try {
+                    execute(c, Traversal{rc}, Collect{});
+                } catch (const Error&) {
+                    rejected = true;
+                }
+                require(rejected, "invalid traversal cutoff accepted");
+            }
             bool rejected = false;
             try {
                 execute(c, Excessive{});
@@ -266,10 +312,17 @@ int main() {
             Structure q    = s;
             q.positions    = x;
             require(collect(q, 2.5, {}).size() == 2, "inclusive cutoff rejected");
+            Context wide;
+            wide.prepare(q, 3.f, {});
+            require(collect(wide, 2.5f).size() == 2, "filtered inclusive cutoff rejected");
             x[3] = std::nextafter(2.5f, 3.f);
             require(collect(q, 2.5, {}).empty(), "above cutoff accepted");
+            wide.prepare(q, 3.f, {});
+            require(collect(wide, 2.5f).empty(), "filtered above cutoff accepted");
             x[3] = std::nextafter(2.5f, 2.f);
             require(collect(q, 2.5, {}).size() == 2, "below cutoff rejected");
+            wide.prepare(q, 3.f, {});
+            require(collect(wide, 2.5f).size() == 2, "filtered below cutoff rejected");
             Options grid;
             grid.backend  = NeighborBackend::CellList;
             q.cell        = {1, 0, 0, 0, 1, 0, 0, 0, 1};

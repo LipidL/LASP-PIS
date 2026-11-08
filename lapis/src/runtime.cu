@@ -109,6 +109,7 @@ __global__ void restore(const float* e, const float* f, const float* v, const in
         out[4 * n + 9 * j + k] = v[9 * i + k];
 }
 void Context::prepare(const Structure& s, float cutoff, const Options& opts) {
+    prepared_cutoff_ = 0;
     resources.clear();
     if (s.size < 0 || s.size > INT_MAX / 16 || !std::isfinite(cutoff) || cutoff <= 0
         || !std::isfinite(cutoff * cutoff))
@@ -285,6 +286,7 @@ void Context::prepare(const Structure& s, float cutoff, const Options& opts) {
     std::copy(images, images + 3, geometry.images);
     // Pageable temporary inputs must remain alive until their stream copies complete.
     check(cudaStreamSynchronize(stream));
+    prepared_cutoff_ = cutoff;
 #ifdef LAPIS_EXPLICIT_REFERENCE
     build_explicit_reference(*this);
     diagnostics.reason += "; benchmark explicit connectivity";

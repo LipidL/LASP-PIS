@@ -1,12 +1,13 @@
 # Lapis workspace
 
-Five independently buildable projects share this repository:
+Six independently buildable projects share this repository:
 
 - [Lapis](lapis/README.md): periodic geometry, neighbor traversal, PairOp execution and reusable device workspaces.
 - [Chemio](chemio/README.md): C++17 ARC structure parsing, with no model or CUDA dependencies.
 - [checkpoint](checkpoint/README.md): C++17 data-only PyTorch ZIP64/pickle reading, depending only on zlib.
 - [MACE](mace/README.md): MACE MH1 inference, native checkpoint loading, executable, C API and ASE frontend.
 - [HPNN](hpnn/README.md): simplified HPNN inference, native checkpoint loading, executable, C API and NumPy/ASE frontends.
+- [D3](d3/README.md): two-body DFT-D3(BJ) dispersion with coordination-dependent forces and virial.
 
 MACE and HPNN consume the public Lapis, Chemio, and checkpoint CMake targets.
 Lapis and Chemio remain independent of each other and of both models. Each model
@@ -42,7 +43,8 @@ The independent CPU archives are `build/chemio/libchemio.a` and
 frontends, or use their `library=` argument. The frontend also searches these
 workspace build locations and each project's own `build/` directory.
 
-`LAPIS_BUILD_MACE` and `LAPIS_BUILD_HPNN` select consumers. Set
+`LAPIS_BUILD_MACE`, `LAPIS_BUILD_HPNN` and `LAPIS_BUILD_D3` select consumers. D3
+builds `build/d3/libd3.a` and needs only Lapis. Set
 `MACE_BUILD_EXPLICIT_REFERENCE=ON` to build the optional MACE benchmark library and
 its separate Lapis runtime. Production inference uses implicit connectivity.
 
