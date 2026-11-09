@@ -180,11 +180,65 @@ int main() {
                 require(collect(shared) == reference(s, 4.7f), "default cutoff changed");
                 require(shared.geometry.cutoff2 == original_geometry.cutoff2
                             && shared.geometry.xyz == original_geometry.xyz
-                            && shared.geometry.elements == original_geometry.elements,
+                            && shared.geometry.elements == original_geometry.elements
+                            && std::equal(shared.geometry.images, shared.geometry.images + 3,
+                                          original_geometry.images),
                         "execution modified prepared geometry");
             }
             std::cout << "neighbor scenario " << scenario << " passed (" << got.size()
                       << " edges)\n";
+        }
+        // Image-bound transitions, wrapped atoms, self images, and cached heights
+        // after cell changes. Verify full edge multisets, not only edge counts.
+        {
+            float x[] = {-.25f, .5f, .75f, 4.25f, 6.5f, -7.25f};
+            int z[] = {18, 18};
+            Structure q{2, x, z, {4, 0, 0, 0, 6, 0, 0, 0, 8}};
+            Context c;
+            for (auto backend : {NeighborBackend::BruteForce, NeighborBackend::Auto}) {
+                c.prepare(q, 13.f, {backend});
+                auto original = c.geometry;
+                size_t bytes = c.diagnostics.allocated_bytes;
+                struct Probe { float r; std::array<int, 3> images; };
+                for (auto probe : {Probe{2.f, {1, 1, 1}}, Probe{6.f, {2, 1, 1}},
+                                   Probe{std::nextafter(6.f, 7.f), {2, 2, 1}},
+                                   Probe{8.f, {2, 2, 1}},
+                                   Probe{std::nextafter(8.f, 9.f), {3, 2, 2}}}) {
+                    auto view = c.traversal_geometry({probe.r});
+                    require(std::equal(view.images, view.images + 3, probe.images.begin()),
+                            "traversal image-bound transition mismatch");
+                    require(view.backend == NeighborBackend::BruteForce
+                                && view.xyz == original.xyz && view.offsets == original.offsets
+                                && view.bins == original.bins
+                                && c.diagnostics.allocated_bytes == bytes,
+                            "traversal view changed backend, index, or allocations");
+                }
+                for (float r : {2.f, 6.f, std::nextafter(6.f, 7.f), 8.f,
+                                std::nextafter(8.f, 9.f), 13.f, 2.f})
+                    require(collect(c, r) == reference(q, r, 8),
+                            "tight image bounds lost periodic edges");
+                require(std::equal(c.geometry.images, c.geometry.images + 3, original.images),
+                        "traversal changed prepared image bounds");
+            }
+            q.cell = {8, 0, 0, 0, 12, 0, 0, 0, 16};
+            c.prepare(q, 20.f, {NeighborBackend::BruteForce});
+            auto view = c.traversal_geometry({6.f});
+            require(view.images[0] == 1 && view.images[1] == 1 && view.images[2] == 1,
+                    "reprepare used stale cell heights");
+            require(collect(c, 6.f) == reference(q, 6.f, 8), "reprepared image edges mismatch");
+            q.cell = {4, 0, 0, 3, 6, 0, 2, 1, 8};
+            c.prepare(q, 13.f, {NeighborBackend::BruteForce});
+            for (float r : {.5f, 3.5f, 6.f, 9.f, 13.f})
+                require(collect(c, r) == reference(q, r, 8), "skew tight-image edges mismatch");
+            q.cell = {32, 0, 0, 0, 32, 0, 0, 0, 32};
+            c.prepare(q, 10.f, {NeighborBackend::CellList});
+            view = c.traversal_geometry({2.f});
+            require(view.backend == NeighborBackend::CellList
+                        && std::equal(view.grid, view.grid + 3, c.geometry.grid)
+                        && view.offsets == c.geometry.offsets && view.xyz == c.geometry.xyz,
+                    "cell-list traversal changed its prepared index");
+            require(collect(c, 2.f) == reference(q, 2.f), "cell-list edges changed");
+            std::cout << "traversal image bounds and geometry reuse passed\n";
         }
         float     xyz[6] = {.2f, .3f, .4f, 1.4f, .3f, .4f};
         int       zs[2]  = {18, 18};

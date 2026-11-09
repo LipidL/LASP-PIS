@@ -59,10 +59,18 @@ ordering. The radius is inclusive and filters candidates before edge compaction,
 including in the optional explicit-connectivity runtime. It does not mutate the
 prepared geometry or rebuild its spatial index.
 
-Candidate enumeration, image bounds and backend selection still use the
-preparation radius. A smaller execution radius saves tile and operation work but
-does not reduce candidate search work. Different indices and stencils are future
-work. Geometry must be prepared again after changing coordinates or the cell.
+Brute-force periodic-image bounds use the execution radius and the perpendicular
+cell heights cached during preparation. A smaller radius can therefore skip
+entire image cells before candidate enumeration. Cell-list bins, its 27-bin
+stencil, atom ordering, and backend selection still use the preparation radius;
+a smaller cell-list execution radius saves tile and operation work but does not
+reduce candidate enumeration. `Context::traversal_geometry(Traversal)` returns
+the validated launch view used by `execute()` without allocation or mutation of
+prepared state. The optional explicit-connectivity runtime still filters the
+materialized prepared edges. Different indices and stencils are future work.
+Geometry must be prepared again after changing coordinates or the cell.
+Candidate-count diagnostics describe the prepared neighborhood; inspect the
+launch view's image bounds when estimating a shorter brute-force traversal.
 
 One CTA owns each receiver. Every CTA thread calls prepare, every consume and
 finalize in the same dynamic order. All threads must reach any block-wide barriers

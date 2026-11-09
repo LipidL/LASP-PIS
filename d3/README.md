@@ -48,7 +48,9 @@ No persistent edge arrays or edge features are used by this consumer.
 Both cutoffs are independent, positive, inclusive hard cutoffs, with no smoothing
 or energy shifting. Energy and derivatives can jump at a cutoff; finite differences
 must avoid crossing those boundaries. The shorter traversal filters before tile
-compaction but still enumerates candidates from the largest prepared radius.
+compaction. Brute-force traversal tightens periodic-image bounds to its own
+radius; cell-list traversal still enumerates candidates from the grid prepared
+at the largest radius. Backend selection remains tied to that preparation.
 
 `d3.physics` compares energies, forces and all virial entries against frozen
 simple-dftd3 1.2.1 results with `s9=0`. Fixtures cover molecules, mixed elements,

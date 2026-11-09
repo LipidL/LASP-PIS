@@ -37,6 +37,11 @@ prepared at a larger cutoff. Existing `execute(context, op)` calls retain the fu
 prepared radius. See the [PairOp contract](docs/PAIR_OP.md) for cutoff semantics
 and the remaining candidate-enumeration cost. The separate [D3 consumer](../d3/README.md)
 uses coordination, dispersion and coordination-backward passes at two radii.
+The [multi-cutoff performance study](../docs/performance/multi-cutoff/README.md)
+measures neighbor search across 1–100 Å and all three backend options. The
+[image-bound follow-up](../docs/performance/traversal-images/README.md) implements
+per-traversal brute-force bounds and measures the remaining penalties. The
+[benchmark instructions](benchmarks/README.md) describe how to reproduce it.
 
 `LAPIS_BUILD_EXAMPLES` builds the small Lennard-Jones example in `examples/lj`.
 Framework tests use it to check forces and virial alongside traversal invariants.

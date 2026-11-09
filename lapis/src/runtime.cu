@@ -139,10 +139,12 @@ void Context::prepare(const Structure& s, float cutoff, const Options& opts) {
                      (h[3] * h[7] - h[4] * h[6]) / det, (h[1] * h[6] - h[0] * h[7]) / det,
                      (h[0] * h[4] - h[1] * h[3]) / det};
     int    dims[3], images[3];
+    std::array<double, 3> heights;
     bool   grid_ok = true;
     for (int k = 0; k < 3; ++k) {
         double height =
             1 / std::sqrt(inv[k] * inv[k] + inv[3 + k] * inv[3 + k] + inv[6 + k] * inv[6 + k]);
+        heights[k] = height;
         double ratio = height / cutoff;
         grid_ok &= ratio >= 1;
         dims[k]   = int(std::max(1.0, std::min(double(INT_MAX / 4), std::floor(ratio))));
@@ -286,11 +288,25 @@ void Context::prepare(const Structure& s, float cutoff, const Options& opts) {
     std::copy(images, images + 3, geometry.images);
     // Pageable temporary inputs must remain alive until their stream copies complete.
     check(cudaStreamSynchronize(stream));
+    plane_heights_   = heights;
     prepared_cutoff_ = cutoff;
 #ifdef LAPIS_EXPLICIT_REFERENCE
     build_explicit_reference(*this);
     diagnostics.reason += "; benchmark explicit connectivity";
 #endif
+}
+DeviceGeometry Context::traversal_geometry(Traversal traversal) const {
+    if (!std::isfinite(traversal.cutoff) || traversal.cutoff <= 0
+        || traversal.cutoff > prepared_cutoff_ || prepared_cutoff_ <= 0)
+        throw Error("Traversal cutoff must be finite, positive and <= prepared cutoff");
+    auto view    = geometry;
+    view.cutoff2 = traversal.cutoff * traversal.cutoff;
+    if (view.backend == NeighborBackend::BruteForce)
+        for (int k = 0; k < 3; ++k)
+            // Use the same double-precision heights and formula as prepare().
+            // r <= R guarantees that these bounds fit the prepared limits.
+            view.images[k] = std::max(1, int(std::ceil(traversal.cutoff / plane_heights_[k])));
+    return view;
 }
 void Context::synchronize() {
     check(cudaGetLastError());

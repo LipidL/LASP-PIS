@@ -85,6 +85,7 @@ struct Traversal {
 };
 class Context {
     float                         prepared_cutoff_ = 0;
+    std::array<double, 3>          plane_heights_{};
     std::map<std::string, Buffer> buffers_;
     using KernelKey = std::tuple<int, const void*, size_t, unsigned, unsigned, unsigned>;
     std::map<KernelKey, KernelResources> kernel_resources_;
@@ -116,6 +117,8 @@ class Context {
     }
     void            prepare(const Structure&, float, const Options&);
     float           prepared_cutoff() const { return prepared_cutoff_; }
+    // Validated launch view; preserves the prepared index and atom ordering.
+    DeviceGeometry  traversal_geometry(Traversal) const;
     Result          finish(float* energies, float* forces, float* node_virials);
     void            synchronize();
     KernelResources kernel_resources(const void* kernel, dim3 block, size_t shared);

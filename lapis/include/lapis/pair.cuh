@@ -183,11 +183,7 @@ __global__ void pair_kernel(DeviceGeometry g, Op op) {
 // Op supplies plan/setup/postprocess even when a phase is empty. No virtual dispatch.
 template<class Op>
 void execute(Context& ctx, Traversal traversal, Op op) {
-    if (!std::isfinite(traversal.cutoff) || traversal.cutoff <= 0
-        || traversal.cutoff > ctx.prepared_cutoff() || ctx.prepared_cutoff() <= 0)
-        throw Error("Traversal cutoff must be finite, positive and <= prepared cutoff");
-    auto geometry    = ctx.geometry;
-    geometry.cutoff2 = traversal.cutoff * traversal.cutoff;
+    auto geometry = ctx.traversal_geometry(traversal);
     static_assert(Op::threads > 0 && Op::threads % 32 == 0 && Op::threads <= 1024);
     static_assert(Op::tile_edges > 0);
     static_assert(Op::scratch_alignment >= 16 && Op::scratch_alignment <= 256
