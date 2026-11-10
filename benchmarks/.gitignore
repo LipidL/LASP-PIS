@@ -1,0 +1,3 @@
+# Raw run records and materialized fixture binaries are reproducible artifacts.
+.cache/
+results/

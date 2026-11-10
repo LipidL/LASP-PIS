@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "id": "mace/mh1/512",
+  "tier": "smoke",
+  "engine": "mace",
+  "model": "mace/mh1",
+  "fixture": "grid-8",
+  "backend": "auto",
+  "warmup": 3,
+  "samples": 10,
+  "tolerances": {
+    "energy_abs": 1e-4,
+    "virial_abs": 1e-3,
+    "force_max_abs": 1e-3,
+    "force_l2_rel": 1e-3,
+    "force_sum_abs": 1e-3,
+    "energies_sum_abs": 1e-4
+  }
+}

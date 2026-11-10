@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "fixtures": {
+    "grid-2": {
+      "recipe": {
+        "kind": "grid",
+        "repeat": [
+          2,
+          2,
+          2
+        ],
+        "spacing": 2.7,
+        "jitter": 0.04,
+        "element": 14,
+        "seed": 32189
+      },
+      "sha256": "4216d12fb87cb0bd0f1a69ad40f970f0d304c75ef68b41827d4a5ef46c461858",
+      "atoms": 8
+    },
+    "grid-4": {
+      "recipe": {
+        "kind": "grid",
+        "repeat": [
+          4,
+          4,
+          4
+        ],
+        "spacing": 2.7,
+        "jitter": 0.04,
+        "element": 14,
+        "seed": 32189
+      },
+      "sha256": "7ea0a449b983af09cdf88a4e955238d0e31dd814fb350523ff9f46f17ce1e74a",
+      "atoms": 64
+    },
+    "grid-8": {
+      "recipe": {
+        "kind": "grid",
+        "repeat": [
+          8,
+          8,
+          8
+        ],
+        "spacing": 2.7,
+        "jitter": 0.04,
+        "element": 14,
+        "seed": 32189
+      },
+      "sha256": "b3b24a87aaab590a86db7ec38205dee452cafd17f19d285a823533b97213e7c1",
+      "atoms": 512
+    },
+    "grid-16": {
+      "recipe": {
+        "kind": "grid",
+        "repeat": [
+          16,
+          16,
+          16
+        ],
+        "spacing": 2.7,
+        "jitter": 0.04,
+        "element": 14,
+        "seed": 32189
+      },
+      "sha256": "88d46a30391cbfebb8bebbb96dd48e5e82d4394721c84811b8a58475121e94fa",
+      "atoms": 4096
+    },
+    "nacl": {
+      "path": "fixtures/nacl.structure.json",
+      "sha256": "c16f07c47cc8417bc5e1e9cbe08b7fb4cd6c93da2687c70a2a81bb9c51c615c0",
+      "atoms": 8
+    }
+  }
+}

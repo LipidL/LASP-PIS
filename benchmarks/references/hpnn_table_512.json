@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "case_id": "hpnn/table/512",
+  "fixture_sha256": "b3b24a87aaab590a86db7ec38205dee452cafd17f19d285a823533b97213e7c1",
+  "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
+  "tolerances": {
+    "energy_abs": 0.0001,
+    "virial_abs": 0.001,
+    "force_max_abs": 0.001,
+    "force_l2_rel": 0.001,
+    "force_sum_abs": 0.001,
+    "energies_sum_abs": 0.0001
+  },
+  "output": {
+    "energy": -2512.7802567481995,
+    "energies_sum": -2512.7802567481995,
+    "virial": [
+      -685.1282958984375,
+      0.014450209215283394,
+      0.07658696919679642,
+      0.014449951238930225,
+      -684.7022705078125,
+      0.020910145714879036,
+      0.07658684253692627,
+      0.02091003768146038,
+      -685.1105346679688
+    ],
+    "force_max_abs": 0.07510222494602203,
+    "force_l2": 0.8707625335838578,
+    "force_sum": [
+      -7.462222129106522e-07,
+      4.44706529378891e-08,
+      -1.7369166016578674e-07
+    ]
+  },
+  "generated_utc": "2026-11-10T07:47:35Z",
+  "note": "Compact golden summary, not a full force/virial array."
+}

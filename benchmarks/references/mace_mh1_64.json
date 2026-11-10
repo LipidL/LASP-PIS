@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "case_id": "mace/mh1/64",
+  "fixture_sha256": "7ea0a449b983af09cdf88a4e955238d0e31dd814fb350523ff9f46f17ce1e74a",
+  "model_sha256": "ec00a2705854622fbbd898ccfb7701072fcd674709102d009fb919c1b8cc5dde",
+  "tolerances": {
+    "energy_abs": 0.0001,
+    "virial_abs": 0.001,
+    "force_max_abs": 0.001,
+    "force_l2_rel": 0.001,
+    "force_sum_abs": 0.001,
+    "energies_sum_abs": 0.0001
+  },
+  "output": {
+    "energy": -519.3088729381561,
+    "energies_sum": -519.3088722229004,
+    "virial": [
+      -113.84933471679688,
+      -0.0024284417741000652,
+      0.00683134188875556,
+      -0.0024287686683237553,
+      -113.81926727294922,
+      0.023054683580994606,
+      0.006831335369497538,
+      0.02305470034480095,
+      -113.90531921386719
+    ],
+    "force_max_abs": 0.09808044135570526,
+    "force_l2": 0.44851647602791744,
+    "force_sum": [
+      -2.307351678609848e-07,
+      -1.5308614820241928e-08,
+      -1.1641532182693481e-08
+    ]
+  },
+  "generated_utc": "2026-11-10T07:47:37Z",
+  "note": "Compact golden summary, not a full force/virial array."
+}

@@ -6,7 +6,6 @@ include(CMakePackageConfigHelpers)
 include(CTest)
 find_package(CUDAToolkit REQUIRED)
 option(LAPIS_BUILD_EXAMPLES "Build Lennard-Jones example" ${BUILD_TESTING})
-option(LAPIS_BUILD_BENCHMARKS "Build standalone neighbor-search benchmarks" OFF)
 option(LAPIS_BUILD_EXPLICIT_REFERENCE
   "Build optional materialized-connectivity benchmark runtime" OFF)
 
@@ -27,10 +26,6 @@ function(lapis_runtime target)
 endfunction()
 lapis_runtime(lapis src/runtime.cu)
 add_library(lapis::lapis ALIAS lapis)
-if(LAPIS_BUILD_BENCHMARKS)
-  add_executable(lapis_cutoff_bench benchmarks/cutoff.cu)
-  target_link_libraries(lapis_cutoff_bench PRIVATE lapis::lapis)
-endif()
 install(TARGETS lapis EXPORT lapisTargets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 if(LAPIS_BUILD_EXPLICIT_REFERENCE)

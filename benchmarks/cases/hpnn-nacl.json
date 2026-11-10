@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "id": "hpnn/direct/nacl",
+  "tier": "smoke",
+  "engine": "hpnn",
+  "model": "hpnn/ggnn",
+  "fixture": "nacl",
+  "backend": "auto",
+  "intervals": 0,
+  "warmup": 5,
+  "samples": 20,
+  "tolerances": {
+    "energy_abs": 1e-4,
+    "virial_abs": 1e-3,
+    "force_max_abs": 1e-3,
+    "force_l2_rel": 1e-3,
+    "force_sum_abs": 1e-3,
+    "energies_sum_abs": 1e-4
+  }
+}
