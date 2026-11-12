@@ -140,11 +140,11 @@ void Context::prepare(const Structure& s, float cutoff, const Options& opts) {
                      (h[0] * h[4] - h[1] * h[3]) / det};
     int    dims[3], images[3];
     std::array<double, 3> heights;
-    bool   grid_ok = true;
+    bool                  grid_ok = true;
     for (int k = 0; k < 3; ++k) {
         double height =
             1 / std::sqrt(inv[k] * inv[k] + inv[3 + k] * inv[3 + k] + inv[6 + k] * inv[6 + k]);
-        heights[k] = height;
+        heights[k]   = height;
         double ratio = height / cutoff;
         grid_ok &= ratio >= 1;
         dims[k]   = int(std::max(1.0, std::min(double(INT_MAX / 4), std::floor(ratio))));

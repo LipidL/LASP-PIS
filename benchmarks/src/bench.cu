@@ -30,10 +30,8 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
-#include <limits>
 #include <memory>
 #include <numeric>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -46,10 +44,10 @@ struct Args {
 };
 
 struct Input {
-    uint64_t            n = 0;
+    uint64_t              n = 0;
     std::array<double, 9> cell{};
-    std::vector<int>    elements;
-    std::vector<float>  positions;
+    std::vector<int>      elements;
+    std::vector<float>    positions;
 };
 
 void usage(std::ostream& out) {
@@ -120,7 +118,7 @@ Input read_input(const std::string& path) {
         throw std::runtime_error("cannot open input: " + path);
     char     magic[8];
     uint32_t version = 0, reserved = 0;
-    uint64_t n       = 0;
+    uint64_t n = 0;
     read_exact(in, magic, sizeof(magic), "magic");
     read_exact(in, &version, sizeof(version), "version");
     read_exact(in, &reserved, sizeof(reserved), "reserved");
@@ -139,11 +137,9 @@ Input read_input(const std::string& path) {
     input.n = n;
     read_exact(in, input.cell.data(), input.cell.size() * sizeof(double), "cell");
     input.elements.resize(size_t(n));
-    read_exact(in, input.elements.data(), input.elements.size() * sizeof(int),
-               "elements");
+    read_exact(in, input.elements.data(), input.elements.size() * sizeof(int), "elements");
     input.positions.resize(size_t(3 * n));
-    read_exact(in, input.positions.data(), input.positions.size() * sizeof(float),
-               "positions");
+    read_exact(in, input.positions.data(), input.positions.size() * sizeof(float), "positions");
     for (double value : input.cell)
         if (!std::isfinite(value))
             throw std::runtime_error("input cell contains a non-finite value");
@@ -190,29 +186,38 @@ std::string escape(const std::string& value) {
     result.reserve(value.size());
     for (char c : value) {
         switch (c) {
-            case '\\': result += "\\\\"; break;
-            case '"': result += "\\\""; break;
-            case '\n': result += "\\n"; break;
-            case '\r': result += "\\r"; break;
-            case '\t': result += "\\t"; break;
-            default:
-                if (static_cast<unsigned char>(c) < 0x20) {
-                    char buffer[7];
-                    std::snprintf(buffer, sizeof(buffer), "\\u%04x",
-                                  static_cast<unsigned char>(c));
-                    result += buffer;
-                } else {
-                    result += c;
-                }
+        case '\\':
+            result += "\\\\";
+            break;
+        case '"':
+            result += "\\\"";
+            break;
+        case '\n':
+            result += "\\n";
+            break;
+        case '\r':
+            result += "\\r";
+            break;
+        case '\t':
+            result += "\\t";
+            break;
+        default:
+            if (static_cast<unsigned char>(c) < 0x20) {
+                char buffer[7];
+                std::snprintf(buffer, sizeof(buffer), "\\u%04x", static_cast<unsigned char>(c));
+                result += buffer;
+            } else {
+                result += c;
+            }
         }
     }
     return result;
 }
 
 std::string version_text(int version) {
-    int major = version / 1000;
-    int minor = (version % 1000) / 10;
-    int patch = version % 10;
+    int         major  = version / 1000;
+    int         minor  = (version % 1000) / 10;
+    int         patch  = version % 10;
     std::string result = std::to_string(major) + "." + std::to_string(minor);
     if (patch)
         result += "." + std::to_string(patch);
@@ -229,29 +234,25 @@ void write_device(std::ostream& out) {
     lapis::check(cudaRuntimeGetVersion(&runtime));
     out << "\"device\":{\"name\":\"" << escape(prop.name) << "\""
         << ",\"compute_capability\":\"" << prop.major << "." << prop.minor << "\""
-        << ",\"memory_bytes\":" << prop.totalGlobalMem
-        << ",\"clock_khz\":" << prop.clockRate
+        << ",\"memory_bytes\":" << prop.totalGlobalMem << ",\"clock_khz\":" << prop.clockRate
         << ",\"memory_clock_khz\":" << prop.memoryClockRate
-        << ",\"sms\":" << prop.multiProcessorCount
-        << ",\"driver_cuda\":" << driver << ",\"driver_version\":\""
-        << version_text(driver) << "\""
-        << ",\"runtime_cuda\":" << runtime << ",\"runtime_version\":\""
-        << version_text(runtime) << "\"}";
+        << ",\"sms\":" << prop.multiProcessorCount << ",\"driver_cuda\":" << driver
+        << ",\"driver_version\":\"" << version_text(driver) << "\""
+        << ",\"runtime_cuda\":" << runtime << ",\"runtime_version\":\"" << version_text(runtime)
+        << "\"}";
 }
 
 void write_summary(std::ostream& out, const std::vector<double>& wall) {
     double mean = std::accumulate(wall.begin(), wall.end(), 0.0) / double(wall.size());
-    out << "\"summary\":{\"median_ms\":" << median(wall)
-        << ",\"p95_ms\":" << percentile(wall, 0.95)
-        << ",\"min_ms\":" << percentile(wall, 0.0)
-        << ",\"max_ms\":" << percentile(wall, 1.0)
+    out << "\"summary\":{\"median_ms\":" << median(wall) << ",\"p95_ms\":" << percentile(wall, 0.95)
+        << ",\"min_ms\":" << percentile(wall, 0.0) << ",\"max_ms\":" << percentile(wall, 1.0)
         << ",\"mean_ms\":" << mean << "}";
 }
 
 void run(const Args& args, std::ostream& out) {
-    Input input = read_input(args.input);
-    std::vector<float> xyz = input.positions;
-    lapis::Structure structure;
+    Input              input = read_input(args.input);
+    std::vector<float> xyz   = input.positions;
+    lapis::Structure   structure;
     structure.size      = int(input.n);
     structure.positions = xyz.data();
     structure.elements  = input.elements.data();
@@ -263,7 +264,7 @@ void run(const Args& args, std::ostream& out) {
     options.backend = backend(args.backend);
 
     std::unique_ptr<lapis::Calculator> calculator;
-    auto start = std::chrono::steady_clock::now();
+    auto                               start = std::chrono::steady_clock::now();
 #ifdef LAPIS_BENCH_HPNN
     if (args.engine == "hpnn")
         calculator = std::make_unique<hpnn::HPNN>(args.model, options, args.intervals);
@@ -277,11 +278,9 @@ void run(const Args& args, std::ostream& out) {
     }
 #endif
     if (!calculator)
-        throw std::runtime_error("this executable was not built with engine " +
-                                 args.engine);
-    double init_ms = std::chrono::duration<double, std::milli>(
-                         std::chrono::steady_clock::now() - start)
-                         .count();
+        throw std::runtime_error("this executable was not built with engine " + args.engine);
+    double init_ms =
+        std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
 
     lapis::Result result;
     for (int i = 0; i < args.warmup; ++i)
@@ -299,9 +298,9 @@ void run(const Args& args, std::ostream& out) {
     }
     lapis::check(cudaDeviceSynchronize());
 
-    double force_max = 0, force_l2 = 0;
+    double                force_max = 0, force_l2 = 0;
     std::array<double, 3> force_sum{};
-    double energies_sum = 0;
+    double                energies_sum = 0;
     for (size_t i = 0; i < result.forces.size(); i += 3) {
         for (int c = 0; c < 3; ++c) {
             double value = double(result.forces[i + size_t(c)]);
@@ -319,10 +318,9 @@ void run(const Args& args, std::ostream& out) {
         << ",\"engine\":\"" << escape(args.engine) << "\""
         << ",\"model\":\"" << escape(args.model) << "\""
         << ",\"input\":\"" << escape(args.input) << "\""
-        << ",\"atoms\":" << input.n << ",\"init_ms\":" << init_ms
-        << ",\"options\":{\"backend\":\"" << escape(args.backend)
-        << "\",\"intervals\":" << args.intervals << ",\"warmup\":" << args.warmup
-        << ",\"samples\":" << args.samples << "},";
+        << ",\"atoms\":" << input.n << ",\"init_ms\":" << init_ms << ",\"options\":{\"backend\":\""
+        << escape(args.backend) << "\",\"intervals\":" << args.intervals
+        << ",\"warmup\":" << args.warmup << ",\"samples\":" << args.samples << "},";
     write_device(out);
     out << ",\"samples_ms\":[";
     for (size_t i = 0; i < wall.size(); ++i)
@@ -332,31 +330,29 @@ void run(const Args& args, std::ostream& out) {
         out << (i ? "," : "") << device[i];
     out << "],";
     write_summary(out, wall);
-    out << ",\"output\":{\"energy\":" << result.energy
-        << ",\"energies_sum\":" << energies_sum << ",\"virial\":[";
+    out << ",\"output\":{\"energy\":" << result.energy << ",\"energies_sum\":" << energies_sum
+        << ",\"virial\":[";
     for (size_t i = 0; i < result.virial.size(); ++i)
         out << (i ? "," : "") << result.virial[i];
-    out << "],\"force_max_abs\":" << force_max << ",\"force_l2\":"
-        << std::sqrt(force_l2) << ",\"force_sum\":[" << force_sum[0] << ","
-        << force_sum[1] << "," << force_sum[2] << "]}";
+    out << "],\"force_max_abs\":" << force_max << ",\"force_l2\":" << std::sqrt(force_l2)
+        << ",\"force_sum\":[" << force_sum[0] << "," << force_sum[1] << "," << force_sum[2] << "]}";
     out << ",\"diagnostics\":{\"selected\":\"" << backend_name(diagnostics.selected)
-        << "\",\"grid\":[" << diagnostics.grid[0] << "," << diagnostics.grid[1]
-        << "," << diagnostics.grid[2] << "]"
+        << "\",\"grid\":[" << diagnostics.grid[0] << "," << diagnostics.grid[1] << ","
+        << diagnostics.grid[2] << "]"
         << ",\"max_occupancy\":" << diagnostics.max_occupancy
         << ",\"occupied_bins\":" << diagnostics.occupied_bins
         << ",\"mean_occupancy\":" << diagnostics.mean_occupancy
         << ",\"grid_candidates\":" << diagnostics.grid_candidates
         << ",\"brute_candidates\":" << diagnostics.brute_candidates
         << ",\"allocated_bytes\":" << diagnostics.allocated_bytes
-        << ",\"peak_bytes\":" << diagnostics.peak_bytes
-        << ",\"reason\":\"" << escape(diagnostics.reason) << "\"}";
+        << ",\"peak_bytes\":" << diagnostics.peak_bytes << ",\"reason\":\""
+        << escape(diagnostics.reason) << "\"}";
     out << ",\"resources\":[";
     const auto& resources = calculator->resources();
     for (size_t i = 0; i < resources.size(); ++i) {
         const auto& r = resources[i];
         out << (i ? "," : "") << "{\"name\":\"" << escape(r.name)
-            << "\",\"registers\":" << r.registers
-            << ",\"block_threads\":" << r.block_threads
+            << "\",\"registers\":" << r.registers << ",\"block_threads\":" << r.block_threads
             << ",\"active_blocks_per_sm\":" << r.active_blocks_per_sm
             << ",\"static_shared\":" << r.static_shared
             << ",\"dynamic_shared\":" << r.dynamic_shared << "}";
@@ -398,8 +394,8 @@ int main(int argc, char** argv) {
         run(args, *out);
         return 0;
     } catch (const std::exception& error) {
-        *out << "{\"schema\":1,\"status\":\"error\",\"error\":\""
-             << escape(error.what()) << "\"}\n";
+        *out << "{\"schema\":1,\"status\":\"error\",\"error\":\"" << escape(error.what())
+             << "\"}\n";
         out->flush();
         std::cerr << "lapis_bench: " << error.what() << "\n";
         return 1;

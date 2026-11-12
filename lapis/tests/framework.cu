@@ -1,13 +1,10 @@
 #include <algorithm>
-#include <chrono>
 #include <cmath>
 #include <future>
 #include <iostream>
 #include <limits>
 #include <random>
-#include <set>
 #include <thread>
-#include <tuple>
 
 #include "lapis/pair.cuh"
 #include "lj.hpp"
@@ -191,30 +188,37 @@ int main() {
         // Image-bound transitions, wrapped atoms, self images, and cached heights
         // after cell changes. Verify full edge multisets, not only edge counts.
         {
-            float x[] = {-.25f, .5f, .75f, 4.25f, 6.5f, -7.25f};
-            int z[] = {18, 18};
-            Structure q{2, x, z, {4, 0, 0, 0, 6, 0, 0, 0, 8}};
+            float     x[] = {-.25f, .5f, .75f, 4.25f, 6.5f, -7.25f};
+            int       z[] = {18, 18};
+            Structure q{
+                2, x, z, {4, 0, 0, 0, 6, 0, 0, 0, 8}
+            };
             Context c;
             for (auto backend : {NeighborBackend::BruteForce, NeighborBackend::Auto}) {
                 c.prepare(q, 13.f, {backend});
-                auto original = c.geometry;
-                size_t bytes = c.diagnostics.allocated_bytes;
-                struct Probe { float r; std::array<int, 3> images; };
-                for (auto probe : {Probe{2.f, {1, 1, 1}}, Probe{6.f, {2, 1, 1}},
-                                   Probe{std::nextafter(6.f, 7.f), {2, 2, 1}},
-                                   Probe{8.f, {2, 2, 1}},
-                                   Probe{std::nextafter(8.f, 9.f), {3, 2, 2}}}) {
+                auto   original = c.geometry;
+                size_t bytes    = c.diagnostics.allocated_bytes;
+                struct Probe {
+                    float              r;
+                    std::array<int, 3> images;
+                };
+                for (auto probe : {
+                         Probe{2.f, {1, 1, 1}},
+                         Probe{6.f, {2, 1, 1}},
+                         Probe{std::nextafter(6.f, 7.f), {2, 2, 1}},
+                         Probe{8.f, {2, 2, 1}},
+                         Probe{std::nextafter(8.f, 9.f), {3, 2, 2}}
+                }) {
                     auto view = c.traversal_geometry({probe.r});
                     require(std::equal(view.images, view.images + 3, probe.images.begin()),
                             "traversal image-bound transition mismatch");
-                    require(view.backend == NeighborBackend::BruteForce
-                                && view.xyz == original.xyz && view.offsets == original.offsets
-                                && view.bins == original.bins
+                    require(view.backend == NeighborBackend::BruteForce && view.xyz == original.xyz
+                                && view.offsets == original.offsets && view.bins == original.bins
                                 && c.diagnostics.allocated_bytes == bytes,
                             "traversal view changed backend, index, or allocations");
                 }
-                for (float r : {2.f, 6.f, std::nextafter(6.f, 7.f), 8.f,
-                                std::nextafter(8.f, 9.f), 13.f, 2.f})
+                for (float r :
+                     {2.f, 6.f, std::nextafter(6.f, 7.f), 8.f, std::nextafter(8.f, 9.f), 13.f, 2.f})
                     require(collect(c, r) == reference(q, r, 8),
                             "tight image bounds lost periodic edges");
                 require(std::equal(c.geometry.images, c.geometry.images + 3, original.images),
