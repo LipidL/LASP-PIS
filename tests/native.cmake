@@ -1,4 +1,6 @@
 include_guard(GLOBAL)
+option(LAPIS_TEST_DISCOVER_CASES
+  "Register each model GoogleTest case separately instead of one test per executable" ON)
 option(LAPIS_TEST_USE_SYSTEM_GTEST
   "Use an installed GoogleTest instead of building the pinned test dependency" OFF)
 if(LAPIS_TEST_USE_SYSTEM_GTEST)
@@ -31,6 +33,14 @@ function(add_potential_tests target model library weights)
   # The manifest changes even when a fixture is removed or an old file is added.
   set_property(TARGET ${target} APPEND PROPERTY LINK_DEPENDS
     "${fixtures}" "${CMAKE_CURRENT_BINARY_DIR}/${target}_fixtures.txt")
-  gtest_discover_tests(${target} TEST_PREFIX "${target}." DISCOVERY_MODE PRE_TEST
-    PROPERTIES LABELS "native_${model}" RESOURCE_LOCK lapis_gpu TIMEOUT 300)
+  if(LAPIS_TEST_DISCOVER_CASES)
+    gtest_discover_tests(${target} TEST_PREFIX "${target}." DISCOVERY_MODE PRE_TEST
+      PROPERTIES LABELS "native_${model}" RESOURCE_LOCK lapis_gpu TIMEOUT 300)
+  else()
+    # Reuse the CUDA context and the models cached by physics.cpp across cases.
+    # Keep CTest failure reporting, timeouts, and GPU resource serialization.
+    add_test(NAME ${target}.all COMMAND ${target} --gtest_filter=* --gtest_repeat=1)
+    set_tests_properties(${target}.all PROPERTIES
+      LABELS "native_${model}" RESOURCE_LOCK lapis_gpu TIMEOUT 300)
+  endif()
 endfunction()

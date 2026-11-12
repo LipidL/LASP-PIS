@@ -77,35 +77,43 @@ def formatting(paths):
     return 0
 
 
-def host():
-    for component in ("chemio", "checkpoint"):
-        build = ROOT / "build-host-hooks" / component
-        configure = [
-            "cmake", "-S", component, "-B", str(build),
-            "-DCMAKE_BUILD_TYPE=Debug", "-DBUILD_TESTING=ON",
-            "-DCMAKE_CXX_FLAGS=-Wall -Wextra -Wpedantic -Werror",
-        ]
-        if component == "checkpoint":
-            configure.append(f"-DPython3_EXECUTABLE={sys.executable}")
-        run(configure)
-        run(["cmake", "--build", str(build), "--config", "Debug", "--parallel", "2"])
-        run([
-            "ctest", "--test-dir", str(build), "-C", "Debug",
-            "--output-on-failure", "--no-tests=error", "--timeout", "120",
-        ])
+def full(build, jobs):
+    run([
+        "cmake", "-S", ".", "-B", str(build),
+        "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_TESTING=ON",
+        "-DLAPIS_BUILD_MACE=ON", "-DLAPIS_BUILD_HPNN=ON", "-DLAPIS_BUILD_D3=ON",
+        "-DLAPIS_TEST_DISCOVER_CASES=OFF",
+        f"-DPython3_EXECUTABLE={sys.executable}",
+    ])
+    run(["cmake", "--build", str(build), "--config", "Release", "--parallel", str(jobs)])
+    run([
+        "ctest", "--test-dir", str(build), "-C", "Release",
+        "--parallel", str(jobs), "--output-on-failure", "--no-tests=error", "--timeout", "300",
+    ])
     return 0
+
+
+def positive_int(value):
+    number = int(value)
+    if number < 1:
+        raise argparse.ArgumentTypeError("must be a positive integer")
+    return number
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("check", choices=("source", "format", "host"))
+    parser.add_argument("check", choices=("source", "format", "full"))
     parser.add_argument("--all", action="store_true", help="check all tracked files")
+    parser.add_argument("--build-dir", type=Path, default=Path("build"),
+                        help="full-check build directory (default: build)")
+    parser.add_argument("--jobs", type=positive_int, default=4,
+                        help="full-check build/CTest parallelism (default: 4)")
     parser.add_argument("files", nargs="*")
     args = parser.parse_args()
     os.chdir(ROOT)
     try:
-        if args.check == "host":
-            return host()
+        if args.check == "full":
+            return full(args.build_dir, args.jobs)
         paths = tracked_files() if args.all else [Path(name) for name in args.files]
         paths = [path for path in paths if path.is_file() and not path.is_symlink()]
         return source(paths) if args.check == "source" else formatting(paths)

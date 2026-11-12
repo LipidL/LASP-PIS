@@ -16,6 +16,27 @@ build/mace/mace_tests
 build/mace/mace_tests --gtest_filter='*NumericalStress*'
 ```
 
+By default, CTest registers each GoogleTest case separately. Each case launches
+a new process, repeating CUDA initialization and model loading. Direct execution
+runs cases sequentially in one process and reuses cached models; its speedup is
+not due to parallel GoogleTest execution.
+
+For fast whole-suite runs through CTest (also used by the pre-push hook):
+
+```sh
+cmake -S . -B build -DLAPIS_TEST_DISCOVER_CASES=OFF
+cmake --build build -j4
+ctest --test-dir build -j4 --output-on-failure
+```
+
+This registers one CTest test per model executable, retaining all of its cases.
+CPU tests can run alongside GPU tests, but the `lapis_gpu` lock serializes GPU
+executables even with `-j4`. The two coexistence load-order cases always run in
+separate processes to preserve isolation. Set `LAPIS_TEST_DISCOVER_CASES=ON` again
+to restore individual case selection/reporting in CTest. In whole-suite mode,
+use the executable's `--gtest_filter` option for an individual case. The pre-push
+check resets this option to `OFF` on each run.
+
 Tests require a CUDA GPU and model weights. Defaults are
 `hpnn/model/ggnn.pth` and `mace/model/mace-mh1.model`. Override them with
 `-DHPNN_TEST_MODEL=/absolute/model` and `-DMACE_TEST_MODEL=/absolute/model`;

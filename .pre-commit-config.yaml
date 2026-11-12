@@ -17,9 +17,9 @@ repos:
         language: system
         files: '(\.(c|cc|cpp|cxx|h|hh|hpp|hxx|cu|cuh)$|^\.clang-format$)'
         types: [text]
-      - id: host-tests
-        name: CPU builds and tests (no CUDA required)
-        entry: python3 tools/checks.py host
+      - id: full-tests
+        name: Full C++/CUDA build and tests
+        entry: python3 tools/checks.py full
         language: system
         stages: [pre-push, manual]
         pass_filenames: false

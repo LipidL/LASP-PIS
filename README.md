@@ -124,15 +124,27 @@ Use that same executable with `-i` to fix formatting. Changing `.clang-format`
 checks all tracked C++/CUDA files.
 
 Pre-push repeats those checks for files selected by pre-commit from the pushed
-commits, then builds and tests **chemio** and **checkpoint** independently in
-Debug mode with `-Wall -Wextra -Wpedantic -Werror`. It requires CMake 3.24+,
-a GCC/Clang-compatible C++17 compiler, and zlib development headers. It needs
-neither CUDA, a GPU, model weights, nor Python packages such as PyTorch.
-Incremental build trees are kept in the ignored `build-host-hooks/` directory.
-Remove that directory when changing compilers/toolchains. Builds use two jobs;
-each test has a 120-second timeout, and discovering zero tests is an error.
+commits, then incrementally builds the **full workspace** in Release mode and
+runs every registered CTest test. This requires the normal CUDA build dependencies,
+a working GPU, and the HPNN/MACE test weights. Missing prerequisites fail the
+check; it does not fall back to CPU-only tests.
 
-Run checks manually, including on a CPU-only CI runner:
+The full check reuses `build/`, including its cached CUDA architecture, model
+paths, and GoogleTest settings. It explicitly enables testing and all three
+consumers, and sets `LAPIS_TEST_DISCOVER_CASES=OFF` so each model suite runs in one
+process. This avoids repeating CUDA initialization and model loading for every
+case. GoogleTest still reports individual failures. The two coexistence load-order
+tests retain separate processes. CTest uses four workers, but GPU tests share
+the `lapis_gpu` lock and run one at a time; CPU tests can overlap. Tests have a
+300-second timeout, and discovering zero tests is an error.
+
+For a new build directory, configure the GPU architecture and any custom model
+paths as shown above before running the hook. The first configure may download
+GoogleTest; for offline use, set `FETCHCONTENT_SOURCE_DIR_GOOGLETEST` as described
+in [native testing](tests/README.md). Optional benchmark/reference build settings
+already enabled in the build directory are preserved.
+
+Run checks manually:
 
 ```sh
 pre-commit run --all-files
@@ -140,12 +152,22 @@ pre-commit run --hook-stage pre-push --all-files
 # The same underlying checks, without installing pre-commit:
 python3 tools/checks.py source --all
 python3 tools/checks.py format --all
+python3 tools/checks.py full
+# Optional separate build directory or different worker count:
+python3 tools/checks.py full --build-dir build-checks --jobs 4
+# Explicit CPU-only checks, also suitable for a CPU CI runner:
 python3 tools/checks.py host
 ```
 
-Local hooks are developer feedback and can be bypassed. The host suite does not
-compile or test the CUDA components, and does not yet include clang-tidy or
-sanitizers. Those remain separate additions to the verification pipeline.
+The explicit `host` command still builds/tests chemio and checkpoint independently
+in Debug mode with `-Wall -Wextra -Wpedantic -Werror`, using two build jobs and
+120-second test timeouts. Its incremental trees are in `build-host-hooks/`.
+It needs no CUDA, GPU, or model weights. These warning flags apply to the host
+command; the full build uses the workspace's normal compiler settings.
+
+Local hooks are developer feedback and can be bypassed. Neither suite includes
+clang-tidy or sanitizers yet. Remove the relevant build directory when changing
+compilers/toolchains.
 
 ### Package boundaries
 
