@@ -101,15 +101,57 @@ Native loading validation records are in [MACE](mace/docs/NATIVE_LOADING.md) and
 
 ## Development contract
 
+### Local checks
+
+Install the Git hooks once per clone using Python 3.10+:
+
+```sh
+python3 -m pip install 'pre-commit>=3.2,<5'
+pre-commit install
+```
+
+The configuration installs both `pre-commit` and `pre-push` hooks. In linked Git
+worktrees, hook installation is shared with the other worktrees; install only
+when those branches also contain this configuration. All hook implementations
+are local and run without downloading additional hook environments.
+
+Pre-commit checks staged text for trailing whitespace, missing final newlines,
+conflict markers, and Python/JSON syntax. It also checks C++/CUDA formatting.
+Checks never rewrite files; fix the reported problems and stage the corrections.
+The formatter is pinned to **clang-format 23.1.4**, matching the existing style
+configuration. Put it on `PATH`, or set `CLANG_FORMAT` to its executable path.
+Use that same executable with `-i` to fix formatting. Changing `.clang-format`
+checks all tracked C++/CUDA files.
+
+Pre-push repeats those checks for files selected by pre-commit from the pushed
+commits, then builds and tests **chemio** and **checkpoint** independently in
+Debug mode with `-Wall -Wextra -Wpedantic -Werror`. It requires CMake 3.24+,
+a GCC/Clang-compatible C++17 compiler, and zlib development headers. It needs
+neither CUDA, a GPU, model weights, nor Python packages such as PyTorch.
+Incremental build trees are kept in the ignored `build-host-hooks/` directory.
+Remove that directory when changing compilers/toolchains. Builds use two jobs;
+each test has a 120-second timeout, and discovering zero tests is an error.
+
+Run checks manually, including on a CPU-only CI runner:
+
+```sh
+pre-commit run --all-files
+pre-commit run --hook-stage pre-push --all-files
+# The same underlying checks, without installing pre-commit:
+python3 tools/checks.py source --all
+python3 tools/checks.py format --all
+python3 tools/checks.py host
+```
+
+Local hooks are developer feedback and can be bypassed. The host suite does not
+compile or test the CUDA components, and does not yet include clang-tidy or
+sanitizers. Those remain separate additions to the verification pipeline.
+
+### Package boundaries
+
 The API and ABI are unreleased and may change. Rebuild consumers against matching
 Lapis headers and library with a compatible CUDA/C++ toolchain. Dependency versions
 are checked exactly until a compatibility policy is established.
-
-Keep implementation, tests, documentation and packaging inside the owning project.
-Framework changes must pass framework and consumer correctness checks. The package
-boundary check in `tools/check_packages.py` builds copied consumer source trees
-against a relocated Lapis installation, then compiles C and C++ clients using the
-installed model packages. No GPU is required for that build check.
 
 See [migration provenance](docs/MIGRATION.md) for the imported histories and naming
 changes. Historical benchmark reports retain their original names and measurements;

@@ -1,0 +1,27 @@
+minimum_pre_commit_version: '3.2.0'
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit, pre-push, manual]
+
+# All hooks use local tools; no hook repositories or environments are downloaded.
+repos:
+  - repo: local
+    hooks:
+      - id: source-hygiene
+        name: Text hygiene and Python/JSON syntax
+        entry: python3 tools/checks.py source
+        language: system
+        types: [text]
+      - id: clang-format
+        name: C++ and CUDA formatting (clang-format 23.1.4)
+        entry: python3 tools/checks.py format
+        language: system
+        files: '(\.(c|cc|cpp|cxx|h|hh|hpp|hxx|cu|cuh)$|^\.clang-format$)'
+        types: [text]
+      - id: host-tests
+        name: CPU builds and tests (no CUDA required)
+        entry: python3 tools/checks.py host
+        language: system
+        stages: [pre-push, manual]
+        pass_filenames: false
+        always_run: true
+        require_serial: true

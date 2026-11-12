@@ -14,7 +14,7 @@ package reads model data with zlib; `chemio` reads structure files. Official
 ## Build and run
 
 CUDA Toolkit, cuBLAS, CMake 3.24+, a C++17 compiler and an NVIDIA GPU are required.
-Select your architecture when building. 
+Select your architecture when building.
 First install Lapis, Chemio, and checkpoint (zlib required), or use
 the workspace build in the root README.
 
