@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "generated_utc": "2026-11-10T07:51:11Z",
+  "git": {
+    "sha": "38e4777f9f94b917a934d6c1ac724a49b3f88dd3",
+    "dirty": true
+  },
+  "environment": {
+    "name": "NVIDIA GeForce RTX 3060 Ti",
+    "compute_capability": "8.6",
+    "memory_bytes": 8589410304,
+    "clock_khz": 1665000,
+    "memory_clock_khz": 9501000,
+    "sms": 38,
+    "driver_cuda": 13010,
+    "driver_version": "13.1",
+    "runtime_cuda": 12060,
+    "runtime_version": "12.6"
+  },
+  "environment_class": "sm86-nvidia-geforce-rtx-3060-ti-cuda12.6",
+  "cases": {
+    "hpnn/direct/512": {
+      "median_ms": 5.842684,
+      "p95_ms": 6.428146,
+      "atoms": 512,
+      "fixture_sha256": "b3b24a87aaab590a86db7ec38205dee452cafd17f19d285a823533b97213e7c1",
+      "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
+      "record_sha256": "2b99a1339cac5c244c950bd911e0959b3d012c3e3d81672f964231f54fb7dd33"
+    },
+    "hpnn/direct/64": {
+      "median_ms": 2.0098085,
+      "p95_ms": 2.564502,
+      "atoms": 64,
+      "fixture_sha256": "7ea0a449b983af09cdf88a4e955238d0e31dd814fb350523ff9f46f17ce1e74a",
+      "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
+      "record_sha256": "eb7daca8bff9f1857a618507145622f9aa62042c7198b4943f00e1f0b660e5c6"
+    },
+    "hpnn/direct/8": {
+      "median_ms": 1.599269,
+      "p95_ms": 2.179655,
+      "atoms": 8,
+      "fixture_sha256": "4216d12fb87cb0bd0f1a69ad40f970f0d304c75ef68b41827d4a5ef46c461858",
+      "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
+      "record_sha256": "73ff6336ba60ab0467fea839efdfcfe3ac47cdc5f5bd0a37638c31980b57e8af"
+    },
+    "hpnn/direct/nacl": {
+      "median_ms": 1.6124049999999999,
+      "p95_ms": 2.103666,
+      "atoms": 8,
+      "fixture_sha256": "c16f07c47cc8417bc5e1e9cbe08b7fb4cd6c93da2687c70a2a81bb9c51c615c0",
+      "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
+      "record_sha256": "0aff35ca0096e437e8392a8765047cf5a5b4a9c36ca7e48b7d65a8b56d63d9c6"
+    },
+    "hpnn/table/512": {
+      "median_ms": 3.033411,
+      "p95_ms": 3.721096,
+      "atoms": 512,
+      "fixture_sha256": "b3b24a87aaab590a86db7ec38205dee452cafd17f19d285a823533b97213e7c1",
+      "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
+      "record_sha256": "ce01d6c950c5d64c8a0032b8d9c2c9eae519d250ec6a7b3629ab5a64754d0592"
+    },
+    "mace/mh1/512": {
+      "median_ms": 20.7236865,
+      "p95_ms": 21.786823,
+      "atoms": 512,
+      "fixture_sha256": "b3b24a87aaab590a86db7ec38205dee452cafd17f19d285a823533b97213e7c1",
+      "model_sha256": "ec00a2705854622fbbd898ccfb7701072fcd674709102d009fb919c1b8cc5dde",
+      "record_sha256": "7ea175665dbe9f873e819dc22de1c8ccd4921164e1adda3947793cc1f30ccc06"
+    },
+    "mace/mh1/64": {
+      "median_ms": 4.180782499999999,
+      "p95_ms": 4.750644,
+      "atoms": 64,
+      "fixture_sha256": "7ea0a449b983af09cdf88a4e955238d0e31dd814fb350523ff9f46f17ce1e74a",
+      "model_sha256": "ec00a2705854622fbbd898ccfb7701072fcd674709102d009fb919c1b8cc5dde",
+      "record_sha256": "f38bd7baacc586e7b6773b5e1110620863c61d31495b7b80e8abb2def8f6ede0"
+    },
+    "mace/mh1/8": {
+      "median_ms": 3.034784,
+      "p95_ms": 3.764736,
+      "atoms": 8,
+      "fixture_sha256": "4216d12fb87cb0bd0f1a69ad40f970f0d304c75ef68b41827d4a5ef46c461858",
+      "model_sha256": "ec00a2705854622fbbd898ccfb7701072fcd674709102d009fb919c1b8cc5dde",
+      "record_sha256": "193ad2275998a53ea8c6b0f0db97545402e5a5e9dcd2e3de8165b29d7969b9d5"
+    }
+  }
+}
