@@ -9,6 +9,7 @@
 
 #include "mace/mh1.hpp"
 #include "mh1_math.cuh"
+#include "mh1_tp.cuh"
 #include "weights.hpp"
 
 namespace mace {
@@ -31,9 +32,6 @@ struct Linear {
     const float*            weight;
     bool                    forward_partition = false, backward_partition = false;
 };
-struct TPEntry {
-    int path, input, sh, output;
-};
 struct PolyTerm {
     int output, degree, a, b, c;
 };
@@ -51,6 +49,7 @@ struct Layer {
     const TPEntry* tp;
     const float*   cg;
     int            terms, paths, in_comp, out_comp;
+    bool           fixed_tp = false;
 };
 // Opt-in stage timing when a system profiler cannot collect GPU kernel activity.
 // Event creation is completely absent from ordinary calculator calls.
@@ -241,29 +240,39 @@ __global__ void read_act(int count, const float* x, const float* grad, float* y,
             y[k] = scale * x[k] * sig;
     }
 }
-template<bool Backward, int Weights>
+// Compile-time experiment controls; four edges / two paths won the PERF-0002 sweep.
+#ifndef MACE_PAIR_TILE_EDGES
+#define MACE_PAIR_TILE_EDGES 4
+#endif
+#ifndef MACE_PAIR_PATH_CHUNK
+#define MACE_PAIR_PATH_CHUNK 2
+#endif
+template<bool Backward, int Weights, int Edges, int Inputs>
 struct PairScratch {
-    // Radial intermediates are dead before tensor-product adjoints start.
-    union {
-        RadialScratch radial[4];
-        float         up_grad[4 * 128];
-    };
-    D3    sh[4][16];
-    float weights[4][Weights], derivatives[Backward ? 4 * Weights : 1];
-    float reduce[12], cut[4], dcut[4], density[4], ddensity[4];
+    RadialScratch radial[Edges];
+    D3            sh[Edges][16];
+    float         weights[Edges][Weights], derivatives[Backward ? Edges * Weights : 1];
+    // Reverse partials survive projection chunks; indexed storage stays shared.
+    float adjoint[Backward ? Edges : 1][Backward ? (4 + Inputs) * 128 : 1];
+    float reduce[12], cut[Edges], dcut[Edges], density[Edges], ddensity[Edges];
 };
-template<int LayerIndex, bool Backward>
+template<int LayerIndex, bool Backward, bool Fixed = true>
 struct MH1Pair {
-    static constexpr int threads = 128, tile_edges = 4, scratch_alignment = 16;
+    static constexpr int threads = 128, tile_edges = MACE_PAIR_TILE_EDGES, scratch_alignment = 16;
     static const char*   name() {
         if constexpr (Backward)
             return LayerIndex == 0 ? "MH1.backward0" : "MH1.backward1";
         else
             return LayerIndex == 0 ? "MH1.forward0" : "MH1.forward1";
     }
-    static constexpr int NC = LayerIndex == 0 ? 16 : 40;
-    static constexpr int NW = LayerIndex == 0 ? 512 : 1280;
-    using Scratch           = PairScratch<Backward, NW>;
+    static constexpr int NC    = LayerIndex == 0 ? 16 : 40;
+    static constexpr int NW    = LayerIndex == 0 ? 512 : 1280;
+    static constexpr int Paths = NW / 128, Inputs = LayerIndex == 0 ? 0 : 4;
+    static constexpr int Chunk =
+        Fixed && MACE_PAIR_PATH_CHUNK < Paths ? MACE_PAIR_PATH_CHUNK : Paths;
+    static_assert(tile_edges == 1 || tile_edges == 2 || tile_edges == 4);
+    static_assert(Chunk > 0);
+    using Scratch = PairScratch<Backward, Chunk * 128, tile_edges, Inputs>;
     struct State {
         float density = 0, force[3] = {}, virial[9] = {};
     };
@@ -282,6 +291,39 @@ struct MH1Pair {
             float* accum = reinterpret_cast<float*>(static_cast<Scratch*>(scratch) + 1);
             for (int k = 0; k < NC; ++k)
                 accum[k * 128 + threadIdx.x] = 0;
+        }
+    }
+    template<int K = 0>
+    __device__ __forceinline__ void fixed_forward(Scratch& s, int edge, int start, const float* u,
+                                                  float* accum) {
+        if constexpr (K < FixedTP<LayerIndex>::count) {
+            constexpr auto t = FixedTP<LayerIndex>::terms[K];
+            int            c = threadIdx.x;
+            if (t.path >= start && t.path < start + Chunk)
+                accum[t.output * 128 + c] += layer.cg[K] * u[t.input] * s.sh[edge][t.sh].v
+                                             * s.weights[edge][(t.path % Chunk) * 128 + c];
+            fixed_forward<K + 1>(s, edge, start, u, accum);
+        }
+    }
+    template<int K = 0>
+    __device__ __forceinline__ void fixed_backward(int i, Scratch& s, int edge, int start,
+                                                   const float* u, float* du, float& dr, float& gx,
+                                                   float& gy, float& gz) {
+        if constexpr (K < FixedTP<LayerIndex>::count) {
+            constexpr auto t = FixedTP<LayerIndex>::terms[K];
+            int            c = threadIdx.x;
+            if (t.path >= start && t.path < start + Chunk) {
+                float a = grad[(size_t(t.output) * g.n + i) * 128 + c] * layer.cg[K];
+                float v = u[t.input], w = s.weights[edge][(t.path % Chunk) * 128 + c];
+                D3    sh = s.sh[edge][t.sh];
+                if constexpr (LayerIndex > 0)
+                    du[t.input] += a * sh.v * w;
+                dr += a * v * sh.v * s.derivatives[(edge * Chunk + t.path % Chunk) * 128 + c];
+                gx += a * v * w * sh.x;
+                gy += a * v * w * sh.y;
+                gz += a * v * w * sh.z;
+            }
+            fixed_backward<K + 1>(i, s, edge, start, u, du, dr, gx, gy, gz);
         }
     }
     template<class Tile>
@@ -328,43 +370,8 @@ struct MH1Pair {
                 }
             }
             __syncwarp();
-            radial_hidden<Backward, 3>(layer.radial, zs, zr, s.radial[worker]);
-        } else {
-            for (int k = lane; k < 64; k += 32) {
-                s.radial[worker].a[k]  = 0;
-                s.radial[worker].da[k] = 0;
-            }
-            if (lane == 0) {
-                s.cut[worker]  = 0;
-                s.dcut[worker] = 0;
-            }
-        }
-        __syncthreads();
-        // One projection-weight load serves all four transient edges.
-        for (int p = 0; p < NW / 128; ++p) {
-            int   k = p * 128 + c;
-            float w[4], dw[4] = {};
-#pragma unroll
-            for (int e = 0; e < 4; ++e)
-                w[e] = layer.radial.output_bias[k];
-            for (int a = 0; a < 64; ++a) {
-                float v = layer.radial.output_weight[a * NW + k];
-#pragma unroll
-                for (int e = 0; e < 4; ++e) {
-                    w[e] += v * s.radial[e].a[a];
-                    if constexpr (Backward)
-                        dw[e] += v * s.radial[e].da[a];
-                }
-            }
-#pragma unroll
-            for (int e = 0; e < 4; ++e) {
-                s.weights[e][k] = w[e] * s.cut[e];
-                if constexpr (Backward)
-                    s.derivatives[e * NW + k] = dw[e] * s.cut[e] + w[e] * s.dcut[e];
-            }
-        }
-        __syncthreads();
-        if (worker < tile.size()) {
+            // Density runs first so the radial hidden values and tangents remain
+            // available throughout projection/TP chunking.
             radial_hidden<Backward, 1>(layer.density, zs, zr, s.radial[worker]);
             if (lane == 0) {
                 float a = layer.density.output_bias[0], da = 0;
@@ -378,53 +385,129 @@ struct MH1Pair {
                 s.ddensity[worker] =
                     2 * a * da * (1 - den * den) * s.cut[worker] + den * s.dcut[worker];
             }
+            __syncwarp();
+            radial_hidden<Backward, 3>(layer.radial, zs, zr, s.radial[worker]);
+        } else if (worker < tile_edges) {
+            for (int k = lane; k < 64; k += 32) {
+                s.radial[worker].a[k]  = 0;
+                s.radial[worker].da[k] = 0;
+            }
+            if (lane == 0) {
+                s.cut[worker]  = 0;
+                s.dcut[worker] = 0;
+            }
         }
         __syncthreads();
-        for (int edge = 0; edge < tile.size(); ++edge) {
-            int    j  = tile.sender(edge);
-            float  r  = fmaxf(sqrtf(tile.squared_distance(edge)), 1e-10f);
-            float3 d  = tile.displacement(edge);
-            float  u0 = up[size_t(j) * 128 + c], u1 = 0, u2 = 0, u3 = 0;
-            if constexpr (LayerIndex > 0) {
-                u1 = up[(size_t(g.n) + j) * 128 + c];
-                u2 = up[(size_t(2) * g.n + j) * 128 + c];
-                u3 = up[(size_t(3) * g.n + j) * 128 + c];
-            }
-            if constexpr (!Backward) {
-                float* accum = reinterpret_cast<float*>(&s + 1);
-                for (int k = 0; k < layer.terms; ++k) {
-                    auto  t = layer.tp[k];
-                    float v = t.input == 0 ? u0 : t.input == 1 ? u1 : t.input == 2 ? u2 : u3;
-                    accum[t.output * 128 + c] +=
-                        layer.cg[k] * v * s.sh[edge][t.sh].v * s.weights[edge][t.path * 128 + c];
+        if constexpr (Backward)
+            for (int edge = 0; edge < tile.size(); ++edge)
+                for (int k = 0; k < 4 + Inputs; ++k)
+                    s.adjoint[edge][k * 128 + c] = 0;
+        // Keep only one path chunk live while reusing projection loads across edges.
+        for (int start = 0; start < Paths; start += Chunk) {
+            for (int p = 0; p < Chunk && start + p < Paths; ++p) {
+                int   k = (start + p) * 128 + c;
+                float w[tile_edges], dw[tile_edges] = {};
+#pragma unroll
+                for (int e = 0; e < tile_edges; ++e)
+                    w[e] = layer.radial.output_bias[k];
+                for (int a = 0; a < 64; ++a) {
+                    float v = layer.radial.output_weight[a * NW + k];
+#pragma unroll
+                    for (int e = 0; e < tile_edges; ++e) {
+                        w[e] += v * s.radial[e].a[a];
+                        if constexpr (Backward)
+                            dw[e] += v * s.radial[e].da[a];
+                    }
                 }
+#pragma unroll
+                for (int e = 0; e < tile_edges; ++e) {
+                    s.weights[e][p * 128 + c] = w[e] * s.cut[e];
+                    if constexpr (Backward)
+                        s.derivatives[(e * Chunk + p) * 128 + c] =
+                            dw[e] * s.cut[e] + w[e] * s.dcut[e];
+                }
+            }
+            __syncthreads();
+            for (int edge = 0; edge < tile.size(); ++edge) {
+                int   j  = tile.sender(edge);
+                float u0 = up[size_t(j) * 128 + c], u1 = 0, u2 = 0, u3 = 0;
+                if constexpr (LayerIndex > 0) {
+                    u1 = up[(size_t(g.n) + j) * 128 + c];
+                    u2 = up[(size_t(2) * g.n + j) * 128 + c];
+                    u3 = up[(size_t(3) * g.n + j) * 128 + c];
+                }
+                if constexpr (!Backward) {
+                    float* accum = reinterpret_cast<float*>(&s + 1);
+                    if constexpr (Fixed) {
+                        float u[] = {u0, u1, u2, u3};
+                        fixed_forward(s, edge, start, u, accum);
+                    } else
+                        for (int k = 0; k < layer.terms; ++k) {
+                            auto  t = layer.tp[k];
+                            float v = t.input == 0   ? u0
+                                      : t.input == 1 ? u1
+                                      : t.input == 2 ? u2
+                                                     : u3;
+                            accum[t.output * 128 + c] +=
+                                layer.cg[k] * v * s.sh[edge][t.sh].v
+                                * s.weights[edge][(t.path % Chunk) * 128 + c];
+                        }
+
+                } else {
+                    float gx = s.adjoint[edge][c], gy = s.adjoint[edge][128 + c],
+                          gz = s.adjoint[edge][256 + c], dr = s.adjoint[edge][384 + c];
+                    float du[4] = {};
+                    if constexpr (LayerIndex > 0)
+#pragma unroll
+                        for (int k = 0; k < 4; ++k)
+                            du[k] = s.adjoint[edge][(4 + k) * 128 + c];
+                    if constexpr (Fixed) {
+                        float u[] = {u0, u1, u2, u3};
+                        fixed_backward(i, s, edge, start, u, du, dr, gx, gy, gz);
+                    } else
+                        for (int k = 0; k < layer.terms; ++k) {
+                            auto  t  = layer.tp[k];
+                            float a  = grad[(size_t(t.output) * g.n + i) * 128 + c] * layer.cg[k];
+                            float v  = t.input == 0   ? u0
+                                       : t.input == 1 ? u1
+                                       : t.input == 2 ? u2
+                                                      : u3,
+                                  w  = s.weights[edge][(t.path % Chunk) * 128 + c];
+                            D3    sh = s.sh[edge][t.sh];
+                            if constexpr (LayerIndex > 0)
+                                s.adjoint[edge][(4 + t.input) * 128 + c] += a * sh.v * w;
+                            dr += a * v * sh.v
+                                  * s.derivatives[(edge * Chunk + t.path % Chunk) * 128 + c];
+                            gx += a * v * w * sh.x;
+                            gy += a * v * w * sh.y;
+                            gz += a * v * w * sh.z;
+                        }
+                    if constexpr (LayerIndex > 0 && Fixed)
+#pragma unroll
+                        for (int k = 0; k < 4; ++k)
+                            s.adjoint[edge][(4 + k) * 128 + c] = du[k];
+                    s.adjoint[edge][c]       = gx;
+                    s.adjoint[edge][128 + c] = gy;
+                    s.adjoint[edge][256 + c] = gz;
+                    s.adjoint[edge][384 + c] = dr;
+                }
+            }
+            __syncthreads();
+        }
+        for (int edge = 0; edge < tile.size(); ++edge) {
+            if constexpr (!Backward) {
                 if (c == 0)
                     state.density += s.density[edge];
             } else {
-                float gx = 0, gy = 0, gz = 0, dr = 0;
-                if constexpr (LayerIndex > 0)
-                    for (int k = 0; k < 4; ++k)
-                        s.up_grad[k * 128 + c] = 0;
-                for (int k = 0; k < layer.terms; ++k) {
-                    auto  t  = layer.tp[k];
-                    float a  = grad[(size_t(t.output) * g.n + i) * 128 + c] * layer.cg[k];
-                    float v  = t.input == 0   ? u0
-                               : t.input == 1 ? u1
-                               : t.input == 2 ? u2
-                                              : u3,
-                          w  = s.weights[edge][t.path * 128 + c];
-                    D3    sh = s.sh[edge][t.sh];
-                    if constexpr (LayerIndex > 0)
-                        s.up_grad[t.input * 128 + c] += a * sh.v * w;
-                    dr += a * v * sh.v * s.derivatives[edge * NW + t.path * 128 + c];
-                    gx += a * v * w * sh.x;
-                    gy += a * v * w * sh.y;
-                    gz += a * v * w * sh.z;
-                }
+                int    j  = tile.sender(edge);
+                float  r  = fmaxf(sqrtf(tile.squared_distance(edge)), 1e-10f);
+                float3 d  = tile.displacement(edge);
+                float  gx = s.adjoint[edge][c], gy = s.adjoint[edge][128 + c],
+                       gz = s.adjoint[edge][256 + c], dr = s.adjoint[edge][384 + c];
                 if constexpr (LayerIndex > 0)
                     for (int k = 0; k < 4; ++k)
                         atomicAdd(up_grad + (size_t(k) * g.n + j) * 128 + c,
-                                  s.up_grad[k * 128 + c]);
+                                  s.adjoint[edge][(4 + k) * 128 + c]);
                 if (c == 0)
                     dr += density_grad[i] * s.ddensity[edge];
                 gx += dr * d.x / r;
@@ -482,6 +565,19 @@ struct MH1Pair {
         }
     }
 };
+template<int LayerIndex, bool Backward>
+void execute(Context& ctx, MH1Pair<LayerIndex, Backward> op) {
+    // A compatible archive may reorder/change connectivity. Keep its dynamic path.
+    if (op.layer.fixed_tp)
+        lapis::execute(ctx, op);
+    else
+        lapis::execute(ctx, MH1Pair<LayerIndex, Backward, false>{op.g, op.layer, op.lookup,
+                                                                 op.constants, op.radii, op.bessel,
+                                                                 op.up, op.grad, op.density_grad,
+                                                                 op.message, op.density_out,
+                                                                 op.up_grad, op.force, op.virial});
+}
+
 struct ZBLOp {
     static constexpr int threads = 128, tile_edges = 32, scratch_alignment = 16;
     static const char*   name() { return "MH1.ZBL"; }
@@ -750,6 +846,12 @@ struct MH1::Model {
                 if (t.path < 0 || t.path >= l.paths || t.input < 0 || t.input >= l.in_comp
                     || t.sh < 0 || t.sh >= 16 || t.output < 0 || t.output >= l.out_comp)
                     throw Error("Invalid MH1 tensor-product index");
+            const TPEntry* fixed = k ? FixedTP<1>::terms : FixedTP<0>::terms;
+            l.fixed_tp           = l.terms == (k ? FixedTP<1>::count : FixedTP<0>::count);
+            auto terms           = host<TPEntry>(p + ".tp.terms");
+            for (int t = 0; l.fixed_tp && t < l.terms; ++t)
+                l.fixed_tp = terms[t].path == fixed[t].path && terms[t].input == fixed[t].input
+                             && terms[t].sh == fixed[t].sh && terms[t].output == fixed[t].output;
             l.radial  = get_radial(p + ".radial", 3, l.paths * 128);
             l.density = get_radial(p + ".density", 1, 1);
             l.product = {reinterpret_cast<const PolyTerm*>(f(p + ".product.terms")),
