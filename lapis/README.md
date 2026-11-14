@@ -27,6 +27,14 @@ Energy units are supplied by the model. Floating-point atomics are not bitwise
 deterministic. Partial periodicity, batching, autodiff and long-range solvers are
 outside the current contract.
 
+`Context::prepare` validates and wraps inputs into reusable pinned staging, then
+enqueues a packed transfer on the context stream. Brute force keeps identity atom
+order and skips histogram/scan/scatter. Preparation no longer synchronizes the
+device; operations must use the context stream, or call `synchronize()` before
+accessing prepared data from another stream. Repeated preparation protects staging
+until its previous transfer completes. `finish` transfers device status with the
+outputs and retains double-precision host energy and virial reductions.
+
 The library is static and position-independent, with hidden internal symbols.
 CUDA templates compile inside consumers. Public CUDA compilation requirements and
 CUDA runtime linkage propagate through the CMake target. Rebuild consumers when

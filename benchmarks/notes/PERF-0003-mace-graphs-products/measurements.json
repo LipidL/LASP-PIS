@@ -1,0 +1,231 @@
+{
+  "schema": 1,
+  "date": "2026-11-14",
+  "baseline_revision": "f2a5635",
+  "gpu": "NVIDIA GeForce RTX 3060 Ti",
+  "architecture": 86,
+  "cuda_toolkit": "12.6.77",
+  "model_sha256": "ec00a2705854622fbbd898ccfb7701072fcd674709102d009fb919c1b8cc5dde",
+  "input_sha256": {
+    "grid-2": "4216d12fb87cb0bd0f1a69ad40f970f0d304c75ef68b41827d4a5ef46c461858",
+    "grid-4": "7ea0a449b983af09cdf88a4e955238d0e31dd814fb350523ff9f46f17ce1e74a",
+    "grid-8": "b3b24a87aaab590a86db7ec38205dee452cafd17f19d285a823533b97213e7c1",
+    "grid-16": "88d46a30391cbfebb8bebbb96dd48e5e82d4394721c84811b8a58475121e94fa"
+  },
+  "library_sha256": {
+    "p1": "413e858ebbebde54decd5087b9dac8a2527fc60d8ff75388c5beb2ae9ccce6cb",
+    "p2": "d915642b034ee570cbb8302184d4115dc21dd69ea14c0a37ea2b6d4471b17b53"
+  },
+  "executable_sha256": {
+    "p1": "fcd453cefd93c4fd68ac8449ddaa3fbce21e4c706f2ef6d024a903d6ea9d8717",
+    "p2": "1835d2a018e775a8c10f007ba28ae0c3b956bb495072f2d77139055fd31dc061"
+  },
+  "method": {
+    "rounds": 3,
+    "warmup": 20,
+    "samples": 50,
+    "backend": "auto",
+    "order": "fixture and variant order reversed in round 2",
+    "clocks": "unlocked; desktop shares GPU",
+    "math_mode": "CUBLAS_PEDANTIC_MATH"
+  },
+  "summary": {
+    "grid-2": {
+      "p1": {
+        "median_ms": 2.744447,
+        "p95_ms": 3.854099,
+        "round_medians_ms": [
+          3.3139995000000004,
+          2.744447,
+          2.730498
+        ]
+      },
+      "p2": {
+        "median_ms": 2.1407485,
+        "p95_ms": 2.747897,
+        "round_medians_ms": [
+          2.1834995,
+          2.1407485,
+          2.117998
+        ]
+      }
+    },
+    "grid-4": {
+      "p1": {
+        "median_ms": 3.5953015,
+        "p95_ms": 4.871598,
+        "round_medians_ms": [
+          4.136499000000001,
+          3.5953015,
+          3.58075
+        ]
+      },
+      "p2": {
+        "median_ms": 2.775147,
+        "p95_ms": 3.581002,
+        "round_medians_ms": [
+          2.775147,
+          2.7976010000000002,
+          2.73625
+        ]
+      }
+    },
+    "grid-8": {
+      "p1": {
+        "median_ms": 16.776799,
+        "p95_ms": 18.280808,
+        "round_medians_ms": [
+          16.736231,
+          17.479757499999998,
+          16.776799
+        ]
+      },
+      "p2": {
+        "median_ms": 13.950038,
+        "p95_ms": 15.294386,
+        "round_medians_ms": [
+          13.696102,
+          14.716736000000001,
+          13.950038
+        ]
+      }
+    },
+    "grid-16": {
+      "p1": {
+        "median_ms": 125.0778905,
+        "p95_ms": 129.306433,
+        "round_medians_ms": [
+          118.8465845,
+          125.0778905,
+          127.08263199999999
+        ]
+      },
+      "p2": {
+        "median_ms": 98.8442,
+        "p95_ms": 104.978462,
+        "round_medians_ms": [
+          98.8442,
+          98.6595925,
+          101.95160849999999
+        ]
+      }
+    }
+  },
+  "output_errors_vs_p1": {
+    "grid-2": {
+      "energy_per_atom": 1.1920928955078125e-07,
+      "atomic_energy_max_abs": 9.5367431640625e-07,
+      "force_max_abs": 1.30385160446167e-07,
+      "virial_max_abs": 1.9073486328125e-06
+    },
+    "grid-4": {
+      "energy_per_atom": 3.725290298461914e-09,
+      "atomic_energy_max_abs": 9.5367431640625e-07,
+      "force_max_abs": 2.8312206268310547e-07,
+      "virial_max_abs": 2.849847078323364e-07
+    },
+    "grid-8": {
+      "energy_per_atom": 1.1175870895385742e-08,
+      "atomic_energy_max_abs": 1.9073486328125e-06,
+      "force_max_abs": 3.650784492492676e-07,
+      "virial_max_abs": 8.083879947662354e-07
+    },
+    "grid-16": {
+      "energy_per_atom": 6.577465683221817e-09,
+      "atomic_energy_max_abs": 1.9073486328125e-06,
+      "force_max_abs": 4.6566128730773926e-07,
+      "virial_max_abs": 2.2343010641634464e-06
+    }
+  },
+  "specialized_product_resources": {
+    "forward": {
+      "registers": 40,
+      "shared_bytes": 0,
+      "local_bytes": 0,
+      "stack_bytes": 0
+    },
+    "backward": {
+      "registers": 48,
+      "shared_bytes": 0,
+      "local_bytes": 0,
+      "stack_bytes": 0
+    }
+  },
+  "math_mode_trial": {
+    "rounds": 3,
+    "warmup": 10,
+    "samples": 20,
+    "order": "fixture and variant order reversed in round 2",
+    "candidate_library_sha256": "b6cd65709e6d9cdcbfba1b6e12f4c342743cc1dc79f605e69b89f39f80f8b8c3",
+    "round_medians_ms": {
+      "grid-2": {
+        "standard_fp32_graph": [
+          2.5260525,
+          2.1202550000000002,
+          2.4721054999999996
+        ],
+        "standard_fp32_direct": [
+          3.016253,
+          2.781346,
+          2.8804565
+        ],
+        "pedantic_fp32_graph": [
+          2.506252,
+          2.136747,
+          2.501306
+        ]
+      },
+      "grid-4": {
+        "standard_fp32_graph": [
+          3.2430529999999997,
+          2.845096,
+          3.200307
+        ],
+        "standard_fp32_direct": [
+          3.5436455000000002,
+          3.1972955,
+          3.537196
+        ],
+        "pedantic_fp32_graph": [
+          2.844996,
+          2.7941960000000003,
+          2.7449465
+        ]
+      },
+      "grid-8": {
+        "standard_fp32_graph": [
+          13.470483,
+          13.9554815,
+          13.4394335
+        ],
+        "standard_fp32_direct": [
+          13.290583,
+          13.839432500000001,
+          13.754683
+        ],
+        "pedantic_fp32_graph": [
+          13.429182,
+          13.550883,
+          13.699182
+        ]
+      },
+      "grid-16": {
+        "standard_fp32_graph": [
+          95.7999255,
+          96.4887185,
+          96.80073
+        ],
+        "standard_fp32_direct": [
+          95.838487,
+          98.2844555,
+          97.927183
+        ],
+        "pedantic_fp32_graph": [
+          96.395874,
+          97.3956665,
+          99.65716950000001
+        ]
+      }
+    }
+  }
+}

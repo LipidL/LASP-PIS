@@ -96,7 +96,12 @@ includes per-atom energies and units. ARC input must have three periodic axes.
 
 * One structure, three periodic axes, float32 geometry and model arithmetic.
 * Calls block through output transfer. Concurrent calls on one calculator are rejected.
-* Device capacity grows and is reused; result transfer uses stable pinned host staging.
+* Device capacity grows and is reused; input/output transfers use stable pinned host staging.
+* Repeated nonempty evaluations use CUDA Graphs after one successful warmup.
+  Capture is limited to model device work; geometry preparation and the blocking
+  output transfer stay outside it. Changes to cell, count, traversal backend,
+  workspace allocation or captured geometry pointers invalidate the single cached
+  graph. The next matching call captures again after warming the new configuration.
 * Brute force supports small cells and periodic self-images. The occupancy-aware
   grid backend uses reciprocal plane heights, a 27-offset stencil, histogram,
   prefix scan and scatter. Dense metadata is coarsened under a configurable budget.
@@ -107,8 +112,15 @@ includes per-atom energies and units. ARC input must have three periodic axes.
   belong to the operation. See [the L1 guide](../lapis/docs/PAIR_OP.md).
 
 Partial periodicity, persistent edge features, general autodiff, heterogeneous
-batches, long-range solvers, CUDA Graph capture and asynchronous public calls are
+batches, long-range solvers and asynchronous public calls are
 outside v1. Floating-point atomics are not bitwise deterministic.
+
+MH1 uses pedantic FP32 cuBLAS math and specializes canonical product connectivity
+while retaining checkpoint coefficients and a generic fallback. TF32/BF16 modes
+are not enabled. Set `MACE_DISABLE_GRAPHS=1` before construction for direct launches,
+or `MACE_DEFAULT_MATH=1` to evaluate standard FP32 cuBLAS math. `MACE_PROFILE_MH1=1`
+also bypasses graphs so stage events describe the actual evaluation. Performance
+and validation results are recorded in the [P2 note](../benchmarks/notes/PERF-0003-mace-graphs-products.md).
 
 The C API exports `mace_create_mh1`, `mace_calculate`, `mace_diagnostics`,
 `mace_destroy` and `mace_last_error` from `libmace.so`. Python is packaged as

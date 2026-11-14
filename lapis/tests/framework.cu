@@ -244,6 +244,33 @@ int main() {
             require(collect(c, 2.f) == reference(q, 2.f), "cell-list edges changed");
             std::cout << "traversal image bounds and geometry reuse passed\n";
         }
+        // Input staging belongs to Context, not the caller's temporary arrays.
+        // Consecutive prepares must also protect staging still being copied.
+        {
+            float     x[] = {-.25f, .5f, .75f, 4.25f, 6.5f, -7.25f};
+            int       z[] = {18, 18};
+            Structure q{
+                2, x, z, {8, 0, 0, 0, 9, 0, 0, 0, 10}
+            };
+            Context c;
+            for (auto backend : {NeighborBackend::BruteForce, NeighborBackend::CellList,
+                                 NeighborBackend::BruteForce}) {
+                c.prepare(q, 4.f, {backend});
+                x[0] += .25f;
+                c.prepare(q, 4.f, {backend});
+                auto expected = reference(q, 4.f);
+                x[0] += .25f;
+                require(collect(c, 4.f) == expected, "reusable input staging lost geometry");
+                if (backend == NeighborBackend::BruteForce) {
+                    int order[2];
+                    check(cudaMemcpy(order, c.internal_to_original, sizeof(order),
+                                     cudaMemcpyDeviceToHost));
+                    require(order[0] == 0 && order[1] == 1, "brute ordering is not identity");
+                    require(c.geometry.offsets == nullptr, "brute path constructed grid offsets");
+                }
+            }
+            std::cout << "reusable input staging and brute identity order passed\n";
+        }
         float     xyz[6] = {.2f, .3f, .4f, 1.4f, .3f, .4f};
         int       zs[2]  = {18, 18};
         Structure s;

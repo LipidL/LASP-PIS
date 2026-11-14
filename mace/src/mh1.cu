@@ -6,9 +6,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <sstream>
+#include <utility>
 
 #include "mace/mh1.hpp"
 #include "mh1_math.cuh"
+#include "mh1_product.cuh"
 #include "mh1_tp.cuh"
 #include "weights.hpp"
 
@@ -32,14 +34,12 @@ struct Linear {
     const float*            weight;
     bool                    forward_partition = false, backward_partition = false;
 };
-struct PolyTerm {
-    int output, degree, a, b, c;
-};
 struct Product {
     const PolyTerm* terms;
     const float*    coefficients;
     int             count, outputs;
     Linear          linear;
+    bool            fixed = false;
 };
 struct Layer {
     Linear         up, res, one, two, skip;
@@ -80,6 +80,35 @@ struct StageTimer {
         for (auto& event : events)
             cudaEventDestroy(event.second);
     }
+};
+// One graph per immutable model. Inputs are refreshed outside capture; kernels
+// capture geometry by value, so every scalar and pointer participates in reuse.
+struct EvaluationGraph {
+    cudaGraphExec_t              executable{};
+    DeviceGeometry               geometry{};
+    uint64_t                     generation = 0;
+    bool                         warmed     = false;
+    std::vector<KernelResources> resources;
+    bool                         matches(const Context& c) const {
+        const auto& g = c.geometry;
+        return warmed && generation == c.allocation_generation() && geometry.n == g.n
+               && geometry.backend == g.backend && geometry.cutoff2 == g.cutoff2
+               && std::equal(g.h, g.h + 9, geometry.h)
+               && std::equal(g.grid, g.grid + 3, geometry.grid)
+               && std::equal(g.images, g.images + 3, geometry.images) && geometry.xyz == g.xyz
+               && geometry.elements == g.elements && geometry.bins == g.bins
+               && geometry.offsets == g.offsets && geometry.winding == g.winding
+               && geometry.status == g.status && geometry.explicit_offsets == g.explicit_offsets
+               && geometry.explicit_edges == g.explicit_edges;
+    }
+    void reset() {
+        if (executable)
+            cudaGraphExecDestroy(executable);
+        executable = nullptr;
+        warmed     = false;
+        resources.clear();
+    }
+    ~EvaluationGraph() { reset(); }
 };
 // Matrices use [irrep component][node][channel]. This makes each component a
 // column-major channel x node matrix and every equivariant map a batched GEMM.
@@ -124,60 +153,67 @@ __global__ void embed_kernel(DeviceGeometry g, const int* lookup, const float* e
     if (c == 0)
         e[i] = shift;
 }
-__global__ void normalize_kernel(int n, const float* raw, const float* res, const float* density,
-                                 float alpha, float beta, float* pre) {
-    size_t k = size_t(blockIdx.x) * blockDim.x + threadIdx.x;
-    if (k >= size_t(n) * 9728)
-        return;
-    int i  = k < size_t(n) * 2048 ? int(k / 2048) : int(((k - size_t(n) * 2048) / 512) % n);
-    pre[k] = raw[k] / (alpha + beta * density[i]) + res[k];
-}
 __device__ size_t gate_index(int n, int i, int c, int comp) {
     return comp == 0 ? size_t(i) * 2048 + c
                      : size_t(n) * 2048 + size_t((comp - 1) * n + i) * 512 + c;
 }
-template<bool Backward>
-__global__ void gate_kernel(int n, const float* pre, const float* grad, float* output,
-                            float scalar_scale, float gate_scale) {
+__global__ void normalize_gate(int n, const float* raw, const float* res, const float* density,
+                               float alpha, float beta, float* pre, float* output,
+                               float scalar_scale, float gate_scale) {
     int q = blockIdx.x * blockDim.x + threadIdx.x;
     if (q >= n * 512)
         return;
-    int   i = q / 512, c = q % 512;
-    float u = pre[i * 2048 + c], sig = sigmoid(u);
-    if constexpr (!Backward)
-        output[q] = scalar_scale * u * sig;
-    else
-        output[i * 2048 + c] = grad[q] * scalar_scale * sig * (1 + u * (1 - sig));
+    int    i = q / 512, c = q % 512;
+    float  den    = alpha + beta * density[i];
+    size_t scalar = size_t(i) * 2048 + c;
+    float  u      = raw[scalar] / den + res[scalar];
+    pre[scalar]   = u;
+    output[q]     = scalar_scale * u * sigmoid(u);
     for (int l = 1; l <= 3; ++l) {
-        int   gi = i * 2048 + l * 512 + c;
-        float g = sigmoid(pre[gi]), dg = 0;
+        size_t gi   = scalar + l * 512;
+        float  gate = raw[gi] / den + res[gi];
+        pre[gi]     = gate;
+        float g     = sigmoid(gate);
         for (int m = l * l; m < (l + 1) * (l + 1); ++m) {
             size_t src = gate_index(n, i, c, m), dst = size_t(m) * n * 512 + q;
-            if constexpr (!Backward)
-                output[dst] = pre[src] * gate_scale * g;
-            else {
-                output[src] = grad[dst] * gate_scale * g;
-                dg += grad[dst] * pre[src] * gate_scale * g * (1 - g);
-            }
+            float  value = raw[src] / den + res[src];
+            pre[src]     = value;
+            output[dst]  = value * gate_scale * g;
         }
-        if constexpr (Backward)
-            output[gi] = dg;
     }
 }
-__global__ void norm_backward(int n, const float* pre_grad, const float* raw, const float* density,
-                              float alpha, float beta, float* raw_grad, float* density_grad) {
+__global__ void gate_norm_backward(int n, const float* pre, const float* grad, const float* raw,
+                                   const float* density, float alpha, float beta, float* pre_grad,
+                                   float* raw_grad, float* density_grad, float scalar_scale,
+                                   float gate_scale) {
     int              i = blockIdx.x, t = threadIdx.x;
-    __shared__ float sum[128];
-    float            den = alpha + beta * density[i], s = 0;
-    for (int k = t; k < 9728; k += 128) {
-        size_t idx = k < 2048 ? size_t(i) * 2048 + k
-                              : size_t(n) * 2048 + size_t(((k - 2048) / 512) * n + i) * 512
-                                    + (k - 2048) % 512;
-        float  g = pre_grad[idx], value = raw[idx];
-        raw_grad[idx] = g / den;
-        s -= g * value * beta / (den * den);
+    __shared__ float sums[128];
+    float            den = alpha + beta * density[i], sum = 0;
+    for (int c = t; c < 512; c += 128) {
+        int    q      = i * 512 + c;
+        size_t scalar = size_t(i) * 2048 + c;
+        float  u = pre[scalar], sig = sigmoid(u);
+        float  du        = grad[q] * scalar_scale * sig * (1 + u * (1 - sig));
+        pre_grad[scalar] = du;
+        sum -= du * raw[scalar] * beta / (den * den);
+        raw_grad[scalar] = du / den;
+        for (int l = 1; l <= 3; ++l) {
+            size_t gi = scalar + l * 512;
+            float  g = sigmoid(pre[gi]), dg = 0;
+            for (int m = l * l; m < (l + 1) * (l + 1); ++m) {
+                size_t src = gate_index(n, i, c, m), dst = size_t(m) * n * 512 + q;
+                float  d = grad[dst] * gate_scale * g;
+                dg += grad[dst] * pre[src] * gate_scale * g * (1 - g);
+                pre_grad[src] = d;
+                sum -= d * raw[src] * beta / (den * den);
+                raw_grad[src] = d / den;
+            }
+            pre_grad[gi] = dg;
+            sum -= dg * raw[gi] * beta / (den * den);
+            raw_grad[gi] = dg / den;
+        }
     }
-    float total = block_sum128(s, sum);
+    float total = block_sum128(sum, sums);
     if (t == 0)
         density_grad[i] = total;
 }
@@ -218,6 +254,75 @@ __global__ void product_kernel(int n, Product p, const float* x, const float* gr
         for (int m = 0; m < 16; ++m)
             y[size_t(m) * n * 512 + q] = accum[m][lane];
     }
+}
+// Constant indices let the compiler keep components and adjoints in registers.
+// Preserve checkpoint term order and multiplication order, including repeated
+// factors in derivatives. Coefficients remain runtime checkpoint data.
+// Full-call measurements and fallback validation: PERF-0003.
+template<int LayerIndex, bool Backward, size_t K>
+__device__ __forceinline__ void product_term(const float* coefficients, int c, const float* v,
+                                             const float* grad, float* accum) {
+    constexpr PolyTerm t = FixedProduct<LayerIndex>::terms[K];
+    float              w = coefficients[K * 512 + c];
+    float              a = v[t.a], b = 1, d = 1;
+    if constexpr (t.degree >= 2)
+        b = v[t.b];
+    if constexpr (t.degree == 3)
+        d = v[t.c];
+    if constexpr (!Backward)
+        accum[t.output] += w * a * b * d;
+    else {
+        float g = w * grad[t.output];
+        accum[t.a] += g * b * d;
+        if constexpr (t.degree >= 2)
+            accum[t.b] += g * a * d;
+        if constexpr (t.degree == 3)
+            accum[t.c] += g * a * b;
+    }
+}
+template<int LayerIndex, bool Backward, size_t... K>
+__device__ __forceinline__ void product_terms(const float* coefficients, int c, const float* v,
+                                              const float* grad, float* accum,
+                                              std::index_sequence<K...>) {
+    (product_term<LayerIndex, Backward, K>(coefficients, c, v, grad, accum), ...);
+}
+template<int LayerIndex, bool Backward>
+__global__ void fixed_product_kernel(int n, const float* coefficients, const float* x,
+                                     const float* grad, float* y) {
+    int q = blockIdx.x * blockDim.x + threadIdx.x;
+    if (q >= n * 512)
+        return;
+    constexpr int outputs = LayerIndex == 0 ? 4 : 1;
+    float         v[16], accum[Backward ? 16 : outputs]{}, g[outputs]{};
+#pragma unroll
+    for (int m = 0; m < 16; ++m)
+        v[m] = x[size_t(m) * n * 512 + q];
+    if constexpr (Backward) {
+#pragma unroll
+        for (int m = 0; m < outputs; ++m)
+            g[m] = grad[size_t(m) * n * 512 + q];
+    }
+    product_terms<LayerIndex, Backward>(
+        coefficients, q % 512, v, g, accum,
+        std::make_index_sequence<FixedProduct<LayerIndex>::count>{});
+#pragma unroll
+    for (int m = 0; m < (Backward ? 16 : outputs); ++m)
+        y[size_t(m) * n * 512 + q] = accum[m];
+}
+template<bool Backward>
+void product(Context& c, int layer, const Product& p, const float* x, const float* grad, float* y) {
+    int n = c.geometry.n;
+    if (!n)
+        return;
+    int blocks = (n * 512 + 127) / 128;
+    if (!p.fixed)
+        product_kernel<Backward><<<blocks, 128, 0, c.stream>>>(n, p, x, grad, y);
+    else if (layer == 0)
+        fixed_product_kernel<0, Backward>
+            <<<blocks, 128, 0, c.stream>>>(n, p.coefficients, x, grad, y);
+    else
+        fixed_product_kernel<1, Backward>
+            <<<blocks, 128, 0, c.stream>>>(n, p.coefficients, x, grad, y);
 }
 __global__ void add_kernel(size_t count, const float* a, float* b, float scale) {
     size_t k = size_t(blockIdx.x) * blockDim.x + threadIdx.x;
@@ -655,7 +760,10 @@ struct MH1::Model {
     Layer                         layers[2];
     Linear                        read0, read1up, read1down;
     cublasHandle_t                blas{};
-    size_t                        bytes = 0;
+    Buffer                        blas_workspace;
+    EvaluationGraph               graph;
+    bool                          use_graphs = std::getenv("MACE_DISABLE_GRAPHS") == nullptr;
+    size_t                        bytes      = 0;
     float                         constants[14];
     float                         atomic_energy[119]{};
     int                           species = 0;
@@ -864,15 +972,29 @@ struct MH1::Model {
                     || t.a < 0 || t.a >= 16 || (t.degree >= 2 && (t.b < 0 || t.b >= 16))
                     || (t.degree == 3 && (t.c < 0 || t.c >= 16)))
                     throw Error("Invalid MH1 polynomial index");
+            auto product_terms = host<PolyTerm>(p + ".product.terms");
+            l.product.fixed =
+                l.product.count == (k ? FixedProduct<1>::count : FixedProduct<0>::count);
+            for (int t = 0; l.product.fixed && t < l.product.count; ++t) {
+                auto actual = product_terms[t], expected = FixedProduct<0>::terms[t];
+                l.product.fixed = actual.output == expected.output
+                                  && actual.degree == expected.degree && actual.a == expected.a
+                                  && actual.b == expected.b && actual.c == expected.c;
+            }
         }
         read0     = get_linear("readout0", 2048, 1);
         read1up   = get_linear("readout1.up", 512, 16);
         read1down = get_linear("readout1.down", 16, 1);
         blas_check(cublasCreate(&blas));
         blas_check(cublasSetStream(blas, stream));
-        blas_check(cublasSetMathMode(blas, CUBLAS_PEDANTIC_MATH));
+        blas_check(cublasSetMathMode(blas, std::getenv("MACE_DEFAULT_MATH")
+                                               ? CUBLAS_DEFAULT_MATH
+                                               : CUBLAS_PEDANTIC_MATH));
+        blas_workspace.reserve(4 * 1024 * 1024);
+        blas_check(cublasSetWorkspace(blas, blas_workspace.data, blas_workspace.capacity));
     }
     ~Model() {
+        graph.reset();
         if (blas)
             cublasDestroy(blas);
     }
@@ -899,133 +1021,169 @@ Result MH1::evaluate() {
     };
     float *energy = array("mh.e", 1), *force = array("mh.f", 3), *virial = array("mh.v", 9),
           *embedding = array("mh.embedding", 2048);
-    if (n)
-        embed_kernel<<<n, 128, 0, c.stream>>>(c.geometry, m.lookup_buffer.as<int>(),
-                                              m.f("embedding"), m.f("e0"), m.constants[7],
-                                              embedding, energy);
-    execute(c, ZBLOp{c.geometry, m.f("constants"), m.f("zbl.radii"), m.f("zbl.c"), energy, force,
-                     virial});
-    timer.mark("embedding/ZBL");
-    struct Saved {
-        float *up, *density, *raw, *pre, *product_in, *hidden;
-    };
-    Saved saved[2];
-    // Common temporaries have stable maximum capacity before either layer runs.
-    float *message = array("mh.temp.message", 5120), *res = array("mh.temp.res", 9728),
-          *gate = array("mh.temp.gate", 8192), *poly = array("mh.temp.poly", 2048),
-          *skip = array("mh.temp.skip", 2048), *node_e = array("mh.temp.energy", 1);
-    float* input = embedding;
-    for (int k = 0; k < 2; ++k) {
-        auto&       l = m.layers[k];
-        auto&       s = saved[k];
-        std::string p = "mh.saved" + std::to_string(k);
-        s.up          = array(p + ".up", l.in_comp * 128);
-        s.density     = array(p + ".density", 1);
-        s.raw         = array(p + ".raw", 9728);
-        s.pre         = array(p + ".pre", 9728);
-        s.product_in  = array(p + ".product_in", 8192);
-        s.hidden      = array(p + ".hidden", k ? 512 : 2048);
-        linear(c, m.blas, l.up, input, s.up);
-        linear(c, m.blas, l.res, s.up, res);
-        linear(c, m.blas, l.skip, input, skip);
-        timer.mark("forward" + std::to_string(k) + ".up/res/skip");
-        if (k == 0)
-            execute(c, MH1Pair<0, false>{c.geometry, l, m.lookup_buffer.as<int>(), m.f("constants"),
-                                         m.f("radii"), m.f("bessel"), s.up, nullptr, nullptr,
-                                         message, s.density, nullptr, nullptr, nullptr});
-        else
-            execute(c, MH1Pair<1, false>{c.geometry, l, m.lookup_buffer.as<int>(), m.f("constants"),
-                                         m.f("radii"), m.f("bessel"), s.up, nullptr, nullptr,
-                                         message, s.density, nullptr, nullptr, nullptr});
-        timer.mark("forward" + std::to_string(k) + ".pairs");
-        linear(c, m.blas, l.one, message, s.raw);
-        if (n) {
-            normalize_kernel<<<(size_t(n) * 9728 + 255) / 256, 256, 0, c.stream>>>(n, s.raw, res,
-                                                                                   s.density,
-                                                                                   l.alpha, l.beta,
-                                                                                   s.pre);
-            gate_kernel<false><<<(n * 512 + 255) / 256, 256, 0, c.stream>>>(n, s.pre, nullptr, gate,
+    auto submit      = [&]() {
+        if (n)
+            embed_kernel<<<n, 128, 0, c.stream>>>(c.geometry, m.lookup_buffer.as<int>(),
+                                                  m.f("embedding"), m.f("e0"), m.constants[7],
+                                                  embedding, energy);
+        execute(c, ZBLOp{c.geometry, m.f("constants"), m.f("zbl.radii"), m.f("zbl.c"), energy,
+                         force, virial});
+        timer.mark("embedding/ZBL");
+        struct Saved {
+            float *up, *density, *raw, *pre, *product_in, *hidden;
+        };
+        Saved saved[2];
+        // Common temporaries have stable maximum capacity before either layer runs.
+        float *message = array("mh.temp.message", 5120), *res = array("mh.temp.res", 9728),
+              *gate = array("mh.temp.gate", 8192), *poly = array("mh.temp.poly", 2048),
+              *skip = array("mh.temp.skip", 2048), *node_e = array("mh.temp.energy", 1);
+        float* input = embedding;
+        for (int k = 0; k < 2; ++k) {
+            auto&       l = m.layers[k];
+            auto&       s = saved[k];
+            std::string p = "mh.saved" + std::to_string(k);
+            s.up          = array(p + ".up", l.in_comp * 128);
+            s.density     = array(p + ".density", 1);
+            s.raw         = array(p + ".raw", 9728);
+            s.pre         = array(p + ".pre", 9728);
+            s.product_in  = array(p + ".product_in", 8192);
+            s.hidden      = array(p + ".hidden", k ? 512 : 2048);
+            linear(c, m.blas, l.up, input, s.up);
+            linear(c, m.blas, l.res, s.up, res);
+            linear(c, m.blas, l.skip, input, skip);
+            timer.mark("forward" + std::to_string(k) + ".up/res/skip");
+            if (k == 0)
+                execute(c, MH1Pair<0, false>{c.geometry, l, m.lookup_buffer.as<int>(),
+                                             m.f("constants"), m.f("radii"), m.f("bessel"), s.up,
+                                             nullptr, nullptr, message, s.density, nullptr, nullptr,
+                                             nullptr});
+            else
+                execute(c, MH1Pair<1, false>{c.geometry, l, m.lookup_buffer.as<int>(),
+                                             m.f("constants"), m.f("radii"), m.f("bessel"), s.up,
+                                             nullptr, nullptr, message, s.density, nullptr, nullptr,
+                                             nullptr});
+            timer.mark("forward" + std::to_string(k) + ".pairs");
+            linear(c, m.blas, l.one, message, s.raw);
+            if (n) {
+                normalize_gate<<<(n * 512 + 255) / 256, 256, 0, c.stream>>>(n, s.raw, res,
+                                                                            s.density, l.alpha,
+                                                                            l.beta, s.pre, gate,
                                                                             m.constants[11],
                                                                             m.constants[12]);
+            }
+            linear(c, m.blas, l.two, gate, s.product_in);
+            timer.mark("forward" + std::to_string(k) + ".linear/gate");
+            product<false>(c, k, l.product, s.product_in, nullptr, poly);
+            timer.mark("forward" + std::to_string(k) + ".product");
+            linear(c, m.blas, l.product.linear, poly, s.hidden);
+            launch_add(k ? 512 : 2048, skip, s.hidden);
+            input = s.hidden;
+            if (k == 0) {
+                linear(c, m.blas, m.read0, s.hidden, node_e);
+                launch_add(1, node_e, energy, m.constants[6]);
+            }
         }
-        linear(c, m.blas, l.two, gate, s.product_in);
-        timer.mark("forward" + std::to_string(k) + ".linear/gate");
+        float *read_pre = array("mh.read.pre", 16), *read_hidden = array("mh.read.hidden", 16),
+              *read_grad = array("mh.read.grad", 16), *read_dpre = array("mh.read.dpre", 16);
+        linear(c, m.blas, m.read1up, saved[1].hidden, read_pre);
         if (n)
-            product_kernel<false><<<(n * 512 + 127) / 128, 128, 0, c.stream>>>(n, l.product,
-                                                                               s.product_in,
-                                                                               nullptr, poly);
-        timer.mark("forward" + std::to_string(k) + ".product");
-        linear(c, m.blas, l.product.linear, poly, s.hidden);
-        launch_add(k ? 512 : 2048, skip, s.hidden);
-        input = s.hidden;
-        if (k == 0) {
-            linear(c, m.blas, m.read0, s.hidden, node_e);
-            launch_add(1, node_e, energy, m.constants[6]);
-        }
-    }
-    float *read_pre = array("mh.read.pre", 16), *read_hidden = array("mh.read.hidden", 16),
-          *read_grad = array("mh.read.grad", 16), *read_dpre = array("mh.read.dpre", 16);
-    linear(c, m.blas, m.read1up, saved[1].hidden, read_pre);
-    if (n)
-        read_act<false><<<(n * 16 + 255) / 256, 256, 0, c.stream>>>(n * 16, read_pre, nullptr,
-                                                                    read_hidden, m.constants[13]);
-    linear(c, m.blas, m.read1down, read_hidden, node_e);
-    launch_add(1, node_e, energy, m.constants[6]);
-    // Forward temporaries are dead here. Reuse them for adjoints, and overwrite
-    // saved node tensors only after their final read in the analytical backward.
-    float *one = node_e, *hidden_grad = skip, *previous_grad = embedding, *product_grad = poly,
-          *density_grad = array("mh.adj.density", 1), *up_grad = array("mh.adj.up", 512);
-    float *gate_grad = gate, *pre_grad = res, *message_grad = message;
-    if (n)
-        fill_kernel<<<(n + 255) / 256, 256, 0, c.stream>>>(n, one, m.constants[6]);
-    linear(c, m.blas, m.read1down, one, read_grad, true);
-    if (n)
-        read_act<true><<<(n * 16 + 255) / 256, 256, 0, c.stream>>>(n * 16, read_pre, read_grad,
-                                                                   read_dpre, m.constants[13]);
-    linear(c, m.blas, m.read1up, read_dpre, hidden_grad, true);
-    timer.mark("readouts");
-    for (int k = 1; k >= 0; --k) {
-        auto&  l        = m.layers[k];
-        auto&  s        = saved[k];
-        float* pin_grad = s.product_in;
-        float* raw_grad = s.raw;
-        if (k == 0)
-            linear(c, m.blas, m.read0, one, hidden_grad, true, true);
-        linear(c, m.blas, l.product.linear, hidden_grad, product_grad, true);
-        timer.mark("backward" + std::to_string(k) + ".product.linear");
+            read_act<false><<<(n * 16 + 255) / 256, 256, 0, c.stream>>>(n * 16, read_pre, nullptr,
+                                                                        read_hidden,
+                                                                        m.constants[13]);
+        linear(c, m.blas, m.read1down, read_hidden, node_e);
+        launch_add(1, node_e, energy, m.constants[6]);
+        // Forward temporaries are dead here. Reuse them for adjoints, and overwrite
+        // saved node tensors only after their final read in the analytical backward.
+        float *one = node_e, *hidden_grad = skip, *previous_grad = embedding, *product_grad = poly,
+              *density_grad = array("mh.adj.density", 1), *up_grad = array("mh.adj.up", 512);
+        float *gate_grad = gate, *pre_grad = res, *message_grad = message;
         if (n)
-            product_kernel<true>
-                <<<(n * 512 + 127) / 128, 128, 0, c.stream>>>(n, l.product, s.product_in,
-                                                              product_grad, pin_grad);
-        timer.mark("backward" + std::to_string(k) + ".product");
-        linear(c, m.blas, l.two, pin_grad, gate_grad, true);
-        if (n) {
-            gate_kernel<true>
-                <<<(n * 512 + 255) / 256, 256, 0, c.stream>>>(n, s.pre, gate_grad, pre_grad,
-                                                              m.constants[11], m.constants[12]);
-            norm_backward<<<n, 128, 0, c.stream>>>(n, pre_grad, s.raw, s.density, l.alpha, l.beta,
-                                                   raw_grad, density_grad);
+            fill_kernel<<<(n + 255) / 256, 256, 0, c.stream>>>(n, one, m.constants[6]);
+        linear(c, m.blas, m.read1down, one, read_grad, true);
+        if (n)
+            read_act<true><<<(n * 16 + 255) / 256, 256, 0, c.stream>>>(n * 16, read_pre, read_grad,
+                                                                       read_dpre, m.constants[13]);
+        linear(c, m.blas, m.read1up, read_dpre, hidden_grad, true);
+        timer.mark("readouts");
+        for (int k = 1; k >= 0; --k) {
+            auto&  l        = m.layers[k];
+            auto&  s        = saved[k];
+            float* pin_grad = s.product_in;
+            float* raw_grad = s.raw;
+            if (k == 0)
+                linear(c, m.blas, m.read0, one, hidden_grad, true, true);
+            linear(c, m.blas, l.product.linear, hidden_grad, product_grad, true);
+            timer.mark("backward" + std::to_string(k) + ".product.linear");
+            product<true>(c, k, l.product, s.product_in, product_grad, pin_grad);
+            timer.mark("backward" + std::to_string(k) + ".product");
+            linear(c, m.blas, l.two, pin_grad, gate_grad, true);
+            if (n) {
+                gate_norm_backward<<<n, 128, 0, c.stream>>>(n, s.pre, gate_grad, s.raw, s.density,
+                                                            l.alpha, l.beta, pre_grad, raw_grad,
+                                                            density_grad, m.constants[11],
+                                                            m.constants[12]);
+            }
+            linear(c, m.blas, l.one, raw_grad, message_grad, true);
+            timer.mark("backward" + std::to_string(k) + ".linear/gate");
+            if (k == 1) {
+                linear(c, m.blas, l.res, pre_grad, up_grad, true);
+                execute(c,
+                        MH1Pair<1, true>{c.geometry, l, m.lookup_buffer.as<int>(), m.f("constants"),
+                                         m.f("radii"), m.f("bessel"), s.up, message_grad,
+                                         density_grad, nullptr, nullptr, up_grad, force, virial});
+                timer.mark("backward1.pairs");
+                linear(c, m.blas, l.skip, hidden_grad, previous_grad, true);
+                linear(c, m.blas, l.up, up_grad, previous_grad, true, true);
+                std::swap(hidden_grad, previous_grad);
+            } else
+                execute(c,
+                        MH1Pair<0, true>{c.geometry, l, m.lookup_buffer.as<int>(), m.f("constants"),
+                                         m.f("radii"), m.f("bessel"), s.up, message_grad,
+                                         density_grad, nullptr, nullptr, nullptr, force, virial});
+            if (k == 0)
+                timer.mark("backward0.pairs");
         }
-        linear(c, m.blas, l.one, raw_grad, message_grad, true);
-        timer.mark("backward" + std::to_string(k) + ".linear/gate");
-        if (k == 1) {
-            linear(c, m.blas, l.res, pre_grad, up_grad, true);
-            execute(c, MH1Pair<1, true>{c.geometry, l, m.lookup_buffer.as<int>(), m.f("constants"),
-                                        m.f("radii"), m.f("bessel"), s.up, message_grad,
-                                        density_grad, nullptr, nullptr, up_grad, force, virial});
-            timer.mark("backward1.pairs");
-            linear(c, m.blas, l.skip, hidden_grad, previous_grad, true);
-            linear(c, m.blas, l.up, up_grad, previous_grad, true, true);
-            std::swap(hidden_grad, previous_grad);
-        } else
-            execute(c, MH1Pair<0, true>{c.geometry, l, m.lookup_buffer.as<int>(), m.f("constants"),
-                                        m.f("radii"), m.f("bessel"), s.up, message_grad,
-                                        density_grad, nullptr, nullptr, nullptr, force, virial});
-        if (k == 0)
-            timer.mark("backward0.pairs");
+        check(cudaGetLastError());
+    };
+    auto& graph         = m.graph;
+    bool  graph_enabled = m.use_graphs && !timer.enabled && n > 0;
+    if (!graph_enabled || !graph.matches(c))
+        graph.reset();
+    if (graph_enabled && graph.executable) {
+        check(cudaGraphLaunch(graph.executable, c.stream));
+        c.resources = graph.resources;
+    } else if (graph_enabled && graph.warmed) {
+        cudaGraph_t captured = nullptr;
+        check(cudaStreamBeginCapture(c.stream, cudaStreamCaptureModeThreadLocal));
+        try {
+            submit();
+            check(cudaStreamEndCapture(c.stream, &captured));
+            check(cudaGraphInstantiate(&graph.executable, captured, nullptr, nullptr, 0));
+            check(cudaGraphDestroy(captured));
+            captured        = nullptr;
+            graph.resources = c.resources;
+            check(cudaGraphLaunch(graph.executable, c.stream));
+        } catch (...) {
+            // Always leave capture mode, including failed captures, so the
+            // Calculator exception guard can synchronize and recover normally.
+            cudaStreamCaptureStatus status;
+            if (cudaStreamIsCapturing(c.stream, &status) == cudaSuccess
+                && status != cudaStreamCaptureStatusNone)
+                cudaStreamEndCapture(c.stream, &captured);
+            if (captured)
+                cudaGraphDestroy(captured);
+            graph.reset();
+            throw;
+        }
+    } else {
+        submit();
     }
-    check(cudaGetLastError());
     auto result = c.finish(energy, force, virial);
+    if (graph_enabled) {
+        graph.geometry   = c.geometry;
+        graph.generation = c.allocation_generation();
+        graph.warmed     = true;
+    }
     timer.report();
     // Keep large atomic baselines separate from small interaction energies until
     // the host's double-precision output reduction. Model kernels remain float32.

@@ -91,6 +91,12 @@ class Context {
     std::map<KernelKey, KernelResources> kernel_resources_;
     void*                                pinned_          = nullptr;
     size_t                               pinned_capacity_ = 0;
+    void*                                input_pinned_    = nullptr;
+    size_t                               input_capacity_  = 0;
+    cudaEvent_t                          input_copied_{};
+    bool                                 input_pending_ = false;
+    std::vector<int>                     occupancy_;
+    uint64_t                             allocation_generation_ = 0;
 
   public:
     cudaStream_t                 stream{};
@@ -105,6 +111,9 @@ class Context {
     Context(const Context&)            = delete;
     Context& operator=(const Context&) = delete;
     void*    reserve(const std::string& name, size_t bytes);
+    // Changes whenever a workspace address/capacity changes, including growth
+    // outside the model. Captured evaluations must match this generation.
+    uint64_t allocation_generation() const { return allocation_generation_; }
     template<class T>
     T* array(const std::string& name, size_t count) {
         if (count > SIZE_MAX / sizeof(T))

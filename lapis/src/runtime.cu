@@ -24,11 +24,15 @@ Context::Context() {
     check(cudaStreamCreateWithFlags(&stream, cudaStreamNonBlocking));
     check(cudaEventCreate(&start));
     check(cudaEventCreate(&stop));
+    check(cudaEventCreateWithFlags(&input_copied_, cudaEventDisableTiming));
 }
 Context::~Context() {
     cudaStreamSynchronize(stream);
     if (pinned_)
         cudaFreeHost(pinned_);
+    if (input_pinned_)
+        cudaFreeHost(input_pinned_);
+    cudaEventDestroy(input_copied_);
     cudaEventDestroy(start);
     cudaEventDestroy(stop);
     cudaStreamDestroy(stream);
@@ -69,7 +73,8 @@ void* Context::reserve(const std::string& name, size_t bytes) {
     auto&  b             = buffers_[name];
     size_t previous      = b.capacity;
     size_t during_growth = diagnostics.allocated_bytes + (bytes > previous ? bytes : 0);
-    b.reserve(bytes);
+    if (b.reserve(bytes))
+        ++allocation_generation_;
     diagnostics.allocated_bytes += b.capacity - previous;
     diagnostics.peak_bytes =
         std::max({diagnostics.peak_bytes, diagnostics.allocated_bytes, during_growth});
@@ -79,6 +84,11 @@ __global__ void histogram(const int* bins, int* counts, int n) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     if (i < n)
         atomicAdd(counts + bins[i], 1);
+}
+__global__ void identity_order(int n, int* io, int* oi) {
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < n)
+        io[i] = oi[i] = i;
 }
 __global__ void scatter(const float* x, const int* z, const int* b, const int* w, int n,
                         const int* offsets, int* cursor, float* xo, int* zo, int* bo, int* wo,
@@ -97,8 +107,10 @@ __global__ void scatter(const float* x, const int* z, const int* b, const int* w
     }
 }
 __global__ void restore(const float* e, const float* f, const float* v, const int* map, int n,
-                        float* out) {
+                        const int* status, float* out) {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
+    if (i == 0)
+        reinterpret_cast<int*>(out)[size_t(n) * 13] = *status;
     if (i >= n)
         return;
     int j  = map[i];
@@ -109,6 +121,12 @@ __global__ void restore(const float* e, const float* f, const float* v, const in
         out[4 * n + 9 * j + k] = v[9 * i + k];
 }
 void Context::prepare(const Structure& s, float cutoff, const Options& opts) {
+    // Calculator calls finish before reusing staging. Direct Context clients
+    // may prepare again sooner; wait only for the preceding input transfer.
+    if (input_pending_) {
+        check(cudaEventSynchronize(input_copied_));
+        input_pending_ = false;
+    }
     prepared_cutoff_ = 0;
     resources.clear();
     if (s.size < 0 || s.size > INT_MAX / 16 || !std::isfinite(cutoff) || cutoff <= 0
@@ -168,12 +186,26 @@ void Context::prepare(const Structure& s, float cutoff, const Options& opts) {
         dims[axis] = (dims[axis] + 1) / 2;
         coarsened  = true;
     }
-    int                nb = int(bins_product()), n = s.size;
-    std::vector<float> xyz(size_t(n) * 3);
-    std::vector<int>   bins(n), wind(size_t(n) * 3), occ(nb, 0);
+    int    nb = int(bins_product()), n = s.size;
+    size_t input_bytes = std::max(size_t(1), size_t(n) * 8) * 4;
+    if (input_bytes > input_capacity_) {
+        void* fresh;
+        check(cudaMallocHost(&fresh, input_bytes));
+        if (input_pinned_)
+            cudaFreeHost(input_pinned_);
+        input_pinned_   = fresh;
+        input_capacity_ = input_bytes;
+    }
+    auto* xyz  = static_cast<float*>(input_pinned_);
+    auto* z    = reinterpret_cast<int*>(xyz + size_t(n) * 3);
+    auto* bins = z + n;
+    auto* wind = bins + n;
+    occupancy_.assign(nb, 0);
+    auto& occ = occupancy_;
     for (int i = 0; i < n; ++i) {
         if (s.elements[i] < 1 || s.elements[i] > 118)
             throw Error("Invalid atomic number");
+        z[i] = s.elements[i];
         double f[3];
         int    b[3];
         for (int k = 0; k < 3; ++k) {
@@ -237,39 +269,50 @@ void Context::prepare(const Structure& s, float cutoff, const Options& opts) {
     if (n)
         original_elements.assign(s.elements, s.elements + n);
     check(cudaEventRecord(start, stream));
-    float* input    = array<float>("input.xyz", 3 * size_t(n));
-    int*   elements = array<int>("input.z", n);
-    int*   ib       = array<int>("input.bin", n);
-    int*   iw       = array<int>("input.winding", 3 * size_t(n));
-    auto   copy     = [&](void* dst, const void* src, size_t bytes) {
-        if (bytes)
-            check(cudaMemcpyAsync(dst, src, bytes, cudaMemcpyHostToDevice, stream));
-    };
-    copy(input, xyz.data(), xyz.size() * 4);
-    copy(elements, s.elements, size_t(n) * 4);
-    copy(ib, bins.data(), size_t(n) * 4);
-    copy(iw, wind.data(), wind.size() * 4);
-    float* sorted        = array<float>("geometry.xyz", 3 * size_t(n));
-    int*   sz            = array<int>("geometry.z", n);
-    int*   sb            = array<int>("geometry.bin", n);
-    int*   sw            = array<int>("geometry.winding", 3 * size_t(n));
+    float* input    = static_cast<float*>(reserve("input.packed", input_bytes));
+    int*   elements = reinterpret_cast<int*>(input + size_t(n) * 3);
+    int*   ib       = elements + n;
+    int*   iw       = ib + n;
+    if (n) {
+        check(cudaMemcpyAsync(input, input_pinned_, size_t(n) * 8 * 4, cudaMemcpyHostToDevice,
+                              stream));
+        // Mark pending before recording so error recovery also protects staging.
+        input_pending_ = true;
+        check(cudaEventRecord(input_copied_, stream));
+    }
+    float* sorted        = input;
+    int*   sz            = elements;
+    int*   sb            = ib;
+    int*   sw            = iw;
     internal_to_original = array<int>("geometry.i2o", n);
     original_to_internal = array<int>("geometry.o2i", n);
-    int* counts          = array<int>("grid.count", nb + 1);
-    int* offsets         = array<int>("grid.offset", nb + 1);
-    int* cursor          = array<int>("grid.cursor", nb);
-    clear(counts, size_t(nb + 1) * 4);
-    clear(cursor, size_t(nb) * 4);
-    if (n)
-        histogram<<<(n + 255) / 256, 256, 0, stream>>>(ib, counts, n);
-    size_t scan_bytes = 0;
-    check(cub::DeviceScan::ExclusiveSum(nullptr, scan_bytes, counts, offsets, nb + 1, stream));
-    void* scan = reserve("grid.scan", scan_bytes);
-    check(cub::DeviceScan::ExclusiveSum(scan, scan_bytes, counts, offsets, nb + 1, stream));
-    if (n)
-        scatter<<<(n + 255) / 256, 256, 0, stream>>>(input, elements, ib, iw, n, offsets, cursor,
-                                                     sorted, sz, sb, sw, internal_to_original,
-                                                     original_to_internal);
+    int* offsets         = nullptr;
+    if (selected == NeighborBackend::BruteForce) {
+        if (n)
+            identity_order<<<(n + 255) / 256, 256, 0, stream>>>(n, internal_to_original,
+                                                                original_to_internal);
+    } else {
+        sorted      = array<float>("geometry.xyz", 3 * size_t(n));
+        sz          = array<int>("geometry.z", n);
+        sb          = array<int>("geometry.bin", n);
+        sw          = array<int>("geometry.winding", 3 * size_t(n));
+        int* counts = array<int>("grid.count", nb + 1);
+        offsets     = array<int>("grid.offset", nb + 1);
+        int* cursor = array<int>("grid.cursor", nb);
+        clear(counts, size_t(nb + 1) * 4);
+        clear(cursor, size_t(nb) * 4);
+        if (n)
+            histogram<<<(n + 255) / 256, 256, 0, stream>>>(ib, counts, n);
+        size_t scan_bytes = 0;
+        check(cub::DeviceScan::ExclusiveSum(nullptr, scan_bytes, counts, offsets, nb + 1, stream));
+        void* scan = reserve("grid.scan", scan_bytes);
+        check(cub::DeviceScan::ExclusiveSum(scan, scan_bytes, counts, offsets, nb + 1, stream));
+        if (n)
+            scatter<<<(n + 255) / 256, 256, 0, stream>>>(input, elements, ib, iw, n, offsets,
+                                                         cursor, sorted, sz, sb, sw,
+                                                         internal_to_original,
+                                                         original_to_internal);
+    }
     check(cudaGetLastError());
     int* status = array<int>("status", 1);
     clear(status, 4);
@@ -286,8 +329,6 @@ void Context::prepare(const Structure& s, float cutoff, const Options& opts) {
     std::copy(s.cell.begin(), s.cell.end(), geometry.h);
     std::copy(dims, dims + 3, geometry.grid);
     std::copy(images, images + 3, geometry.images);
-    // Pageable temporary inputs must remain alive until their stream copies complete.
-    check(cudaStreamSynchronize(stream));
     plane_heights_   = heights;
     prepared_cutoff_ = cutoff;
 #ifdef LAPIS_EXPLICIT_REFERENCE
@@ -318,10 +359,10 @@ void Context::synchronize() {
 }
 Result Context::finish(float* e, float* f, float* v) {
     int    n       = geometry.n;
-    size_t bytes   = size_t(n) * 13 * 4;
-    float* ordered = array<float>("output.ordered", size_t(n) * 13);
-    if (n)
-        restore<<<(n + 255) / 256, 256, 0, stream>>>(e, f, v, internal_to_original, n, ordered);
+    size_t bytes   = (size_t(n) * 13 + 1) * 4;
+    float* ordered = array<float>("output.ordered", size_t(n) * 13 + 1);
+    restore<<<std::max(1, (n + 255) / 256), 256, 0, stream>>>(e, f, v, internal_to_original, n,
+                                                              geometry.status, ordered);
     if (bytes > pinned_capacity_) {
         void* fresh;
         check(cudaMallocHost(&fresh, bytes));
@@ -333,7 +374,12 @@ Result Context::finish(float* e, float* f, float* v) {
     if (bytes)
         check(cudaMemcpyAsync(pinned_, ordered, bytes, cudaMemcpyDeviceToHost, stream));
     check(cudaEventRecord(stop, stream));
-    synchronize();
+    check(cudaGetLastError());
+    check(cudaStreamSynchronize(stream));
+    input_pending_ = false;
+    int status     = static_cast<const int*>(pinned_)[size_t(n) * 13];
+    if (status)
+        throw Error("Model detected invalid device state (code " + std::to_string(status) + ")");
     check(cudaEventElapsedTime(&diagnostics.device_ms, start, stop));
     Result r;
     r.energies.resize(n);

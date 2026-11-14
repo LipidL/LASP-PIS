@@ -128,4 +128,50 @@ TEST_P(TensorProductCompatibility, ReorderedTermsAgreeWithSpecializedPaths) {
 }
 
 INSTANTIATE_TEST_SUITE_P(MH1, TensorProductCompatibility, ::testing::Bool());
+
+class ProductCompatibility : public ::testing::TestWithParam<bool> {};
+
+TEST_P(ProductCompatibility, ReorderedPolynomialsAgreeWithSpecializedProducts) {
+    static const Archive original  = archive();
+    auto                 canonical = original;
+    if (GetParam())
+        for (int layer = 0; layer < 2; ++layer)
+            change_weights(canonical.at("layer" + std::to_string(layer) + ".product.coefficients"));
+    TemporaryArchive canonical_file(canonical);
+    mace::MH1        specialized(canonical_file.path.string());
+    auto             fixtures = potential_test::structures();
+    auto fixture = std::find_if(fixtures.begin(), fixtures.end(),
+                                [](const auto& s) { return s.name == "TriclinicTiO2"; });
+    ASSERT_NE(fixture, fixtures.end());
+    auto expected = specialized.calculate(fixture->view());
+    if (GetParam())
+        EXPECT_GT(std::abs(expected.energy
+                           - potential_test::model().calculate(fixture->view()).energy),
+                  1e-4);
+    for (int mask : {1, 2, 3}) {
+        SCOPED_TRACE(mask);
+        auto reordered = canonical;
+        for (int layer = 0; layer < 2; ++layer) {
+            if (!(mask & (1 << layer)))
+                continue;
+            auto prefix = "layer" + std::to_string(layer) + ".product";
+            reverse_records(reordered.at(prefix + ".terms"), 5 * sizeof(int));
+            reverse_records(reordered.at(prefix + ".coefficients"), 512 * sizeof(float));
+        }
+        TemporaryArchive fallback_file(reordered);
+        mace::MH1        generic(fallback_file.path.string());
+        for (int call = 0; call < 3; ++call) {
+            auto actual = generic.calculate(fixture->view());
+            EXPECT_NEAR(actual.energy, expected.energy, 1e-5 * fixture->elements.size());
+            for (size_t k = 0; k < actual.energies.size(); ++k)
+                EXPECT_NEAR(actual.energies[k], expected.energies[k], 1e-5);
+            for (size_t k = 0; k < actual.forces.size(); ++k)
+                EXPECT_NEAR(actual.forces[k], expected.forces[k], 1e-4);
+            for (size_t k = 0; k < actual.virial.size(); ++k)
+                EXPECT_NEAR(actual.virial[k], expected.virial[k], 5e-4);
+        }
+    }
+}
+
+INSTANTIATE_TEST_SUITE_P(MH1, ProductCompatibility, ::testing::Bool());
 } // namespace

@@ -1,5 +1,10 @@
 # MACE inference benchmarks and optimization roadmap
 
+Implementation follow-ups: [P1 pair kernels](../../../benchmarks/notes/PERF-0002-mace-pair-chunks.md)
+and [P2 staging, CUDA Graphs, and products](../../../benchmarks/notes/PERF-0003-mace-graphs-products.md).
+The measurements below describe the original pre-optimization revision; the
+follow-ups record their own baselines, validation, and acceptance results.
+
 The next substantial MACE speedup should target the radial networks and tensor
 products inside the fused pair kernels. On the measured Ti/O structures these
 stages account for 74–76% of the timed model span. Lapis preparation and output
