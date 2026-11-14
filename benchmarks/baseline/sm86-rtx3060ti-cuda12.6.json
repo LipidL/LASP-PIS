@@ -1,8 +1,8 @@
 {
   "schema": 1,
-  "generated_utc": "2026-11-13T02:32:26Z",
+  "generated_utc": "2026-11-14T09:15:28Z",
   "git": {
-    "sha": "a6d0906a878e3272614382b9537a06718524f9d1",
+    "sha": "f2a563579ace7534a126569f7992d01805e99366",
     "dirty": true
   },
   "environment": {
@@ -20,68 +20,68 @@
   "environment_class": "sm86-nvidia-geforce-rtx-3060-ti-cuda12.6",
   "cases": {
     "hpnn/direct/512": {
-      "median_ms": 6.689858,
-      "p95_ms": 6.957419,
+      "median_ms": 6.423610500000001,
+      "p95_ms": 6.944411,
       "atoms": 512,
       "fixture_sha256": "b3b24a87aaab590a86db7ec38205dee452cafd17f19d285a823533b97213e7c1",
       "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
-      "record_sha256": "2a72cf561f54a064f7bd1672d2feda28e119334697d3824b5103754fc8a3d87f"
+      "record_sha256": "5023decd3e034991f74dff69689d0144e87d235449808bb118a62653b6a1be90"
     },
     "hpnn/direct/64": {
-      "median_ms": 2.0255465,
-      "p95_ms": 2.172754,
+      "median_ms": 2.053853,
+      "p95_ms": 2.866304,
       "atoms": 64,
       "fixture_sha256": "7ea0a449b983af09cdf88a4e955238d0e31dd814fb350523ff9f46f17ce1e74a",
       "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
-      "record_sha256": "5bad34314a6057dc12af92ef3c1653c89d9a34a56a88e9d95515363d0c8bd5c1"
+      "record_sha256": "80a43aac30fdad650a02a5d555861d4561466fb7cc36ea7d1fcbec88d5af5e0e"
     },
     "hpnn/direct/8": {
-      "median_ms": 1.643467,
-      "p95_ms": 1.754622,
+      "median_ms": 1.6541519999999998,
+      "p95_ms": 2.347703,
       "atoms": 8,
       "fixture_sha256": "4216d12fb87cb0bd0f1a69ad40f970f0d304c75ef68b41827d4a5ef46c461858",
       "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
-      "record_sha256": "ebbfe5bd49b88aa84e74f0c9000b94b4cf53db75fe4c9db55e3563f2033c57e8"
+      "record_sha256": "6e3f744f8f19e0c643a018a8bb0bf645fa2d4a4b2e8006800694f5a44a491e2a"
     },
     "hpnn/direct/nacl": {
-      "median_ms": 1.615875,
-      "p95_ms": 1.65792,
+      "median_ms": 1.5111020000000002,
+      "p95_ms": 3.448604,
       "atoms": 8,
       "fixture_sha256": "c16f07c47cc8417bc5e1e9cbe08b7fb4cd6c93da2687c70a2a81bb9c51c615c0",
       "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
-      "record_sha256": "7a85e858df2e9deb7c16055fcd3c473def09aa829790b2f96b01ac4e8da71704"
+      "record_sha256": "9b1259b3fe7dbfd42906d0b32dfd95ccc27c8b9b8ec501907562a25bdda7148d"
     },
     "hpnn/table/512": {
-      "median_ms": 3.6134165,
-      "p95_ms": 3.976267,
+      "median_ms": 3.3641035,
+      "p95_ms": 3.449904,
       "atoms": 512,
       "fixture_sha256": "b3b24a87aaab590a86db7ec38205dee452cafd17f19d285a823533b97213e7c1",
       "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
-      "record_sha256": "fb0f2f9c46377742772da366eb20f0d776a8fe932d58df40d9505ef5138ae2de"
+      "record_sha256": "f7434fb1f1e2da5097b4dba716f509fb24f1e2e8de1d0de7bb3bf078f5f7afc3"
     },
     "mace/mh1/512": {
-      "median_ms": 16.516831500000002,
-      "p95_ms": 19.107777,
+      "median_ms": 14.0382625,
+      "p95_ms": 15.172613,
       "atoms": 512,
       "fixture_sha256": "b3b24a87aaab590a86db7ec38205dee452cafd17f19d285a823533b97213e7c1",
       "model_sha256": "ec00a2705854622fbbd898ccfb7701072fcd674709102d009fb919c1b8cc5dde",
-      "record_sha256": "6b372ee73de96c1f43d0e0ce6619e2c2a8539bf3f0e97267e3f9f40383a68870"
+      "record_sha256": "1c497f79d9af86b1c487308478362e045f76cde472ab7b2d9bd74f8b14317245"
     },
     "mace/mh1/64": {
-      "median_ms": 3.5847239999999996,
-      "p95_ms": 3.618548,
+      "median_ms": 2.761102,
+      "p95_ms": 3.192402,
       "atoms": 64,
       "fixture_sha256": "7ea0a449b983af09cdf88a4e955238d0e31dd814fb350523ff9f46f17ce1e74a",
       "model_sha256": "ec00a2705854622fbbd898ccfb7701072fcd674709102d009fb919c1b8cc5dde",
-      "record_sha256": "98ee419a9699789c7442ceeed1b7b7477f873ceaf17d59ca2626b2084cbc25f1"
+      "record_sha256": "dbbd1e2903d8245d35657e68a3eef622fe1e2e9f2f416c2e357b9335399d2ddb"
     },
     "mace/mh1/8": {
-      "median_ms": 2.812687,
-      "p95_ms": 2.995787,
+      "median_ms": 2.0805505,
+      "p95_ms": 2.126101,
       "atoms": 8,
       "fixture_sha256": "4216d12fb87cb0bd0f1a69ad40f970f0d304c75ef68b41827d4a5ef46c461858",
       "model_sha256": "ec00a2705854622fbbd898ccfb7701072fcd674709102d009fb919c1b8cc5dde",
-      "record_sha256": "7cdc49a3fae1b270c1db224c9f2d5c59aec9679becd21a104cda936e23237b60"
+      "record_sha256": "9d85135aebc969f6b3dece7b0ad79e9b17c36b3cd2d78e7579854b35ccf7bb6e"
     }
   }
 }
