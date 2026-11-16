@@ -1,7 +1,7 @@
 # Model-level benchmarks
 
-This is the minimal reproducible benchmark entry point for the CUDA inference
-packages. It deliberately separates four things:
+This is the minimal reproducible benchmark entry point for MACE CUDA inference.
+It deliberately separates four things:
 
 | Artifact | Tracked? | Purpose |
 | --- | --- | --- |
@@ -12,7 +12,7 @@ packages. It deliberately separates four things:
 
 The model files themselves are gitignored, so `models.json` pins their SHA-256
 instead. A missing or changed model is an error unless explicitly allowed.
-`LAPIS_BENCH_HPNN_MODEL` and `LAPIS_BENCH_MACE_MODEL` override the paths; the
+`LAPIS_BENCH_MACE_MODEL` overrides the model path; the
 manifest hash check still applies unless `--allow-model-mismatch` is given.
 
 ## Build
@@ -20,13 +20,11 @@ manifest hash check still applies unless `--allow-model-mismatch` is given.
 ```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_CUDA_ARCHITECTURES=86 -DLAPIS_BUILD_BENCHMARKS=ON
-cmake --build build -j4 --target lapis_bench_hpnn lapis_bench_mace
+cmake --build build -j4 --target lapis_bench_mace
 ```
 
-`lapis_bench_hpnn` and `lapis_bench_mace` are separate executables. Each links
-exactly one model library, so HPNN and MACE do not share a process or a CUDA
-context. If a model is disabled in the build, its cases can be skipped with
-`--skip-missing`.
+`lapis_bench_mace` links the MACE library and requires `LAPIS_BUILD_MACE=ON`.
+Cases with missing executables or model files can be skipped with `--skip-missing`.
 
 ## Quick start
 
@@ -45,7 +43,7 @@ python3 benchmarks/run.py --tier smoke --update-reference
 # Normal run. Raw records go to benchmarks/results/ (gitignored).
 python3 benchmarks/run.py --tier smoke
 
-# Full case set, including 4096 atoms.
+# All tracked MACE cases (8, 64, and 512 atoms).
 python3 benchmarks/run.py --tier all
 
 # Freeze the accepted values for this environment as a release baseline.
@@ -69,15 +67,14 @@ A case is a small JSON file in `cases/`:
 ```json
 {
   "schema": 1,
-  "id": "hpnn/direct/512",
+  "id": "mace/mh1/512",
   "tier": "smoke",
-  "engine": "hpnn",
-  "model": "hpnn/ggnn",
+  "engine": "mace",
+  "model": "mace/mh1",
   "fixture": "grid-8",
   "backend": "auto",
-  "intervals": 0,
-  "warmup": 5,
-  "samples": 20,
+  "warmup": 3,
+  "samples": 10,
   "tolerances": {
     "energy_abs": 1e-4,
     "virial_abs": 1e-3,
@@ -134,7 +131,7 @@ virial arrays:
 ```json
 {
   "schema": 1,
-  "case_id": "hpnn/direct/512",
+  "case_id": "mace/mh1/512",
   "fixture_sha256": "...",
   "model_sha256": "...",
   "tolerances": { "...": 0.0 },

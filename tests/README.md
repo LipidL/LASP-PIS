@@ -1,16 +1,16 @@
 # Native potential tests
 
-HPNN and MACE use GoogleTest and the public C++ calculator API. Both run the
-shared parameterized suite in `physics.cpp`; model adapters live in
-`hpnn/tests/physics.cpp` and `mace/tests/physics.cpp`. The native workspace test
-also checks both global shared-library load orders through the C APIs.
+MACE uses GoogleTest and the public C++ calculator API. It runs the
+shared parameterized suite in `physics.cpp`; the model adapter lives in
+`mace/tests/physics.cpp`. The native workspace test in `c_api.cpp` also checks
+dynamic library loading, interleaved MACE calculators, and their independent
+lifetimes through the C API.
 
 ```sh
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=86
 cmake --build build -j4
 ctest --test-dir build -L native --output-on-failure
-# Faster local iteration: load each model once and run its entire suite.
-build/hpnn/hpnn_tests
+# Faster local iteration: load MACE once and run its entire suite.
 build/mace/mace_tests
 # GoogleTest filters and shuffle/repeat work normally.
 build/mace/mace_tests --gtest_filter='*NumericalStress*'
@@ -31,18 +31,16 @@ ctest --test-dir build -j4 --output-on-failure
 
 This registers one CTest test per model executable, retaining all of its cases.
 CPU tests can run alongside GPU tests, but the `lapis_gpu` lock serializes GPU
-executables even with `-j4`. The two coexistence load-order cases always run in
-separate processes to preserve isolation. Set `LAPIS_TEST_DISCOVER_CASES=ON` again
+executables even with `-j4`. Set `LAPIS_TEST_DISCOVER_CASES=ON` again
 to restore individual case selection/reporting in CTest. In whole-suite mode,
 use the executable's `--gtest_filter` option for an individual case. The pre-push
 check resets this option to `OFF` on each run.
 
-Tests require a CUDA GPU and model weights. Defaults are
-`hpnn/model/ggnn.pth` and `mace/model/mace-mh1.model`. Override them with
-`-DHPNN_TEST_MODEL=/absolute/model` and `-DMACE_TEST_MODEL=/absolute/model`;
+Tests require a CUDA GPU and model weights. The default is
+`mace/model/mace-mh1.model`. Override it with `-DMACE_TEST_MODEL=/absolute/model`;
 original supported checkpoints and processed archives both work. The old
-`HPNN_TEST_CHECKPOINT`, `MACE_TEST_CHECKPOINT`, and `MACE_TEST_ARCHIVE` options
-provide defaults when the new variables are first configured. Missing weights
+`MACE_TEST_CHECKPOINT` and `MACE_TEST_ARCHIVE` options
+provide defaults when `MACE_TEST_MODEL` is first configured. Missing weights
 are a configuration error. Use `BUILD_TESTING=OFF` for inference-only builds.
 Standalone model builds use the same tests and options.
 
@@ -59,11 +57,10 @@ That installation must support RTTI, as the parameterized suites use it.
 ## Adding structures
 
 Drop a fully periodic ARC file into `tests/structures/` and rebuild. Each frame
-automatically participates in **all** tests for both models, including HPNN's
-interpolated radial-network comparison. No per-test lists need updating.
+automatically participates in **all** MACE physics tests. No per-test lists need updating.
 Alternatively, add a named `Structure` to `structures()` in `physics.cpp`.
-Use small, physically reasonable structures with elements supported by both
-models. Negative energy is a fixture/model expectation, not a universal law
+Use small, physically reasonable structures with elements supported by MACE.
+Negative energy is a fixture/model expectation, not a universal law
 for arbitrary trained potentials or highly compressed configurations.
 
 Built-in cases cover empty cells, isolated atoms, distorted water and methane,
@@ -86,7 +83,7 @@ across grid bins; the ARC fixture adds distorted rocksalt NaCl.
   original cell, including the first copy.
 - Zero net force, symmetric stress, repeatability, grow/empty/shrink buffer
   reuse, Auto/brute/grid agreement, explicit rejection of unsupported small-cell
-  grid geometry, invalid-input errors and recovery, and HPNN interpolation.
+  grid geometry, invalid-input errors and recovery.
 
 Invariance tolerances use absolute energy error per atom (no relative allowance
 on large atomic baselines), plus small absolute/relative force and virial
@@ -97,4 +94,4 @@ dominated by float32 roundoff. Derivative allowances are 0.003 eV/Angstrom and
 checks complement, but do not replace, independent reference-model comparisons.
 
 The unrelated checkpoint reader still uses Python to generate serialization
-fixtures; the HPNN/MACE native suites require neither Python nor PyTorch.
+fixtures; the MACE native suite requires neither Python nor PyTorch.

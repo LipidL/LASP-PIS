@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Workspace integration: native checkpoint and archive inference through the CLIs.
+"""MACE integration: native checkpoint and archive inference through the CLI.
 
 Reference archives must come from the independent Python export paths. This test
 also exercises frame selection, output files, and diagnostic exit statuses.
@@ -34,10 +34,8 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--build", type=Path, required=True)
     p.add_argument("--mace", type=Path, required=True)
-    p.add_argument("--hpnn", type=Path, required=True)
     p.add_argument("--structure", type=Path, required=True)
     p.add_argument("--mace-reference-dir", type=Path, required=True)
-    p.add_argument("--hpnn-reference", type=Path, required=True)
     p.add_argument("--output", type=Path)
     args = p.parse_args()
     report = {}
@@ -46,9 +44,6 @@ def main():
         direct = run(args.build/"mace-main", args.mace, args.structure, "--head", head)
         archive = run(args.build/"mace-main", args.mace_reference_dir/(head+".pwm"), args.structure)
         report[head] = compare(direct, archive)
-    direct = run(args.build/"hpnn-main", args.hpnn, args.structure)
-    archive = run(args.build/"hpnn-main", args.hpnn_reference, args.structure)
-    report["hpnn"] = compare(direct, archive)
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         frames = tmp/"frames.arc"
@@ -62,26 +57,26 @@ def main():
         text = "\n".join(lines)+"\n"
         # Both full ARC headers and unwrapped Cartesian coordinates are accepted.
         frames.write_text(text + "\n" + text)
-        for package, model in (("mace", args.mace), ("hpnn", args.hpnn)):
-            exe = args.build/(package+"-main")
-            first, second = run(exe, model, frames), run(exe, model, frames, "--frame", "1")
-            assert first["frame"] == 0 and second["frame"] == 1
-            compare(first, second)
-            out = tmp/(package+".json")
-            subprocess.run([str(exe), str(model), str(frames), "--json", "--output", str(out)], check=True, capture_output=True)
-            compare(first, json.loads(out.read_text()))
-            bad = tmp/"bad.arc"
-            bad.write_text(text.rsplit("end", 1)[0])
-            cases = [(frames, ["--frame", "2"], "frame index"),
-                     (frames, ["--frame", "-1"], "nonnegative"),
-                     (frames, ["--invalid"], "unknown option"),
-                     (bad, [], "incomplete")]
-            nonperiodic = tmp/"nonperiodic.arc"
-            nonperiodic.write_text(text.replace("PBC=ON", "PBC=OFF"))
-            cases.append((nonperiodic, [], "three periodic axes"))
-            for path, flags, diagnostic in cases:
-                failure = subprocess.run([str(exe), str(model), str(path), *flags], text=True, capture_output=True)
-                assert failure.returncode and diagnostic in failure.stderr, (flags, diagnostic, failure.stderr)
+        exe = args.build/"mace-main"
+        model = args.mace
+        first, second = run(exe, model, frames), run(exe, model, frames, "--frame", "1")
+        assert first["frame"] == 0 and second["frame"] == 1
+        compare(first, second)
+        out = tmp/"mace.json"
+        subprocess.run([str(exe), str(model), str(frames), "--json", "--output", str(out)], check=True, capture_output=True)
+        compare(first, json.loads(out.read_text()))
+        bad = tmp/"bad.arc"
+        bad.write_text(text.rsplit("end", 1)[0])
+        cases = [(frames, ["--frame", "2"], "frame index"),
+                 (frames, ["--frame", "-1"], "nonnegative"),
+                 (frames, ["--invalid"], "unknown option"),
+                 (bad, [], "incomplete")]
+        nonperiodic = tmp/"nonperiodic.arc"
+        nonperiodic.write_text(text.replace("PBC=ON", "PBC=OFF"))
+        cases.append((nonperiodic, [], "three periodic axes"))
+        for path, flags, diagnostic in cases:
+            failure = subprocess.run([str(exe), str(model), str(path), *flags], text=True, capture_output=True)
+            assert failure.returncode and diagnostic in failure.stderr, (flags, diagnostic, failure.stderr)
     print(json.dumps(report, indent=2))
     if args.output:
         args.output.write_text(json.dumps(report, indent=2)+"\n")

@@ -1,6 +1,6 @@
 # Native checkpoint data reader
 
-Independent C++17 package used privately by MACE and HPNN. It uses a ZIP64 reader
+Independent C++17 package used privately by MACE. It uses a ZIP64 reader
 with zlib decompression and a bounded data-only pickle decoder. Python class and reducer
 names become inert records: Python code and TorchScript graphs are never run.
 It has no LibTorch or Python runtime dependency. Lapis and Chemio have no
@@ -20,9 +20,9 @@ processes. Stored and deflated records, ZIP64 metadata, and CRC checks are
 supported. Encrypted and split ZIP archives are rejected.
 
 The decoder supports the pickle operations and dense float32/float64/integer
-tensor storage used by the supplied eager MH1 and scripted simplified HPNN
-checkpoints, including storage offsets, strides, memo references, and embedded
-byte strings. This is not a general Python unpickler or a universal PyTorch model
+tensor storage used by the supplied eager MH1 checkpoint, including storage
+offsets, strides, memo references, and embedded byte strings. This is not a general
+Python unpickler or a universal PyTorch model
 loader. Model projects must validate architecture and interpret metadata.
 Unsupported opcodes, storage types, byte orders, invalid references, nonfinite
 tensor data, and out-of-bounds tensor views are errors. Resource limits apply to

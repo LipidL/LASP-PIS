@@ -36,7 +36,7 @@ their term order. Existing public APIs, precision, cutoff, and ZBL are unchanged
 The saved baseline library was built before editing production sources. The
 candidate uses the same compiler and model. The supplied MH1 model selects
 `matpes_r2scan`; its SHA-256 and all input hashes are in the
-[compact measurements](measurements.json).
+[compact measurements](PERF-0002-mace-pair-chunks/measurements.json).
 
 Three rounds ran sequentially, with 20 warmups and 50 timed calls per process.
 Baseline and candidate ran consecutively for each fixture; both fixture and
@@ -161,7 +161,7 @@ build to sweep `MACE_PAIR_TILE_EDGES=1,2,4` and positive
 ```sh
 cmake -S . -B build-pair-sweep \
   -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=86 \
-  -DBUILD_TESTING=OFF -DLAPIS_BUILD_HPNN=OFF -DLAPIS_BUILD_D3=OFF \
+  -DBUILD_TESTING=OFF -DLAPIS_BUILD_D3=OFF \
   -DLAPIS_BUILD_BENCHMARKS=ON \
   '-DCMAKE_CUDA_FLAGS=-DMACE_PAIR_TILE_EDGES=2 -DMACE_PAIR_PATH_CHUNK=2'
 cmake --build build-pair-sweep -j4 --target lapis_bench_mace

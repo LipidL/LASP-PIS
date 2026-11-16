@@ -23,21 +23,15 @@ struct Library {
             throw std::runtime_error(dlerror());
         return reinterpret_cast<Function>(ptr);
     }
-    explicit Library(bool hpnn) {
-        library = dlopen(hpnn ? HPNN_LIBRARY_PATH : MACE_LIBRARY_PATH, RTLD_NOW | RTLD_GLOBAL);
+    Library() {
+        library = dlopen(MACE_LIBRARY_PATH, RTLD_NOW | RTLD_GLOBAL);
         if (!library)
             throw std::runtime_error(dlerror());
         try {
-            const std::string prefix = hpnn ? "hpnn_" : "mace_";
-            destroy                  = symbol<void (*)(void*)>(prefix + "destroy");
-            error                    = symbol<const char* (*)()>(prefix + "last_error");
-            calculate                = symbol<Calculate>(prefix + "calculate");
-            if (hpnn)
-                calculator =
-                    symbol<void* (*)(const char*, int, int)>("hpnn_create")(HPNN_MODEL_PATH, 0, 0);
-            else
-                calculator =
-                    symbol<void* (*)(const char*, int)>("mace_create_mh1")(MACE_MODEL_PATH, 0);
+            destroy    = symbol<void (*)(void*)>("mace_destroy");
+            error      = symbol<const char* (*)()>("mace_last_error");
+            calculate  = symbol<Calculate>("mace_calculate");
+            calculator = symbol<void* (*)(const char*, int)>("mace_create_mh1")(MACE_MODEL_PATH, 0);
             if (!calculator)
                 throw std::runtime_error(error());
         } catch (...) {
@@ -68,12 +62,11 @@ struct Library {
         return result;
     }
 };
-class Coexistence : public testing::TestWithParam<bool> {};
-TEST_P(Coexistence, GlobalLoadOrderAndInterleavedCAPI) {
-    Library    first(GetParam());
+TEST(CAPI, InterleavedCalculators) {
+    Library    first;
     const auto before = first.evaluate();
     {
-        Library    second(!GetParam());
+        Library    second;
         const auto other = second.evaluate();
         for (int run = 0; run < 3; ++run) {
             const auto actual_first = first.evaluate(), actual_second = second.evaluate();
@@ -89,8 +82,4 @@ TEST_P(Coexistence, GlobalLoadOrderAndInterleavedCAPI) {
     for (size_t i = 0; i < before.size(); ++i)
         EXPECT_NEAR(after[i], before[i], 3e-4);
 }
-INSTANTIATE_TEST_SUITE_P(LoadOrder, Coexistence, testing::Bool(),
-                         [](const testing::TestParamInfo<bool>& p) {
-                             return p.param ? "HPNNFirst" : "MACEFirst";
-                         });
 } // namespace

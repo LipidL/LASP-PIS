@@ -99,8 +99,8 @@ with zero shared, stack or local bytes in both layers. Generic products use
 
 ## Correctness
 
-All 10 configured CTest entries pass: implicit and explicit Lapis, Chemio,
-checkpoint, D3, HPNN, both shared-library load orders, and implicit/explicit MACE.
+The historical validation passed the implicit and explicit Lapis, Chemio,
+checkpoint, D3, and implicit/explicit MACE CTest entries.
 Each MACE executable passes 125 cases, including all 120 physics cases with
 finite-difference forces and nine strain derivatives. New cases compare graph
 replay against direct pedantic evaluation through coordinate/species changes,

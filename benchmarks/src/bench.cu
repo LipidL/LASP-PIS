@@ -4,21 +4,6 @@
 // loads the requested model, performs warmup calls, records wall and device
 // time, and emits a self-describing JSON record.  Fixture generation, reference
 // comparison, and baseline selection live in the Python driver.
-#include <lapis/runtime.hpp>
-
-#if defined(LAPIS_BENCH_HPNN) && defined(LAPIS_BENCH_MACE)
-#error "Build one benchmark executable per model library"
-#endif
-#if !defined(LAPIS_BENCH_HPNN) && !defined(LAPIS_BENCH_MACE)
-#error "Define LAPIS_BENCH_HPNN or LAPIS_BENCH_MACE"
-#endif
-#ifdef LAPIS_BENCH_HPNN
-#include <hpnn/hpnn.hpp>
-#endif
-#ifdef LAPIS_BENCH_MACE
-#include <mace/mh1.hpp>
-#endif
-
 #include <algorithm>
 #include <array>
 #include <chrono>
@@ -30,6 +15,8 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <lapis/runtime.hpp>
+#include <mace/mh1.hpp>
 #include <memory>
 #include <numeric>
 #include <stdexcept>
@@ -40,7 +27,7 @@ namespace {
 
 struct Args {
     std::string engine, model, input, backend = "auto", output, head;
-    int         intervals = 0, warmup = 5, samples = 20;
+    int         warmup = 5, samples = 20;
 };
 
 struct Input {
@@ -51,8 +38,8 @@ struct Input {
 };
 
 void usage(std::ostream& out) {
-    out << "Usage: lapis_bench_<engine> --engine hpnn|mace --model FILE "
-           "--input FILE.bin [--backend auto|brute|cell] [--intervals N] "
+    out << "Usage: lapis_bench_mace --engine mace --model FILE "
+           "--input FILE.bin [--backend auto|brute|cell] "
            "[--head NAME] [--warmup N] [--samples N] [--output FILE]\n";
 }
 
@@ -86,8 +73,6 @@ Args parse(int argc, char** argv) {
             args.output = value;
         else if (flag == "--head")
             args.head = value;
-        else if (flag == "--intervals")
-            args.intervals = integer(value, "intervals");
         else if (flag == "--warmup")
             args.warmup = integer(value, "warmup");
         else if (flag == "--samples")
@@ -95,8 +80,8 @@ Args parse(int argc, char** argv) {
         else
             throw std::runtime_error("unknown option: " + flag);
     }
-    if (args.engine != "hpnn" && args.engine != "mace")
-        throw std::runtime_error("--engine must be hpnn or mace");
+    if (args.engine != "mace")
+        throw std::runtime_error("--engine must be mace");
     if (args.model.empty() || args.input.empty())
         throw std::runtime_error("--model and --input are required");
     if (args.backend != "auto" && args.backend != "brute" && args.backend != "cell")
@@ -265,20 +250,10 @@ void run(const Args& args, std::ostream& out) {
 
     std::unique_ptr<lapis::Calculator> calculator;
     auto                               start = std::chrono::steady_clock::now();
-#ifdef LAPIS_BENCH_HPNN
-    if (args.engine == "hpnn")
-        calculator = std::make_unique<hpnn::HPNN>(args.model, options, args.intervals);
-#endif
-#ifdef LAPIS_BENCH_MACE
-    if (args.engine == "mace") {
-        if (args.head.empty())
-            calculator = std::make_unique<mace::MH1>(args.model, options);
-        else
-            calculator = std::make_unique<mace::MH1>(args.model, options, args.head);
-    }
-#endif
-    if (!calculator)
-        throw std::runtime_error("this executable was not built with engine " + args.engine);
+    if (args.head.empty())
+        calculator = std::make_unique<mace::MH1>(args.model, options);
+    else
+        calculator = std::make_unique<mace::MH1>(args.model, options, args.head);
     double init_ms =
         std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count();
 
@@ -319,8 +294,8 @@ void run(const Args& args, std::ostream& out) {
         << ",\"model\":\"" << escape(args.model) << "\""
         << ",\"input\":\"" << escape(args.input) << "\""
         << ",\"atoms\":" << input.n << ",\"init_ms\":" << init_ms << ",\"options\":{\"backend\":\""
-        << escape(args.backend) << "\",\"intervals\":" << args.intervals
-        << ",\"warmup\":" << args.warmup << ",\"samples\":" << args.samples << "},";
+        << escape(args.backend) << "\",\"warmup\":" << args.warmup
+        << ",\"samples\":" << args.samples << "},";
     write_device(out);
     out << ",\"samples_ms\":[";
     for (size_t i = 0; i < wall.size(); ++i)

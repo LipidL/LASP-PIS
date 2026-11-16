@@ -27,7 +27,7 @@ For each receiver atom, the framework assigns a CUDA thread block. Threads trave
 
 Two neighbor-discovery backends are provided. The brute-force backend enumerates sender and periodic-image tuples and is the correctness fallback for small or geometrically unsuitable cells. The grid backend spatially permutes atoms, uses a dense periodic cell grid whose bin heights are at least the cutoff, and traverses the receiver bin plus the 26 adjacent bin offsets. An occupancy-aware `Auto` policy validates geometry, caps or coarsens grid dimensions, estimates candidate work from bin occupancy, and chooses between valid backends.
 
-The first production model is MACE MH1. The same runtime grammar also supports models such as NequIP and HPNN whose durable messages are node-level. Architectures with persistent edge state, edge-to-edge message passing, or nonlocal iterative solvers are excluded from v1.
+The first production model is MACE MH1. The same runtime grammar also supports models such as NequIP whose durable messages are node-level. Architectures with persistent edge state, edge-to-edge message passing, or nonlocal iterative solvers are excluded from v1.
 
 ## User Stories
 
@@ -237,7 +237,7 @@ The first production model is MACE MH1. The same runtime grammar also supports m
 
 - MACE MH1 is the flagship v1 integration. Its edge-local geometry, basis, radial network, tensor-product work, analytical force, and virial calculations are fused into specialized pair traversals while hidden states, messages, densities, and linear results remain node-level.
 
-- NequIP- and HPNN-style models are expected to fit the same runtime grammar when their durable state is node-level.
+- NequIP-style models are expected to fit the same runtime grammar when their durable state is node-level.
 
 - The framework is initially performance-tested on SM80, SM86, SM89, and SM90 hardware. SM70 and SM75 are experimental or compile-only until tested. Early releases build from source and do not require distributed fat binaries.
 

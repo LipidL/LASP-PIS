@@ -73,7 +73,7 @@ def main() -> int:
                 errors.append(f"{path.name}: unknown fixture {case.get('fixture')}")
             if case.get("model") not in models:
                 errors.append(f"{path.name}: unknown model {case.get('model')}")
-            if case.get("engine") not in ("hpnn", "mace"):
+            if case.get("engine") != "mace":
                 errors.append(f"{path.name}: invalid engine {case.get('engine')}")
             if case.get("tier", "smoke") not in ("smoke", "full"):
                 errors.append(f"{path.name}: invalid tier {case.get('tier')}")

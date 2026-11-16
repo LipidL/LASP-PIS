@@ -1,10 +1,6 @@
 {
   "schema": 1,
   "models": {
-    "hpnn/ggnn": {
-      "path": "hpnn/model/ggnn.pth",
-      "sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b"
-    },
     "mace/mh1": {
       "path": "mace/model/mace-mh1.model",
       "sha256": "ec00a2705854622fbbd898ccfb7701072fcd674709102d009fb919c1b8cc5dde"

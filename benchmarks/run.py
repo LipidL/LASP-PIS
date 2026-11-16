@@ -219,8 +219,6 @@ def bench_command(args, case: dict, exe: Path, model: Path, input_path: Path) ->
         "--samples",
         str(args.samples if args.samples is not None else case.get("samples", 20)),
     ]
-    if case["engine"] == "hpnn":
-        command += ["--intervals", str(case.get("intervals", 0))]
     if case.get("head"):
         command += ["--head", case["head"]]
     return command

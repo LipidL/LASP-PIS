@@ -19,46 +19,6 @@
   },
   "environment_class": "sm86-nvidia-geforce-rtx-3060-ti-cuda12.6",
   "cases": {
-    "hpnn/direct/512": {
-      "median_ms": 6.423610500000001,
-      "p95_ms": 6.944411,
-      "atoms": 512,
-      "fixture_sha256": "b3b24a87aaab590a86db7ec38205dee452cafd17f19d285a823533b97213e7c1",
-      "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
-      "record_sha256": "5023decd3e034991f74dff69689d0144e87d235449808bb118a62653b6a1be90"
-    },
-    "hpnn/direct/64": {
-      "median_ms": 2.053853,
-      "p95_ms": 2.866304,
-      "atoms": 64,
-      "fixture_sha256": "7ea0a449b983af09cdf88a4e955238d0e31dd814fb350523ff9f46f17ce1e74a",
-      "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
-      "record_sha256": "80a43aac30fdad650a02a5d555861d4561466fb7cc36ea7d1fcbec88d5af5e0e"
-    },
-    "hpnn/direct/8": {
-      "median_ms": 1.6541519999999998,
-      "p95_ms": 2.347703,
-      "atoms": 8,
-      "fixture_sha256": "4216d12fb87cb0bd0f1a69ad40f970f0d304c75ef68b41827d4a5ef46c461858",
-      "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
-      "record_sha256": "6e3f744f8f19e0c643a018a8bb0bf645fa2d4a4b2e8006800694f5a44a491e2a"
-    },
-    "hpnn/direct/nacl": {
-      "median_ms": 1.5111020000000002,
-      "p95_ms": 3.448604,
-      "atoms": 8,
-      "fixture_sha256": "c16f07c47cc8417bc5e1e9cbe08b7fb4cd6c93da2687c70a2a81bb9c51c615c0",
-      "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
-      "record_sha256": "9b1259b3fe7dbfd42906d0b32dfd95ccc27c8b9b8ec501907562a25bdda7148d"
-    },
-    "hpnn/table/512": {
-      "median_ms": 3.3641035,
-      "p95_ms": 3.449904,
-      "atoms": 512,
-      "fixture_sha256": "b3b24a87aaab590a86db7ec38205dee452cafd17f19d285a823533b97213e7c1",
-      "model_sha256": "018217082bf728e845456edd9284c82f8afa75ba944dd8e98440cabcc9ef0a3b",
-      "record_sha256": "f7434fb1f1e2da5097b4dba716f509fb24f1e2e8de1d0de7bb3bf078f5f7afc3"
-    },
     "mace/mh1/512": {
       "median_ms": 14.0382625,
       "p95_ms": 15.172613,

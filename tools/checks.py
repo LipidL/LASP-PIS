@@ -81,7 +81,7 @@ def full(build, jobs):
     run([
         "cmake", "-S", ".", "-B", str(build),
         "-DCMAKE_BUILD_TYPE=Release", "-DBUILD_TESTING=ON",
-        "-DLAPIS_BUILD_MACE=ON", "-DLAPIS_BUILD_HPNN=ON", "-DLAPIS_BUILD_D3=ON",
+        "-DLAPIS_BUILD_MACE=ON", "-DLAPIS_BUILD_D3=ON",
         "-DLAPIS_TEST_DISCOVER_CASES=OFF",
         f"-DPython3_EXECUTABLE={sys.executable}",
     ])
