@@ -1,11 +1,12 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77.0.3"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "lapis-mace-inference"
 version = "0.1.0"
 description = "MACE MH1 inference using Lapis"
+license = "MIT"
 requires-python = ">=3.10"
 dependencies = ["numpy>=1.26", "ase>=3.23"]
 

@@ -58,6 +58,9 @@ if(BUILD_TESTING)
   endif()
 endif()
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+find_file(mit_license LICENSE PATHS "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/.."
+  NO_DEFAULT_PATH NO_CACHE REQUIRED)
+install(FILES "${mit_license}" DESTINATION ${CMAKE_INSTALL_DATADIR}/lapis)
 install(EXPORT lapisTargets NAMESPACE lapis::
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/lapis)
 configure_package_config_file(cmake/lapisConfig.cmake.in

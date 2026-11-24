@@ -23,7 +23,9 @@ if(BUILD_TESTING)
 endif()
 install(TARGETS d3 EXPORT d3Targets ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-install(FILES data/LGPL-3.txt data/GPL-3.txt data/NOTICE.md
+find_file(mit_license LICENSE PATHS "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/.."
+  NO_DEFAULT_PATH NO_CACHE REQUIRED)
+install(FILES "${mit_license}" data/Apache-2.0.txt data/NOTICE.md
   DESTINATION ${CMAKE_INSTALL_DATADIR}/d3)
 install(EXPORT d3Targets NAMESPACE d3:: DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/d3)
 configure_package_config_file(cmake/d3Config.cmake.in

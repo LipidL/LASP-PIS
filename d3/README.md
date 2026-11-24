@@ -25,9 +25,10 @@ cmake --build build-d3 -j4
 ctest --test-dir build-d3 --output-on-failure
 ```
 
-Atomic numbers 1–94 (H–Pu) are supported. Parameters are bundled; native use
-requires no Python, model file, or network access. See [parameter provenance](data/NOTICE.md)
-for the source, license and regeneration command. Functional damping parameters
+Atomic numbers 1–94 (H–Pu) are supported. The bundled Apache-2.0 parameter
+tables come from tad-dftd3 and tad-mctc. Native calculations work offline
+without Python or an external data file. See the [data notice](data/NOTICE.md)
+for attribution and the regeneration command. Functional damping parameters
 can be supplied directly; the built-in default is PBE-D3(BJ).
 
 The input and output conventions match Lapis: float32 positions and cell in

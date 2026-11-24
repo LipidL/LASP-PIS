@@ -1,5 +1,6 @@
-// Generated from simple-dftd3 v1.2.1 (LGPL-3.0-or-later).
-// See tools/import_parameters.py and data/NOTICE.md.
+// SPDX-License-Identifier: Apache-2.0
+// Repacked and scaled for Lapis from tad-dftd3 0.5.0 and tad-mctc 0.5.3.
+// Covalent radii: Copyright (C) 2024 Grimme Group. See data/NOTICE.md.
 static constexpr int max_element = 94, max_reference = 7;
 static constexpr int offsets[] = {
     0, 0, 2, 3, 5, 8, 13, 18,

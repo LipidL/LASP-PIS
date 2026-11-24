@@ -14,6 +14,9 @@ set_target_properties(chemio PROPERTIES POSITION_INDEPENDENT_CODE ON
 install(TARGETS chemio EXPORT chemioTargets
   ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+find_file(mit_license LICENSE PATHS "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/.."
+  NO_DEFAULT_PATH NO_CACHE REQUIRED)
+install(FILES "${mit_license}" DESTINATION ${CMAKE_INSTALL_DATADIR}/chemio)
 install(EXPORT chemioTargets NAMESPACE chemio::
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/chemio)
 configure_package_config_file(cmake/chemioConfig.cmake.in

@@ -15,6 +15,15 @@ hidden. CUDA runtime, cuBLAS, and zlib remain external runtime dependencies.
 PairOp templates compile with the consuming model. No Python or LibTorch is
 needed for native loading or inference.
 
+## License
+
+Lapis-authored code is distributed under the [MIT License](LICENSE).
+The bundled D3 parameter tables are distributed under [Apache-2.0](d3/data/Apache-2.0.txt).
+Their sources and the transformations used by Lapis are recorded in the
+[D3 data notice](d3/data/NOTICE.md). When packaging D3 binaries, include both
+license texts and the data notice. When extracting a component into its own
+repository, include the workspace MIT license at the component root.
+
 ## Build together
 
 Requires CMake 3.24+, a C++17 compiler, CUDA Toolkit, and zlib development headers.
